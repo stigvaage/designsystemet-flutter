@@ -1,4 +1,65 @@
 import { defineConfig } from 'vitepress'
+import { writeFileSync, mkdirSync } from 'node:fs'
+import { resolve, dirname } from 'node:path'
+
+const base = '/komponentbibliotek-flutter/'
+
+const redirects: Record<string, string> = {
+  // komponenter/kjernekomponenter → komponenter
+  'komponenter/kjernekomponenter/ds-alert': 'komponenter/ds-alert',
+  'komponenter/kjernekomponenter/ds-badge': 'komponenter/ds-badge',
+  'komponenter/kjernekomponenter/ds-button': 'komponenter/ds-button',
+  'komponenter/kjernekomponenter/ds-card': 'komponenter/ds-card',
+  'komponenter/kjernekomponenter/ds-checkbox': 'komponenter/ds-checkbox',
+  'komponenter/kjernekomponenter/ds-chip': 'komponenter/ds-chip',
+  'komponenter/kjernekomponenter/ds-divider': 'komponenter/ds-divider',
+  'komponenter/kjernekomponenter/ds-link': 'komponenter/ds-link',
+  'komponenter/kjernekomponenter/ds-radio': 'komponenter/ds-radio',
+  'komponenter/kjernekomponenter/ds-spinner': 'komponenter/ds-spinner',
+  'komponenter/kjernekomponenter/ds-switch': 'komponenter/ds-switch',
+  'komponenter/kjernekomponenter/ds-tag': 'komponenter/ds-tag',
+  'komponenter/kjernekomponenter/ds-textarea': 'komponenter/ds-textarea',
+  'komponenter/kjernekomponenter/ds-textfield': 'komponenter/ds-textfield',
+  // komponenter/navigasjon → komponenter
+  'komponenter/navigasjon/ds-avatar': 'komponenter/ds-avatar',
+  'komponenter/navigasjon/ds-avatar-stack': 'komponenter/ds-avatar-stack',
+  'komponenter/navigasjon/ds-breadcrumbs': 'komponenter/ds-breadcrumbs',
+  'komponenter/navigasjon/ds-dialog': 'komponenter/ds-dialog',
+  'komponenter/navigasjon/ds-dropdown': 'komponenter/ds-dropdown',
+  'komponenter/navigasjon/ds-pagination': 'komponenter/ds-pagination',
+  'komponenter/navigasjon/ds-popover': 'komponenter/ds-popover',
+  'komponenter/navigasjon/ds-search': 'komponenter/ds-search',
+  'komponenter/navigasjon/ds-select': 'komponenter/ds-select',
+  'komponenter/navigasjon/ds-suggestion': 'komponenter/ds-suggestion',
+  'komponenter/navigasjon/ds-table': 'komponenter/ds-table',
+  'komponenter/navigasjon/ds-tabs': 'komponenter/ds-tabs',
+  'komponenter/navigasjon/ds-toggle-group': 'komponenter/ds-toggle-group',
+  'komponenter/navigasjon/ds-tooltip': 'komponenter/ds-tooltip',
+  // komponenter/skjema → komponenter
+  'komponenter/skjema/ds-details': 'komponenter/ds-details',
+  'komponenter/skjema/ds-error-summary': 'komponenter/ds-error-summary',
+  'komponenter/skjema/ds-field': 'komponenter/ds-field',
+  'komponenter/skjema/ds-fieldset': 'komponenter/ds-fieldset',
+  'komponenter/skjema/ds-input': 'komponenter/ds-input',
+  'komponenter/skjema/ds-list': 'komponenter/ds-list',
+  'komponenter/skjema/ds-skeleton': 'komponenter/ds-skeleton',
+  'komponenter/skjema/ds-skip-link': 'komponenter/ds-skip-link',
+  // komponenter/typografi → komponenter
+  'komponenter/typografi/ds-heading': 'komponenter/ds-heading',
+  'komponenter/typografi/ds-label': 'komponenter/ds-label',
+  'komponenter/typografi/ds-paragraph': 'komponenter/ds-paragraph',
+  'komponenter/typografi/ds-validation-message': 'komponenter/ds-validation-message',
+  // grunnleggende → kom-i-gang
+  'grunnleggende/tilgjengelighet': 'kom-i-gang/tilgjengelighet',
+  'grunnleggende/typografi': 'kom-i-gang/typografi',
+  'grunnleggende/farger/index': 'kom-i-gang/farger/',
+  'grunnleggende/storrelser/index': 'kom-i-gang/storrelser/',
+  'grunnleggende/avrunding-og-skygger': 'kom-i-gang/avrunding-og-skygger',
+  'grunnleggende/tema/index': 'kom-i-gang/tema/',
+  // introduksjon → intro
+  'introduksjon/om-designsystemet': 'intro/om-designsystemet',
+  'introduksjon/om-flutter-biblioteket': 'intro/om-flutter-biblioteket',
+}
 
 export default defineConfig({
   lang: 'nb-NO',
@@ -6,11 +67,24 @@ export default defineConfig({
   description: 'Flutter-implementasjon av det norske offentlige designsystemet',
 
   srcDir: 'nb',
-  base: '/komponentbibliotek-flutter/',
+  base,
 
   head: [
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/komponentbibliotek-flutter/favicon.svg' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}favicon.svg` }],
   ],
+
+  buildEnd(siteConfig) {
+    const outDir = siteConfig.outDir
+    for (const [from, to] of Object.entries(redirects)) {
+      const htmlPath = resolve(outDir, `${from}.html`)
+      mkdirSync(dirname(htmlPath), { recursive: true })
+      const target = to.endsWith('/') ? `${base}${to}` : `${base}${to}.html`
+      writeFileSync(
+        htmlPath,
+        `<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=${target}"><link rel="canonical" href="${target}"></head><body><a href="${target}">Moved here</a></body></html>`,
+      )
+    }
+  },
 
   themeConfig: {
     logo: '/logo.svg',
