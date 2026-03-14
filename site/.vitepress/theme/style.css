@@ -1,0 +1,89 @@
+/**
+ * Designsystemet-inspirert tema for VitePress
+ * Farger fra designsystemet.no (Digdir)
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Designsystemet Digdir-farger */
+  --ds-blue-1: #f4f7fb;
+  --ds-blue-2: #dfe9f4;
+  --ds-blue-3: #c5d7eb;
+  --ds-blue-4: #a1c1de;
+  --ds-blue-5: #6fa3cf;
+  --ds-blue-6: #3d85c0;
+  --ds-blue-7: #0062BA;
+  --ds-blue-8: #004d93;
+  --ds-blue-9: #00396e;
+  --ds-blue-10: #002649;
+
+  /* VitePress brand-farger → Designsystemet blå */
+  --vp-c-brand-1: var(--ds-blue-7);
+  --vp-c-brand-2: var(--ds-blue-6);
+  --vp-c-brand-3: var(--ds-blue-8);
+  --vp-c-brand-soft: var(--ds-blue-2);
+
+  /* Skriftfamilie */
+  --vp-font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --vp-font-family-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+.dark {
+  --vp-c-brand-1: var(--ds-blue-5);
+  --vp-c-brand-2: var(--ds-blue-4);
+  --vp-c-brand-3: var(--ds-blue-6);
+  --vp-c-brand-soft: var(--ds-blue-9);
+}
+
+/* Hero-styling */
+.VPHero .VPImage {
+  max-width: 200px;
+  max-height: 200px;
+}
+
+/* Komponentrutenett på oversiktsiden */
+.component-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.component-card {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  padding: 20px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.component-card:hover {
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.component-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--vp-c-brand-1);
+}
+
+.component-card p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--vp-c-text-2);
+  line-height: 1.5;
+}
+
+/* Tabellstyling */
+.vp-doc table {
+  width: 100%;
+}
+
+.vp-doc table th {
+  font-weight: 600;
+}

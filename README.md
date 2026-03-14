@@ -6,6 +6,8 @@
 [![Lisens: MIT](https://img.shields.io/badge/Lisens-MIT-green.svg)](LICENSE)
 [![WCAG 2.1 AA](https://img.shields.io/badge/WCAG_2.1-AA-brightgreen.svg)](https://www.w3.org/WAI/WCAG21/quickref/)
 
+> **[Les dokumentasjonen](https://stigvaage.github.io/komponentbibliotek-flutter/)** | **[Interaktiv komponentkatalog (Widgetbook)](https://stigvaage.github.io/komponentbibliotek-flutter/widgetbook/)**
+
 Flutter-implementasjon av [Designsystemet](https://designsystemet.no) -- det norske offentlige designsystemet utviklet av Digitaliseringsdirektoratet (Digdir).
 
 ## Kort beskrivelse

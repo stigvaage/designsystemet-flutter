@@ -21,3 +21,8 @@ Thumbs.db
 
 # Coverage
 coverage/
+
+# VitePress
+site/.vitepress/dist/
+site/.vitepress/cache/
+site/node_modules/

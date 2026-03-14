@@ -1,4 +1,4 @@
-name: Deploy Widgetbook to GitHub Pages
+name: Deploy Documentation to GitHub Pages
 
 on:
   push:
@@ -24,20 +24,35 @@ jobs:
         with:
           channel: stable
 
-      - name: Install dependencies
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install Flutter dependencies
         run: |
           flutter pub get
           cd widgetbook && flutter pub get
 
-      - name: Build Widgetbook for web
+      - name: Build Widgetbook
         run: |
           cd widgetbook
-          flutter build web --release --base-href /komponentbibliotek-flutter/
+          flutter build web --release --base-href /komponentbibliotek-flutter/widgetbook/
+
+      - name: Install VitePress dependencies
+        run: cd site && npm ci
+
+      - name: Build VitePress documentation
+        run: cd site && npm run build
+
+      - name: Copy Widgetbook into VitePress output
+        run: cp -r widgetbook/build/web site/.vitepress/dist/widgetbook
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: widgetbook/build/web
+          path: site/.vitepress/dist
 
   deploy:
     needs: build
