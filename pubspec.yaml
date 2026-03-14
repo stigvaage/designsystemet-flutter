@@ -1,0 +1,29 @@
+name: komponentbibliotek_flutter
+description: Flutter component library implementing the Norwegian Designsystemet (designsystemet.no) design system.
+version: 0.0.1
+homepage: https://designsystemet.no
+repository: https://github.com/user/komponentbibliotek.flutter
+
+environment:
+  sdk: ^3.3.0
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: lib/fonts/Inter-Regular.ttf
+          weight: 400
+        - asset: lib/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: lib/fonts/Inter-SemiBold.ttf
+          weight: 600

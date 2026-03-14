@@ -1,0 +1,22 @@
+{
+  "color": {
+    "accent": {
+      "background-default": { "$value": "#FEFEFF", "$type": "color" },
+      "background-tinted": { "$value": "#EEF4FA", "$type": "color" },
+      "surface-default": { "$value": "#DDE9F3", "$type": "color" },
+      "surface-tinted": { "$value": "#CCDFF0", "$type": "color" },
+      "surface-hover": { "$value": "#B3CFE5", "$type": "color" },
+      "surface-active": { "$value": "#99C0DB", "$type": "color" },
+      "border-subtle": { "$value": "#85B0CC", "$type": "color" },
+      "border-default": { "$value": "#5A9AC4", "$type": "color" },
+      "border-strong": { "$value": "#2B7BB5", "$type": "color" },
+      "text-subtle": { "$value": "#1A5C97", "$type": "color" },
+      "text-default": { "$value": "#003052", "$type": "color" },
+      "base-default": { "$value": "#0062BA", "$type": "color" },
+      "base-hover": { "$value": "#004D94", "$type": "color" },
+      "base-active": { "$value": "#003B73", "$type": "color" },
+      "base-contrast-subtle": { "$value": "#D4E4F0", "$type": "color" },
+      "base-contrast-default": { "$value": "#FFFFFF", "$type": "color" }
+    }
+  }
+}

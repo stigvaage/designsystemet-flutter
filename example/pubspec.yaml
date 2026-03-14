@@ -1,0 +1,11 @@
+name: example
+description: Showcase app for komponentbibliotek_flutter
+
+environment:
+  sdk: ^3.3.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  komponentbibliotek_flutter:
+    path: ../
