@@ -1,44 +1,95 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   component: string
   height?: number
-}>(), {
-  height: 400,
-})
+}>()
 
 const baseUrl = import.meta.env.BASE_URL ?? '/komponentbibliotek-flutter/'
-const src = computed(() => {
+const widgetbookUrl = computed(() => {
   const path = encodeURIComponent(props.component)
   return `${baseUrl}widgetbook/?path=${path}`
+})
+
+const componentName = computed(() => {
+  const parts = props.component.split('/')
+  return parts[parts.length - 1]
 })
 </script>
 
 <template>
-  <div class="widgetbook-embed">
-    <iframe
-      :src="src"
-      :style="{ height: `${height}px` }"
-      frameborder="0"
-      loading="lazy"
-      allow="clipboard-write"
-      title="Interaktiv komponentforhåndsvisning i Widgetbook"
-    />
+  <div class="widgetbook-link">
+    <a :href="widgetbookUrl" target="_blank" rel="noopener noreferrer" class="widgetbook-link-card">
+      <span class="widgetbook-link-icon" aria-hidden="true">&#9654;</span>
+      <span class="widgetbook-link-text">
+        <span class="widgetbook-link-title">Prøv {{ componentName }} i Widgetbook</span>
+        <span class="widgetbook-link-desc">Interaktiv forhåndsvisning med justerbare egenskaper</span>
+      </span>
+      <span class="widgetbook-link-arrow" aria-hidden="true">&#8599;</span>
+    </a>
   </div>
 </template>
 
 <style scoped>
-.widgetbook-embed {
+.widgetbook-link {
   margin: 16px 0;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  overflow: hidden;
 }
 
-.widgetbook-embed iframe {
-  width: 100%;
-  display: block;
-  background: var(--vp-c-bg);
+.widgetbook-link-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.widgetbook-link-card:hover {
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.dark .widgetbook-link-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.24);
+}
+
+.widgetbook-link-card:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}
+
+.widgetbook-link-icon {
+  font-size: 20px;
+  color: var(--vp-c-brand-1);
+  flex-shrink: 0;
+}
+
+.widgetbook-link-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.widgetbook-link-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--vp-c-brand-1);
+}
+
+.widgetbook-link-desc {
+  font-size: 13px;
+  color: var(--vp-c-text-2);
+}
+
+.widgetbook-link-arrow {
+  font-size: 16px;
+  color: var(--vp-c-text-3);
+  flex-shrink: 0;
 }
 </style>
