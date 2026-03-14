@@ -1,0 +1,15 @@
+name: widgetbook_komponentbibliotek
+description: Interactive component catalog for komponentbibliotek_flutter
+
+environment:
+  sdk: ^3.3.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  widgetbook: ^3.10.0
+  komponentbibliotek_flutter:
+    path: ../
+
+flutter:
+  uses-material-design: true
