@@ -4,6 +4,7 @@ import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_icons.dart';
 import '../dropdown/ds_dropdown.dart';
 
 class DsSelect extends StatelessWidget {
@@ -76,7 +77,7 @@ class DsSelect extends StatelessWidget {
               ),
             ),
           ),
-          Text('▾', style: TextStyle(color: colorScale.textSubtle)),
+          Icon(DsIcons.chevronDown, size: 16, color: colorScale.textSubtle),
         ],
       ),
     );

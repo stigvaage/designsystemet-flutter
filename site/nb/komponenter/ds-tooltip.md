@@ -41,7 +41,7 @@ DsTooltip(
   child: DsButton(
     variant: DsButtonVariant.tertiary,
     onPressed: () => slettElement(),
-    child: Icon(Icons.delete),
+    child: Icon(DsIcons.trash),
   ),
 )
 ```

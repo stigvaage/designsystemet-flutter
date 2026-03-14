@@ -8,6 +8,7 @@ dependencies:
   flutter:
     sdk: flutter
   widgetbook: ^3.10.0
+  lucide_icons_flutter: ^2.0.0
   komponentbibliotek_flutter:
     path: ../
 

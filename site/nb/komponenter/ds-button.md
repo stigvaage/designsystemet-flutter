@@ -36,7 +36,7 @@ DsButton(
 DsButton(
   variant: DsButtonVariant.primary,
   onPressed: () => send(),
-  icon: Icon(Icons.send),
+  icon: Icon(DsIcons.send),
   child: Text('Send inn'),
 )
 ```

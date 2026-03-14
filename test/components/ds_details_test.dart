@@ -43,7 +43,7 @@ void main() {
           initiallyExpanded: true,
         ),
       ));
-      final semantics = tester.getSemantics(find.byType(Semantics));
+      final semantics = tester.getSemantics(find.byType(DsDetails));
       expect(semantics.hasFlag(SemanticsFlag.hasExpandedState), isTrue);
     });
   });

@@ -3,6 +3,8 @@
 /// Provides design tokens, theme data, and scoping widgets.
 library;
 
+export 'package:lucide_icons_flutter/lucide_icons.dart' show LucideIcons;
+
 export 'src/theme/ds_border_radius_tokens.dart';
 export 'src/theme/ds_color_scale.dart';
 export 'src/theme/ds_color_scheme.dart';

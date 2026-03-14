@@ -3,6 +3,7 @@ import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_icons.dart';
 
 class DsChip extends StatelessWidget {
   const DsChip({
@@ -64,7 +65,7 @@ class DsChip extends StatelessWidget {
               const SizedBox(width: 4),
               GestureDetector(
                 onTap: onRemove,
-                child: Text('×', style: TextStyle(color: fgColor, fontSize: 14)),
+                child: Icon(DsIcons.x, size: 14, color: fgColor),
               ),
             ],
           ],

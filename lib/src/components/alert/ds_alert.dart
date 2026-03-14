@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_icons.dart';
 
 class DsAlert extends StatelessWidget {
   const DsAlert({
@@ -94,7 +95,7 @@ class DsAlert extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8),
                   child: Icon(
-                    const IconData(0x2715), // × symbol
+                    DsIcons.x,
                     size: 16,
                     color: colorScale.textSubtle,
                   ),
@@ -114,16 +115,12 @@ class _SeverityIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use unicode symbols as simple icons
-    final codePoint = switch (severity) {
-      DsSeverity.info => 0x2139, // ℹ
-      DsSeverity.warning => 0x26A0, // ⚠
-      DsSeverity.success => 0x2713, // ✓
-      DsSeverity.danger => 0x2716, // ✖
+    final icon = switch (severity) {
+      DsSeverity.info => DsIcons.info,
+      DsSeverity.warning => DsIcons.triangleAlert,
+      DsSeverity.success => DsIcons.circleCheck,
+      DsSeverity.danger => DsIcons.circleX,
     };
-    return Text(
-      String.fromCharCode(codePoint),
-      style: TextStyle(fontSize: 18, color: color),
-    );
+    return Icon(icon, size: 18, color: color);
   }
 }

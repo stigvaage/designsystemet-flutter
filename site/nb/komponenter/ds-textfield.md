@@ -45,7 +45,7 @@ DsTextfield(
 DsTextfield(
   controller: passordController,
   obscureText: true,
-  suffix: Icon(Icons.visibility),
+  suffix: Icon(DsIcons.eye),
 )
 ```
 

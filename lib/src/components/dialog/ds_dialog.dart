@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_icons.dart';
 
 class DsDialog extends StatelessWidget {
   const DsDialog({
@@ -71,12 +72,10 @@ class DsDialog extends StatelessWidget {
                     if (onClose != null)
                       GestureDetector(
                         onTap: onClose,
-                        child: Text(
-                          '×',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: colorScale.textSubtle,
-                          ),
+                        child: Icon(
+                          DsIcons.x,
+                          size: 20,
+                          color: colorScale.textSubtle,
                         ),
                       ),
                   ],

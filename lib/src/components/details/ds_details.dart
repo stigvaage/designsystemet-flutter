@@ -4,6 +4,7 @@ import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_icons.dart';
 
 class DsDetails extends StatefulWidget {
   const DsDetails({
@@ -88,9 +89,10 @@ class _DsDetailsState extends State<DsDetails>
                 padding: const EdgeInsets.all(12),
                 child: Row(
                   children: [
-                    Text(
-                      _isExpanded ? '▾' : '▸',
-                      style: TextStyle(color: colorScale.textDefault),
+                    Icon(
+                      _isExpanded ? DsIcons.chevronDown : DsIcons.chevronRight,
+                      size: 16,
+                      color: colorScale.textDefault,
                     ),
                     const SizedBox(width: 8),
                     Expanded(child: widget.summary),

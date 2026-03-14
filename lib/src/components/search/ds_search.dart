@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_icons.dart';
 import '../input/ds_input.dart';
 
 class DsSearch extends StatelessWidget {
@@ -30,7 +31,7 @@ class DsSearch extends StatelessWidget {
       onSubmitted: onSubmitted,
       focusNode: focusNode,
       placeholder: placeholder ?? 'Search...',
-      prefix: const Text('🔍', style: TextStyle(fontSize: 16)),
+      prefix: const Icon(DsIcons.search, size: 16),
     );
   }
 }

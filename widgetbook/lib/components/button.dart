@@ -29,5 +29,33 @@ final buttonComponent = WidgetbookComponent(
         );
       },
     ),
+    WidgetbookUseCase(
+      name: 'Med ikon',
+      builder: (context) {
+        final variant = context.knobs.object.dropdown(
+          label: 'Variant',
+          options: DsButtonVariant.values,
+          initialOption: DsButtonVariant.primary,
+          labelBuilder: (v) => v.name,
+        );
+        final iconPosition = context.knobs.object.dropdown(
+          label: 'Ikonplassering',
+          options: DsIconPosition.values,
+          initialOption: DsIconPosition.left,
+          labelBuilder: (v) => v.name,
+        );
+        final text = context.knobs.string(label: 'Tekst', initialValue: 'Send inn');
+
+        return Center(
+          child: DsButton(
+            variant: variant,
+            onPressed: () {},
+            icon: const Icon(DsIcons.send),
+            iconPosition: iconPosition,
+            child: Text(text),
+          ),
+        );
+      },
+    ),
   ],
 );
