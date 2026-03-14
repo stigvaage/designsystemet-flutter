@@ -1,0 +1,262 @@
+[
+  {
+    "materialWidget": "ElevatedButton",
+    "dsComponent": "DsButton",
+    "notes": "Use variant: DsButtonVariant.primary for ElevatedButton style",
+    "propertyMappings": [
+      { "materialProp": "onPressed", "dsProp": "onPressed", "transform": null },
+      { "materialProp": "child", "dsProp": "child", "transform": null },
+      { "materialProp": "style", "dsProp": "variant / color / size", "transform": "Use DsButtonVariant enum instead of ButtonStyle" },
+      { "materialProp": "onLongPress", "dsProp": "onLongPress", "transform": null }
+    ],
+    "beforeCode": "ElevatedButton(\n  onPressed: () => submit(),\n  child: Text('Submit'),\n)",
+    "afterCode": "DsButton(\n  variant: DsButtonVariant.primary,\n  onPressed: () => submit(),\n  child: Text('Submit'),\n)"
+  },
+  {
+    "materialWidget": "OutlinedButton",
+    "dsComponent": "DsButton",
+    "notes": "Use variant: DsButtonVariant.secondary for OutlinedButton style",
+    "propertyMappings": [
+      { "materialProp": "onPressed", "dsProp": "onPressed", "transform": null },
+      { "materialProp": "child", "dsProp": "child", "transform": null },
+      { "materialProp": "style", "dsProp": "variant / color / size", "transform": "Use DsButtonVariant.secondary instead of ButtonStyle" }
+    ],
+    "beforeCode": "OutlinedButton(\n  onPressed: () => cancel(),\n  child: Text('Cancel'),\n)",
+    "afterCode": "DsButton(\n  variant: DsButtonVariant.secondary,\n  onPressed: () => cancel(),\n  child: Text('Cancel'),\n)"
+  },
+  {
+    "materialWidget": "TextButton",
+    "dsComponent": "DsButton",
+    "notes": "Use variant: DsButtonVariant.tertiary for TextButton style",
+    "propertyMappings": [
+      { "materialProp": "onPressed", "dsProp": "onPressed", "transform": null },
+      { "materialProp": "child", "dsProp": "child", "transform": null },
+      { "materialProp": "style", "dsProp": "variant / color / size", "transform": "Use DsButtonVariant.tertiary instead of ButtonStyle" }
+    ],
+    "beforeCode": "TextButton(\n  onPressed: () => details(),\n  child: Text('View details'),\n)",
+    "afterCode": "DsButton(\n  variant: DsButtonVariant.tertiary,\n  onPressed: () => details(),\n  child: Text('View details'),\n)"
+  },
+  {
+    "materialWidget": "TextField",
+    "dsComponent": "DsTextfield",
+    "notes": "DsTextfield wraps input with built-in label and validation. Use DsField for more complex form layouts.",
+    "propertyMappings": [
+      { "materialProp": "controller", "dsProp": "controller", "transform": null },
+      { "materialProp": "onChanged", "dsProp": "onChanged", "transform": null },
+      { "materialProp": "decoration.labelText", "dsProp": "label", "transform": "Label is a top-level prop, not nested in decoration" },
+      { "materialProp": "decoration.hintText", "dsProp": "placeholder", "transform": "Use placeholder instead of hintText" },
+      { "materialProp": "decoration.errorText", "dsProp": "errorMessage", "transform": "Use errorMessage instead of errorText" },
+      { "materialProp": "enabled", "dsProp": "enabled", "transform": null },
+      { "materialProp": "readOnly", "dsProp": "readOnly", "transform": null }
+    ],
+    "beforeCode": "TextField(\n  controller: _controller,\n  decoration: InputDecoration(\n    labelText: 'Email',\n    hintText: 'Enter your email',\n    errorText: _error,\n  ),\n  onChanged: (value) => validate(value),\n)",
+    "afterCode": "DsTextfield(\n  controller: _controller,\n  label: 'Email',\n  placeholder: 'Enter your email',\n  errorMessage: _error,\n  onChanged: (value) => validate(value),\n)"
+  },
+  {
+    "materialWidget": "Checkbox",
+    "dsComponent": "DsCheckbox",
+    "notes": "DsCheckbox includes its own label. No need for a separate CheckboxListTile.",
+    "propertyMappings": [
+      { "materialProp": "value", "dsProp": "checked", "transform": "Renamed from value to checked" },
+      { "materialProp": "onChanged", "dsProp": "onChanged", "transform": null },
+      { "materialProp": "tristate", "dsProp": "indeterminate", "transform": "Use indeterminate prop for tristate behavior" }
+    ],
+    "beforeCode": "Checkbox(\n  value: _accepted,\n  onChanged: (val) => setState(() => _accepted = val!),\n)",
+    "afterCode": "DsCheckbox(\n  checked: _accepted,\n  label: 'I accept the terms',\n  onChanged: (val) => setState(() => _accepted = val),\n)"
+  },
+  {
+    "materialWidget": "Radio",
+    "dsComponent": "DsRadio",
+    "notes": "DsRadio includes its own label. Group multiple DsRadio widgets in a DsFieldset.",
+    "propertyMappings": [
+      { "materialProp": "value", "dsProp": "value", "transform": null },
+      { "materialProp": "groupValue", "dsProp": "groupValue", "transform": null },
+      { "materialProp": "onChanged", "dsProp": "onChanged", "transform": null }
+    ],
+    "beforeCode": "Radio<String>(\n  value: 'option1',\n  groupValue: _selected,\n  onChanged: (val) => setState(() => _selected = val!),\n)",
+    "afterCode": "DsRadio<String>(\n  value: 'option1',\n  groupValue: _selected,\n  label: 'Option 1',\n  onChanged: (val) => setState(() => _selected = val!),\n)"
+  },
+  {
+    "materialWidget": "Switch",
+    "dsComponent": "DsSwitch",
+    "notes": "DsSwitch includes its own label. Follows Designsystemet sizing and color tokens.",
+    "propertyMappings": [
+      { "materialProp": "value", "dsProp": "checked", "transform": "Renamed from value to checked" },
+      { "materialProp": "onChanged", "dsProp": "onChanged", "transform": null },
+      { "materialProp": "activeColor", "dsProp": "color", "transform": "Use DsColor token instead of raw Color" }
+    ],
+    "beforeCode": "Switch(\n  value: _darkMode,\n  onChanged: (val) => setState(() => _darkMode = val),\n)",
+    "afterCode": "DsSwitch(\n  checked: _darkMode,\n  label: 'Dark mode',\n  onChanged: (val) => setState(() => _darkMode = val),\n)"
+  },
+  {
+    "materialWidget": "AlertDialog",
+    "dsComponent": "DsDialog",
+    "notes": "DsDialog uses a slot-based API with header, content, and footer sections.",
+    "propertyMappings": [
+      { "materialProp": "title", "dsProp": "title", "transform": "Pass as String, not Widget" },
+      { "materialProp": "content", "dsProp": "child", "transform": "Use child slot for dialog body content" },
+      { "materialProp": "actions", "dsProp": "footer", "transform": "Use footer widget for action buttons" },
+      { "materialProp": "shape", "dsProp": null, "transform": "Not applicable; DsDialog follows Designsystemet styling" }
+    ],
+    "beforeCode": "showDialog(\n  context: context,\n  builder: (ctx) => AlertDialog(\n    title: Text('Confirm'),\n    content: Text('Are you sure?'),\n    actions: [\n      TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel')),\n      ElevatedButton(onPressed: () => confirm(), child: Text('OK')),\n    ],\n  ),\n)",
+    "afterCode": "showDialog(\n  context: context,\n  builder: (ctx) => DsDialog(\n    title: 'Confirm',\n    child: Text('Are you sure?'),\n    footer: Row(\n      children: [\n        DsButton(\n          variant: DsButtonVariant.secondary,\n          onPressed: () => Navigator.pop(ctx),\n          child: Text('Cancel'),\n        ),\n        DsButton(\n          variant: DsButtonVariant.primary,\n          onPressed: () => confirm(),\n          child: Text('OK'),\n        ),\n      ],\n    ),\n  ),\n)"
+  },
+  {
+    "materialWidget": "Card",
+    "dsComponent": "DsCard",
+    "notes": "DsCard uses composable sub-components: DsCardHeader, DsCardBlock, DsCardFooter.",
+    "propertyMappings": [
+      { "materialProp": "child", "dsProp": "child", "transform": "Wrap content in DsCardBlock for proper padding" },
+      { "materialProp": "elevation", "dsProp": null, "transform": "Not applicable; DsCard uses Designsystemet shadow tokens" },
+      { "materialProp": "shape", "dsProp": null, "transform": "Not applicable; follows Designsystemet border radius" },
+      { "materialProp": "color", "dsProp": "color", "transform": "Use DsColor token instead of raw Color" }
+    ],
+    "beforeCode": "Card(\n  elevation: 2,\n  child: Padding(\n    padding: EdgeInsets.all(16),\n    child: Column(\n      children: [\n        Text('Title', style: Theme.of(context).textTheme.titleMedium),\n        Text('Card content goes here'),\n      ],\n    ),\n  ),\n)",
+    "afterCode": "DsCard(\n  child: Column(\n    children: [\n      DsCardHeader(title: 'Title'),\n      DsCardBlock(child: Text('Card content goes here')),\n    ],\n  ),\n)"
+  },
+  {
+    "materialWidget": "TabBar",
+    "dsComponent": "DsTabs",
+    "notes": "DsTabs combines TabBar and TabBarView into a single composable widget.",
+    "propertyMappings": [
+      { "materialProp": "tabs", "dsProp": "tabs", "transform": "Use DsTab objects instead of Tab widgets" },
+      { "materialProp": "controller", "dsProp": "controller", "transform": null },
+      { "materialProp": "onTap", "dsProp": "onChanged", "transform": "Renamed from onTap to onChanged" },
+      { "materialProp": "indicatorColor", "dsProp": null, "transform": "Not applicable; follows Designsystemet color tokens" }
+    ],
+    "beforeCode": "TabBar(\n  controller: _tabController,\n  tabs: [\n    Tab(text: 'Tab 1'),\n    Tab(text: 'Tab 2'),\n    Tab(text: 'Tab 3'),\n  ],\n)",
+    "afterCode": "DsTabs(\n  controller: _tabController,\n  tabs: [\n    DsTab(label: 'Tab 1'),\n    DsTab(label: 'Tab 2'),\n    DsTab(label: 'Tab 3'),\n  ],\n  onChanged: (index) => _tabController.animateTo(index),\n)"
+  },
+  {
+    "materialWidget": "Tooltip",
+    "dsComponent": "DsTooltip",
+    "notes": "DsTooltip follows Designsystemet styling with proper contrast and spacing.",
+    "propertyMappings": [
+      { "materialProp": "message", "dsProp": "content", "transform": "Renamed from message to content" },
+      { "materialProp": "child", "dsProp": "child", "transform": null },
+      { "materialProp": "waitDuration", "dsProp": "delay", "transform": "Renamed from waitDuration to delay" },
+      { "materialProp": "preferBelow", "dsProp": "placement", "transform": "Use DsTooltipPlacement enum instead of bool" }
+    ],
+    "beforeCode": "Tooltip(\n  message: 'More information',\n  child: Icon(Icons.info),\n)",
+    "afterCode": "DsTooltip(\n  content: 'More information',\n  child: Icon(Icons.info),\n)"
+  },
+  {
+    "materialWidget": "DropdownButton",
+    "dsComponent": "DsSelect",
+    "notes": "DsSelect provides a dropdown with built-in label, validation, and search support.",
+    "propertyMappings": [
+      { "materialProp": "value", "dsProp": "value", "transform": null },
+      { "materialProp": "items", "dsProp": "options", "transform": "Use DsSelectOption list instead of DropdownMenuItem list" },
+      { "materialProp": "onChanged", "dsProp": "onChanged", "transform": null },
+      { "materialProp": "hint", "dsProp": "placeholder", "transform": "Use placeholder string instead of hint Widget" }
+    ],
+    "beforeCode": "DropdownButton<String>(\n  value: _selectedCountry,\n  hint: Text('Select a country'),\n  items: countries.map((c) => DropdownMenuItem(\n    value: c,\n    child: Text(c),\n  )).toList(),\n  onChanged: (val) => setState(() => _selectedCountry = val),\n)",
+    "afterCode": "DsSelect<String>(\n  value: _selectedCountry,\n  label: 'Country',\n  placeholder: 'Select a country',\n  options: countries.map((c) => DsSelectOption(\n    value: c,\n    label: c,\n  )).toList(),\n  onChanged: (val) => setState(() => _selectedCountry = val),\n)"
+  },
+  {
+    "materialWidget": "Chip",
+    "dsComponent": "DsChip",
+    "notes": "DsChip supports removable and selectable variants through props.",
+    "propertyMappings": [
+      { "materialProp": "label", "dsProp": "label", "transform": "Pass as String, not Widget" },
+      { "materialProp": "onDeleted", "dsProp": "onRemove", "transform": "Renamed from onDeleted to onRemove" },
+      { "materialProp": "avatar", "dsProp": "leading", "transform": "Use leading widget slot" },
+      { "materialProp": "backgroundColor", "dsProp": "color", "transform": "Use DsColor token instead of raw Color" }
+    ],
+    "beforeCode": "Chip(\n  label: Text('Flutter'),\n  onDeleted: () => removeTag('Flutter'),\n  avatar: Icon(Icons.code, size: 16),\n)",
+    "afterCode": "DsChip(\n  label: 'Flutter',\n  onRemove: () => removeTag('Flutter'),\n  leading: Icon(Icons.code, size: 16),\n)"
+  },
+  {
+    "materialWidget": "Badge",
+    "dsComponent": "DsBadge",
+    "notes": "DsBadge supports count, color variants, and positioning relative to a child.",
+    "propertyMappings": [
+      { "materialProp": "label", "dsProp": "count", "transform": "Use count (int) for numeric badges, or label for text" },
+      { "materialProp": "child", "dsProp": "child", "transform": null },
+      { "materialProp": "backgroundColor", "dsProp": "color", "transform": "Use DsBadgeColor enum instead of raw Color" },
+      { "materialProp": "isLabelVisible", "dsProp": "visible", "transform": "Renamed from isLabelVisible to visible" }
+    ],
+    "beforeCode": "Badge(\n  label: Text('3'),\n  backgroundColor: Colors.red,\n  child: Icon(Icons.notifications),\n)",
+    "afterCode": "DsBadge(\n  count: 3,\n  color: DsBadgeColor.danger,\n  child: Icon(Icons.notifications),\n)"
+  },
+  {
+    "materialWidget": "Divider",
+    "dsComponent": "DsDivider",
+    "notes": "DsDivider follows Designsystemet spacing and color tokens.",
+    "propertyMappings": [
+      { "materialProp": "height", "dsProp": "spacing", "transform": "Use DsSpacing token instead of raw double" },
+      { "materialProp": "thickness", "dsProp": null, "transform": "Not applicable; follows Designsystemet border width" },
+      { "materialProp": "color", "dsProp": "color", "transform": "Use DsColor token instead of raw Color" },
+      { "materialProp": "indent", "dsProp": null, "transform": "Not supported; use padding on parent widget" }
+    ],
+    "beforeCode": "Divider(\n  height: 24,\n  thickness: 1,\n  color: Colors.grey,\n)",
+    "afterCode": "DsDivider(\n  spacing: DsSpacing.md,\n)"
+  },
+  {
+    "materialWidget": "CircularProgressIndicator",
+    "dsComponent": "DsSpinner",
+    "notes": "DsSpinner replaces CircularProgressIndicator with Designsystemet styling and sizing.",
+    "propertyMappings": [
+      { "materialProp": "value", "dsProp": null, "transform": "DsSpinner is always indeterminate; for determinate progress, consider a custom approach" },
+      { "materialProp": "strokeWidth", "dsProp": "size", "transform": "Use DsSpinnerSize enum (sm, md, lg) instead of strokeWidth" },
+      { "materialProp": "color", "dsProp": "color", "transform": "Use DsColor token instead of raw Color" }
+    ],
+    "beforeCode": "CircularProgressIndicator(\n  strokeWidth: 3,\n  color: Colors.blue,\n)",
+    "afterCode": "DsSpinner(\n  size: DsSpinnerSize.md,\n)"
+  },
+  {
+    "materialWidget": "LinearProgressIndicator",
+    "dsComponent": "DsSkeleton",
+    "notes": "DsSkeleton provides a loading placeholder. For determinate progress bars, compose with DsSkeleton or use a custom widget.",
+    "propertyMappings": [
+      { "materialProp": "value", "dsProp": null, "transform": "DsSkeleton is a placeholder, not a progress bar; for loading states use DsSkeleton" },
+      { "materialProp": "backgroundColor", "dsProp": null, "transform": "Follows Designsystemet color tokens automatically" },
+      { "materialProp": "color", "dsProp": null, "transform": "Follows Designsystemet color tokens automatically" }
+    ],
+    "beforeCode": "LinearProgressIndicator(\n  value: null, // indeterminate\n  backgroundColor: Colors.grey[200],\n)",
+    "afterCode": "DsSkeleton(\n  width: double.infinity,\n  height: 8,\n)"
+  },
+  {
+    "materialWidget": "ListTile",
+    "dsComponent": "DsList",
+    "notes": "DsList provides a structured list container. Individual items are composed with DsList.item or standard widgets.",
+    "propertyMappings": [
+      { "materialProp": "title", "dsProp": "children", "transform": "Compose items as children of DsList" },
+      { "materialProp": "subtitle", "dsProp": "children", "transform": "Include subtitle text within each list item" },
+      { "materialProp": "leading", "dsProp": "children", "transform": "Include leading widget within each list item" },
+      { "materialProp": "trailing", "dsProp": "children", "transform": "Include trailing widget within each list item" },
+      { "materialProp": "onTap", "dsProp": "onTap", "transform": "Apply onTap to individual list items" }
+    ],
+    "beforeCode": "ListTile(\n  leading: Icon(Icons.person),\n  title: Text('John Doe'),\n  subtitle: Text('john@example.com'),\n  trailing: Icon(Icons.arrow_forward_ios),\n  onTap: () => openProfile(),\n)",
+    "afterCode": "DsList(\n  children: [\n    DsList.item(\n      leading: Icon(Icons.person),\n      title: 'John Doe',\n      description: 'john@example.com',\n      trailing: Icon(Icons.arrow_forward_ios),\n      onTap: () => openProfile(),\n    ),\n  ],\n)"
+  },
+  {
+    "materialWidget": "DataTable",
+    "dsComponent": "DsTable",
+    "notes": "DsTable provides a structured data table with Designsystemet styling, sorting, and responsive behavior.",
+    "propertyMappings": [
+      { "materialProp": "columns", "dsProp": "columns", "transform": "Use DsTableColumn instead of DataColumn" },
+      { "materialProp": "rows", "dsProp": "rows", "transform": "Use DsTableRow instead of DataRow" },
+      { "materialProp": "sortColumnIndex", "dsProp": "sortColumn", "transform": "Use column key string instead of index" },
+      { "materialProp": "sortAscending", "dsProp": "sortAscending", "transform": null },
+      { "materialProp": "onSelectAll", "dsProp": "onSelectAll", "transform": null }
+    ],
+    "beforeCode": "DataTable(\n  columns: [\n    DataColumn(label: Text('Name')),\n    DataColumn(label: Text('Age')),\n  ],\n  rows: [\n    DataRow(cells: [\n      DataCell(Text('Alice')),\n      DataCell(Text('30')),\n    ]),\n  ],\n)",
+    "afterCode": "DsTable(\n  columns: [\n    DsTableColumn(key: 'name', label: 'Name'),\n    DsTableColumn(key: 'age', label: 'Age'),\n  ],\n  rows: [\n    DsTableRow(cells: {\n      'name': Text('Alice'),\n      'age': Text('30'),\n    }),\n  ],\n)"
+  },
+  {
+    "materialWidget": "SearchBar",
+    "dsComponent": "DsSearch",
+    "notes": "DsSearch combines search input with suggestion dropdown. Use DsSuggestion for individual suggestion items.",
+    "propertyMappings": [
+      { "materialProp": "controller", "dsProp": "controller", "transform": null },
+      { "materialProp": "onChanged", "dsProp": "onChanged", "transform": null },
+      { "materialProp": "onSubmitted", "dsProp": "onSubmit", "transform": "Renamed from onSubmitted to onSubmit" },
+      { "materialProp": "hintText", "dsProp": "placeholder", "transform": "Use placeholder instead of hintText" },
+      { "materialProp": "leading", "dsProp": null, "transform": "DsSearch includes a search icon by default" },
+      { "materialProp": "trailing", "dsProp": "clearable", "transform": "Set clearable: true for a clear button, instead of custom trailing widgets" }
+    ],
+    "beforeCode": "SearchBar(\n  controller: _searchController,\n  hintText: 'Search...',\n  onChanged: (query) => performSearch(query),\n  onSubmitted: (query) => submitSearch(query),\n  leading: Icon(Icons.search),\n  trailing: [IconButton(\n    icon: Icon(Icons.clear),\n    onPressed: () => _searchController.clear(),\n  )],\n)",
+    "afterCode": "DsSearch(\n  controller: _searchController,\n  placeholder: 'Search...',\n  clearable: true,\n  onChanged: (query) => performSearch(query),\n  onSubmit: (query) => submitSearch(query),\n)"
+  }
+]

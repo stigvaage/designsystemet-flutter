@@ -261,6 +261,85 @@ Alle komponenter i biblioteket er bygget med universell utforming som grunnprins
 - **Bevegelsesreduksjon** -- respekterer `MediaQuery.disableAnimations`
 - **Roving focus** -- fanegrupper, radiogrupper og vekslegrupper bruker roving focus-monster
 
+## MCP-server for AI-assistenter
+
+Biblioteket inkluderer en MCP-server (Model Context Protocol) som lar AI-kodeassistenter som Claude Code, Cursor og VS Code Copilot sla opp komponenter, migrere fra Material-widgets og soke i dokumentasjonen.
+
+### Installer i Claude Code
+
+Legg til i prosjektets `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "komponentbibliotek": {
+      "command": "node",
+      "args": ["<sti-til-repo>/mcp-server/dist/index.js"],
+      "env": {
+        "REPO_ROOT": "<sti-til-repo>"
+      }
+    }
+  }
+}
+```
+
+### Installer i VS Code (Copilot)
+
+Legg til i `.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "komponentbibliotek": {
+      "command": "node",
+      "args": ["<sti-til-repo>/mcp-server/dist/index.js"],
+      "env": {
+        "REPO_ROOT": "<sti-til-repo>"
+      }
+    }
+  }
+}
+```
+
+### Installer i Cursor
+
+Legg til i `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "komponentbibliotek": {
+      "command": "node",
+      "args": ["<sti-til-repo>/mcp-server/dist/index.js"],
+      "env": {
+        "REPO_ROOT": "<sti-til-repo>"
+      }
+    }
+  }
+}
+```
+
+### Bygg MCP-serveren
+
+```bash
+cd mcp-server
+npm install
+npm run build
+```
+
+### Tilgjengelige verktoy
+
+| Verktoy | Beskrivelse |
+|---------|-------------|
+| `lookup_component` | Sla opp en komponent -- returnerer egenskaper, eksempler og import |
+| `list_components` | List alle komponenter, valgfritt filtrert pa kategori |
+| `get_migration_mapping` | Migrer fra Material-widget til Designsystemet-ekvivalent |
+| `get_theme_setup` | Fa trinnvis veiledning for temaoppsett |
+| `list_tokens` | List designtokens etter kategori (farger, typografi, storrelser m.m.) |
+| `search_docs` | Sok pa tvers av all dokumentasjon |
+
+Se [mcp-server/README.md](mcp-server/README.md) for full dokumentasjon og Docker-stotte.
+
 ## Bidra
 
 Vi onsker bidrag velkommen! Se [CONTRIBUTING.md](CONTRIBUTING.md) for retningslinjer.

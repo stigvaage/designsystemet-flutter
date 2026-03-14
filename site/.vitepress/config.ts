@@ -121,6 +121,7 @@ export default defineConfig({
           text: 'Kode',
           items: [
             { text: 'Oppsett', link: '/kom-i-gang/oppsett' },
+            { text: 'MCP-server', link: '/kom-i-gang/mcp-server' },
           ],
         },
         {

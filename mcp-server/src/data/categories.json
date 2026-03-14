@@ -1,0 +1,21 @@
+{
+  "form": [
+    "DsInput", "DsTextfield", "DsTextarea", "DsCheckbox", "DsRadio",
+    "DsSwitch", "DsSelect", "DsDropdown", "DsField", "DsFieldset", "DsErrorSummary"
+  ],
+  "navigation": [
+    "DsButton", "DsLink", "DsBreadcrumbs", "DsPagination", "DsSkipLink", "DsTabs"
+  ],
+  "layout": [
+    "DsCard", "DsCardHeader", "DsCardBlock", "DsCardFooter", "DsDialog", "DsPopover", "DsDivider"
+  ],
+  "content": [
+    "DsAlert", "DsBadge", "DsTag", "DsChip", "DsAvatar", "DsAvatarStack", "DsSpinner", "DsSkeleton"
+  ],
+  "interactive": [
+    "DsToggleGroup", "DsTooltip", "DsDetails", "DsSearch", "DsSuggestion", "DsList", "DsTable"
+  ],
+  "typography": [
+    "DsHeading", "DsParagraph", "DsLabel", "DsValidationMessage"
+  ]
+}
