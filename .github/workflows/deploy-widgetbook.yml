@@ -38,7 +38,7 @@ jobs:
       - name: Build Widgetbook
         run: |
           cd widgetbook
-          flutter build web --release --base-href /komponentbibliotek-flutter/widgetbook/
+          flutter build web --release --no-tree-shake-icons --base-href /komponentbibliotek-flutter/widgetbook/
 
       - name: Install VitePress dependencies
         run: cd site && npm ci
