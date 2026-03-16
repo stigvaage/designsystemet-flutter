@@ -2,7 +2,7 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.19-blue.svg)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-%3E%3D3.3-blue.svg)](https://dart.dev)
-[![Designsystemet](https://img.shields.io/badge/Designsystemet-designsystemet.no-0062BA.svg)](https://designsystemet.no)
+[![Designsystemet](https://img.shields.io/badge/Designsystemet-designsystemet.no-003087.svg)](https://designsystemet.no)
 [![Lisens: MIT](https://img.shields.io/badge/Lisens-MIT-green.svg)](LICENSE)
 [![WCAG 2.1 AA](https://img.shields.io/badge/WCAG_2.1-AA-brightgreen.svg)](https://www.w3.org/WAI/WCAG21/quickref/)
 

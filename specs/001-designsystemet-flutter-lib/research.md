@@ -25,7 +25,7 @@ npx @digdir/designsystemet tokens create --config designsystemet.config.json --c
   "themes": {
     "<theme-name>": {
       "colors": {
-        "main": { "primary": "#0062BA", "accent": "#1E98F5" },
+        "main": { "primary": "#003087", "accent": "#1E98F5" },
         "neutral": "#1E2B3C",
         "support": { "extra1": "#F45F63", "extra2": "#E5AA20" }
       },
@@ -81,7 +81,7 @@ design-tokens/
       "border-subtle": { "$value": "#99c0db", "$type": "color" },
       "border-default": { "$value": "#5a9ac4", "$type": "color" },
       "border-strong": { "$value": "#2b7bb5", "$type": "color" },
-      "base-default": { "$value": "#0062BA", "$type": "color" },
+      "base-default": { "$value": "#003087", "$type": "color" },
       "base-hover": { "$value": "#004d94", "$type": "color" },
       "base-active": { "$value": "#003b73", "$type": "color" },
       "text-subtle": { "$value": "#1a5c97", "$type": "color" },

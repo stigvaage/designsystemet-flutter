@@ -40,4 +40,7 @@ export 'src/components/textarea/ds_textarea.dart';
 export 'src/components/textfield/ds_textfield.dart';
 export 'src/components/toggle_group/ds_toggle_group.dart';
 export 'src/components/tooltip/ds_tooltip.dart';
+export 'src/utils/ds_enums.dart';
 export 'src/utils/ds_icons.dart';
+
+export 'package:lucide_icons_flutter/lucide_icons.dart' show LucideIcons;

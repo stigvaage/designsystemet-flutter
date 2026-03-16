@@ -26,6 +26,32 @@ class DsColorScheme {
     this.custom = const {},
   });
 
+  DsColorScheme copyWith({
+    DsColorScale? accent,
+    DsColorScale? neutral,
+    DsColorScale? brand1,
+    DsColorScale? brand2,
+    DsColorScale? brand3,
+    DsColorScale? success,
+    DsColorScale? danger,
+    DsColorScale? warning,
+    DsColorScale? info,
+    Map<String, DsColorScale>? custom,
+  }) {
+    return DsColorScheme(
+      accent: accent ?? this.accent,
+      neutral: neutral ?? this.neutral,
+      brand1: brand1 ?? this.brand1,
+      brand2: brand2 ?? this.brand2,
+      brand3: brand3 ?? this.brand3,
+      success: success ?? this.success,
+      danger: danger ?? this.danger,
+      warning: warning ?? this.warning,
+      info: info ?? this.info,
+      custom: custom ?? this.custom,
+    );
+  }
+
   DsColorScale resolve(DsColor color) {
     return switch (color) {
       DsColorAccent() => accent,

@@ -179,7 +179,11 @@ class _DsButtonState extends State<DsButton> {
         horizontal: horizontalPadding,
         vertical: verticalPadding,
       ),
-      child: content,
+      child: Align(
+        alignment: Alignment.center,
+        heightFactor: 1.0,
+        child: content,
+      ),
     );
   }
 

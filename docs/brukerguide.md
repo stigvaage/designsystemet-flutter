@@ -1001,7 +1001,7 @@ Opprett `designsystemet.config.json` med dine merkevareverdier:
   "themes": {
     "min-organisasjon": {
       "colors": {
-        "main": { "primary": "#0062BA", "accent": "#1E98F5" },
+        "main": { "primary": "#003087", "accent": "#1E98F5" },
         "neutral": "#1E2B3C",
         "support": { "extra1": "#F45F63", "extra2": "#E5AA20" }
       },

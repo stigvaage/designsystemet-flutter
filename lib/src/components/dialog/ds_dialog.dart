@@ -46,6 +46,7 @@ class DsDialog extends StatelessWidget {
       child: Semantics(
         scopesRoute: true,
         namesRoute: true,
+        explicitChildNodes: true,
         child: Container(
           constraints: const BoxConstraints(maxWidth: 560),
           decoration: BoxDecoration(
@@ -81,7 +82,12 @@ class DsDialog extends StatelessWidget {
                   ],
                 ),
               if (title != null) const SizedBox(height: 16),
-              child,
+              DefaultTextStyle(
+                style: theme.typography.bodyMd.copyWith(
+                  color: colorScale.textDefault,
+                ),
+                child: child,
+              ),
             ],
           ),
         ),
