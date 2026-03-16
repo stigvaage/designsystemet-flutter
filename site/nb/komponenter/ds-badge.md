@@ -20,7 +20,7 @@ Merke for telling eller statusindikasjon.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Kjernekomponenter/DsBadge" :height="300" />
+<WidgetbookEmbed component="Kjernekomponenter/DsBadge/Standard" />
 
 ```dart
 DsBadge(

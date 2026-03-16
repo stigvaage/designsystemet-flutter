@@ -20,7 +20,7 @@ Velger med nedtrekksliste.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Navigasjon og layout/DsSelect" :height="300" />
+<WidgetbookEmbed component="Navigasjon og layout/DsSelect/Standard" />
 
 ```dart
 DsSelect(

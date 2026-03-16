@@ -20,7 +20,7 @@ Søkefelt som lar brukeren søke etter innhold.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Navigasjon og layout/DsSearch" :height="300" />
+<WidgetbookEmbed component="Navigasjon og layout/DsSearch/Standard" />
 
 ```dart
 DsSearch(

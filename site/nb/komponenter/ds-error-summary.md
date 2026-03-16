@@ -20,7 +20,7 @@ Feilsammendrag for skjemavalidering — viser alle feil samlet.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Skjema og verktøy/DsErrorSummary" :height="300" />
+<WidgetbookEmbed component="Skjema og verktøy/DsErrorSummary/Standard" />
 
 ```dart
 DsErrorSummary(

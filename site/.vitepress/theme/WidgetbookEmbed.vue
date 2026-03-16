@@ -3,18 +3,19 @@ import { computed } from 'vue'
 
 const props = defineProps<{
   component: string
-  height?: number
 }>()
 
 const baseUrl = import.meta.env.BASE_URL ?? '/komponentbibliotek-flutter/'
 const widgetbookUrl = computed(() => {
-  const path = encodeURIComponent(props.component)
-  return `${baseUrl}widgetbook/?path=${path}`
+  const path = props.component
+    .replace(/ /g, '-')
+    .toLowerCase()
+  return `${baseUrl}widgetbook/#/?path=${encodeURIComponent(path)}`
 })
 
 const componentName = computed(() => {
   const parts = props.component.split('/')
-  return parts[parts.length - 1]
+  return parts[parts.length - 2] ?? parts[parts.length - 1]
 })
 </script>
 

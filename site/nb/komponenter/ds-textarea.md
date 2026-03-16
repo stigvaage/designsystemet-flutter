@@ -20,7 +20,7 @@ Tekstområde for flerlinjes inndata med støtte for tegnbegrensning og konfigure
 
 ### Grunnleggende tekstområde
 
-<WidgetbookEmbed component="Kjernekomponenter/DsTextarea" :height="200" />
+<WidgetbookEmbed component="Kjernekomponenter/DsTextarea/Standard" />
 
 ```dart
 DsTextarea(

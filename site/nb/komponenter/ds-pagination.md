@@ -20,7 +20,7 @@ Sidenavigasjon.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Navigasjon og layout/DsPagination" :height="300" />
+<WidgetbookEmbed component="Navigasjon og layout/DsPagination/Standard" />
 
 ```dart
 DsPagination(

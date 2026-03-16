@@ -20,7 +20,7 @@ Brødtekst med varianter.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Typografi/DsParagraph" :height="300" />
+<WidgetbookEmbed component="Typografi/DsParagraph/Standard" />
 
 ```dart
 DsParagraph(

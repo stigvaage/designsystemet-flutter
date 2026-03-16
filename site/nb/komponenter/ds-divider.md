@@ -20,7 +20,7 @@ Skillelinje.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Kjernekomponenter/DsDivider" :height="300" />
+<WidgetbookEmbed component="Kjernekomponenter/DsDivider/Standard" />
 
 ```dart
 DsDivider()

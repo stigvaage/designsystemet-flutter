@@ -20,7 +20,7 @@ Gruppering av relaterte skjemaelementer med legend.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Skjema og verktøy/DsFieldset" :height="300" />
+<WidgetbookEmbed component="Skjema og verktøy/DsFieldset/Standard" />
 
 ```dart
 DsFieldset(

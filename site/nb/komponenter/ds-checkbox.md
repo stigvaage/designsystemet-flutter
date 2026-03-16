@@ -20,7 +20,7 @@ Avkrysningsboks for flervalg med støtte for ubestemt tilstand og validering.
 
 ### Grunnleggende avkrysningsboks
 
-<WidgetbookEmbed component="Kjernekomponenter/DsCheckbox" :height="200" />
+<WidgetbookEmbed component="Kjernekomponenter/DsCheckbox/Standard" />
 
 ```dart
 DsCheckbox(

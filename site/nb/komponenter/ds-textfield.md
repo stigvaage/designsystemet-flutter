@@ -20,7 +20,7 @@ Tekstfelt for enlinjes inndata med støtte for validering, prefiks/suffiks og ul
 
 ### Grunnleggende tekstfelt
 
-<WidgetbookEmbed component="Kjernekomponenter/DsTextfield" :height="200" />
+<WidgetbookEmbed component="Kjernekomponenter/DsTextfield/Standard" />
 
 ```dart
 DsTextfield(

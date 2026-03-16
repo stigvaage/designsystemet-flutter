@@ -20,7 +20,7 @@ Avatarbilde eller initialer som representerer en bruker eller entitet.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Navigasjon og layout/DsAvatar" :height="300" />
+<WidgetbookEmbed component="Navigasjon og layout/DsAvatar/Standard" />
 
 ```dart
 DsAvatar(

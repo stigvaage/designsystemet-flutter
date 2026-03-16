@@ -21,7 +21,7 @@ Kompakt element for filtrering eller valg med veksle-funksjonalitet.
 
 ### Grunnleggende chip
 
-<WidgetbookEmbed component="Kjernekomponenter/DsChip" :height="200" />
+<WidgetbookEmbed component="Kjernekomponenter/DsChip/Standard" />
 
 ```dart
 DsChip(

@@ -20,7 +20,7 @@ Overskrift med 7 nivåer.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Typografi/DsHeading" :height="300" />
+<WidgetbookEmbed component="Typografi/DsHeading/Standard" />
 
 ```dart
 DsHeading(text: 'Velkommen til tjenesten', level: DsHeadingLevel.xl)

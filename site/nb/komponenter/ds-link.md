@@ -20,7 +20,7 @@ Lenke med Designsystemet-styling.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Kjernekomponenter/DsLink" :height="300" />
+<WidgetbookEmbed component="Kjernekomponenter/DsLink/Standard" />
 
 ```dart
 DsLink(

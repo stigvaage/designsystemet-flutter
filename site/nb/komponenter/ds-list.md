@@ -20,7 +20,7 @@ Liste med Designsystemet-styling.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Skjema og verktøy/DsList" :height="300" />
+<WidgetbookEmbed component="Skjema og verktøy/DsList/Standard" />
 
 ```dart
 DsList(

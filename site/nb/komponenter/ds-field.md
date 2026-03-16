@@ -20,7 +20,7 @@ Skjemafelt-wrapper som gir etikett, beskrivelse og feilmelding til et inndatafel
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Skjema og verktøy/DsField" :height="300" />
+<WidgetbookEmbed component="Skjema og verktøy/DsField/Standard" />
 
 ```dart
 DsField(

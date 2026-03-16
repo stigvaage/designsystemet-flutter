@@ -20,7 +20,7 @@ Fanenavigasjon med tastaturstøtte og roving focus.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Navigasjon og layout/DsTabs" :height="300" />
+<WidgetbookEmbed component="Navigasjon og layout/DsTabs/Standard" />
 
 ```dart
 DsTabs(

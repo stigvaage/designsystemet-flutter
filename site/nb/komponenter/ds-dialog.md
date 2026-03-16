@@ -20,7 +20,7 @@ Dialogvindu (modal).
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Navigasjon og layout/DsDialog" :height="300" />
+<WidgetbookEmbed component="Navigasjon og layout/DsDialog/Standard" />
 
 ```dart
 DsDialog(

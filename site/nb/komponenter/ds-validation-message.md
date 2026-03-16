@@ -20,7 +20,7 @@ Valideringsmelding for feilvisning under skjemaelementer.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Typografi/DsValidationMessage" :height="300" />
+<WidgetbookEmbed component="Typografi/DsValidationMessage/Standard" />
 
 ```dart
 DsValidationMessage(text: 'Feltet er påkrevd')

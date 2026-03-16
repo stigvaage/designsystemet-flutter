@@ -20,7 +20,7 @@ Knapp for handlinger. Tre varianter, støtte for ikon, lastetilstand og deaktive
 
 ### Primærknapp
 
-<WidgetbookEmbed component="Kjernekomponenter/DsButton" :height="200" />
+<WidgetbookEmbed component="Kjernekomponenter/DsButton/Standard" />
 
 ```dart
 DsButton(

@@ -20,7 +20,7 @@ Datatabell.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Navigasjon og layout/DsTable" :height="300" />
+<WidgetbookEmbed component="Navigasjon og layout/DsTable/Standard" />
 
 ```dart
 DsTable(

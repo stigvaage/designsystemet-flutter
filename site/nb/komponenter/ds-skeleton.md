@@ -20,7 +20,7 @@ Plassholder for innhold som lastes.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Skjema og verktøy/DsSkeleton" :height="300" />
+<WidgetbookEmbed component="Skjema og verktøy/DsSkeleton/Standard" />
 
 ```dart
 Column(

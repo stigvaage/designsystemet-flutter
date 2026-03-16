@@ -20,7 +20,7 @@ Forslagskomponent med autofullføringsforslag.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Navigasjon og layout/DsSuggestion" :height="300" />
+<WidgetbookEmbed component="Navigasjon og layout/DsSuggestion/Standard" />
 
 ```dart
 DsSuggestion(

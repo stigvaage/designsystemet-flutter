@@ -20,7 +20,7 @@ Etikett for skjemaelementer.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Typografi/DsLabel" :height="300" />
+<WidgetbookEmbed component="Typografi/DsLabel/Standard" />
 
 ```dart
 DsLabel(text: 'Fornavn')

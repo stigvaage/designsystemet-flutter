@@ -20,7 +20,7 @@ Lastindikator.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Kjernekomponenter/DsSpinner" :height="300" />
+<WidgetbookEmbed component="Kjernekomponenter/DsSpinner/Standard" />
 
 ```dart
 DsSpinner(size: DsSize.md)

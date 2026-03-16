@@ -20,7 +20,7 @@ Hopp-til-innhold-lenke for tastaturnavigasjon og tilgjengelighet.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Skjema og verktøy/DsSkipLink" :height="300" />
+<WidgetbookEmbed component="Skjema og verktøy/DsSkipLink/Standard" />
 
 ```dart
 DsSkipLink(

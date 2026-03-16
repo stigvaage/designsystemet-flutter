@@ -20,7 +20,7 @@ Vekslegruppe for å velge mellom alternativer.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Navigasjon og layout/DsToggleGroup" :height="300" />
+<WidgetbookEmbed component="Navigasjon og layout/DsToggleGroup/Standard" />
 
 ```dart
 DsToggleGroup(

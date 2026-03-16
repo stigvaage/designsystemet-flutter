@@ -21,7 +21,7 @@ Varselboks med fire alvorlighetsgrader for å kommunisere viktig informasjon til
 
 ### Informasjonsvarsel
 
-<WidgetbookEmbed component="Kjernekomponenter/DsAlert" :height="200" />
+<WidgetbookEmbed component="Kjernekomponenter/DsAlert/Standard" />
 
 ```dart
 DsAlert(

@@ -20,7 +20,7 @@ Nedtrekksmeny.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Navigasjon og layout/DsDropdown" :height="300" />
+<WidgetbookEmbed component="Navigasjon og layout/DsDropdown/Standard" />
 
 ```dart
 DsDropdown(

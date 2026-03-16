@@ -21,7 +21,7 @@ Av/på-bryter for binære innstillinger med umiddelbar effekt.
 
 ### Grunnleggende bryter
 
-<WidgetbookEmbed component="Kjernekomponenter/DsSwitch" :height="200" />
+<WidgetbookEmbed component="Kjernekomponenter/DsSwitch/Standard" />
 
 ```dart
 DsSwitch(

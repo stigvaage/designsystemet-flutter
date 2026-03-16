@@ -21,7 +21,7 @@ Radioknapp for enkeltvalg i en gruppe med gjensidig utelukkende alternativer.
 
 ### Grunnleggende radioknapp
 
-<WidgetbookEmbed component="Kjernekomponenter/DsRadio" :height="200" />
+<WidgetbookEmbed component="Kjernekomponenter/DsRadio/Standard" />
 
 ```dart
 DsRadio(

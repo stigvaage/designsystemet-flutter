@@ -20,7 +20,7 @@ Verktøyshjelp som vises ved hover eller fokus.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Navigasjon og layout/DsTooltip" :height="300" />
+<WidgetbookEmbed component="Navigasjon og layout/DsTooltip/Standard" />
 
 ```dart
 DsTooltip(

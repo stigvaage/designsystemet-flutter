@@ -20,7 +20,7 @@ Stablet gruppe av avatarer som viser flere brukere kompakt.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Navigasjon og layout/DsAvatarStack" :height="300" />
+<WidgetbookEmbed component="Navigasjon og layout/DsAvatarStack/Standard" />
 
 ```dart
 DsAvatarStack(

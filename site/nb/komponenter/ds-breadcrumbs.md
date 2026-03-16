@@ -20,7 +20,7 @@ Brødsmulesti som viser brukerens plassering i navigasjonshierarkiet.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Navigasjon og layout/DsBreadcrumbs" :height="300" />
+<WidgetbookEmbed component="Navigasjon og layout/DsBreadcrumbs/Standard" />
 
 ```dart
 DsBreadcrumbs(

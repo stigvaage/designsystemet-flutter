@@ -21,7 +21,7 @@ Kort for å gruppere relatert innhold med valgfrie underseksjoner og klikkbarhet
 
 ### Grunnleggende kort
 
-<WidgetbookEmbed component="Kjernekomponenter/DsCard" :height="200" />
+<WidgetbookEmbed component="Kjernekomponenter/DsCard/Standard" />
 
 ```dart
 DsCard(

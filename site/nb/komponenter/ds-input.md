@@ -20,7 +20,7 @@ Generisk inndatafelt (lavnivå-komponent).
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Skjema og verktøy/DsInput" :height="300" />
+<WidgetbookEmbed component="Skjema og verktøy/DsInput/Standard" />
 
 ```dart
 DsInput(

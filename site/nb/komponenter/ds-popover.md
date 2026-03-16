@@ -20,7 +20,7 @@ Innholdsboble som vises ved interaksjon med et utløserelement.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Navigasjon og layout/DsPopover" :height="300" />
+<WidgetbookEmbed component="Navigasjon og layout/DsPopover/Standard" />
 
 ```dart
 DsPopover(

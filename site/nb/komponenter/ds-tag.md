@@ -21,7 +21,7 @@ Etikett for kategorisering og statusvisning med ulike farger og størrelser.
 
 ### Grunnleggende etikett
 
-<WidgetbookEmbed component="Kjernekomponenter/DsTag" :height="200" />
+<WidgetbookEmbed component="Kjernekomponenter/DsTag/Standard" />
 
 ```dart
 DsTag(

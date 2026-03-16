@@ -20,7 +20,7 @@ Sammenleggbar detaljseksjon.
 
 ### Grunnleggende bruk
 
-<WidgetbookEmbed component="Skjema og verktøy/DsDetails" :height="300" />
+<WidgetbookEmbed component="Skjema og verktøy/DsDetails/Standard" />
 
 ```dart
 DsDetails(
