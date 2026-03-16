@@ -15,7 +15,7 @@ const widgetbookUrl = computed(() => {
 
 const componentName = computed(() => {
   const parts = props.component.split('/')
-  return parts[parts.length - 2] ?? parts[parts.length - 1]
+  return parts.length === 3 ? parts[1] : parts[parts.length - 1]
 })
 </script>
 
