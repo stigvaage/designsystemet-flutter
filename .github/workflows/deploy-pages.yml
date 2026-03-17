@@ -41,7 +41,8 @@ jobs:
           flutter build web --release --no-tree-shake-icons --base-href /komponentbibliotek-flutter-poc/widgetbook/
 
       - name: Verify Widgetbook build output
-        run: test -f widgetbook/build/web/index.html || (echo "ERROR: Widgetbook build output not found" && exit 1)
+        run: |
+          test -f widgetbook/build/web/index.html || (echo "Widgetbook build output not found" && exit 1)
 
       - name: Install VitePress dependencies
         run: cd site && npm ci
