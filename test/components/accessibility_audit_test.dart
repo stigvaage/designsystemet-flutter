@@ -1,5 +1,5 @@
 import 'dart:ui' show SemanticsFlag;
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:komponentbibliotek_flutter/komponentbibliotek_flutter.dart';
 import 'package:komponentbibliotek_flutter/generated/ds_theme_digdir.dart';
@@ -57,7 +57,7 @@ void main() {
       await tester.pumpWidget(wrapWithTheme(
         const DsInput(),
       ));
-      final semantics = tester.getSemantics(find.byType(Semantics).first);
+      final semantics = tester.getSemantics(find.byType(EditableText));
       expect(semantics.hasFlag(SemanticsFlag.isTextField), isTrue);
     });
 

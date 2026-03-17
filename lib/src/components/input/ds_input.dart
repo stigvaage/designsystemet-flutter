@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
@@ -49,26 +49,38 @@ class DsInput extends StatefulWidget {
 }
 
 class _DsInputState extends State<DsInput> {
-  late final TextEditingController _controller;
-  late final FocusNode _focusNode;
+  TextEditingController? _ownController;
+  FocusNode? _ownFocusNode;
   bool _isHovered = false;
   bool _isFocused = false;
+
+  TextEditingController get _controller =>
+      widget.controller ?? (_ownController ??= TextEditingController());
+
+  FocusNode get _focusNode =>
+      widget.focusNode ?? (_ownFocusNode ??= FocusNode());
 
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ?? TextEditingController();
-    _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_onFocusChange);
   }
 
   @override
-  void dispose() {
-    if (widget.controller == null) _controller.dispose();
-    if (widget.focusNode == null) {
-      _focusNode.removeListener(_onFocusChange);
-      _focusNode.dispose();
+  void didUpdateWidget(DsInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.focusNode != oldWidget.focusNode) {
+      (oldWidget.focusNode ?? _ownFocusNode)?.removeListener(_onFocusChange);
+      _focusNode.addListener(_onFocusChange);
+      _isFocused = _focusNode.hasFocus;
     }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _ownController?.dispose();
+    _ownFocusNode?.dispose();
     super.dispose();
   }
 
@@ -116,23 +128,57 @@ class _DsInputState extends State<DsInput> {
         ? BorderSide.none
         : BorderSide(color: borderColor, width: 1);
 
-    final Widget input = EditableText(
-      controller: _controller,
-      focusNode: _focusNode,
-      style: TextStyle(
-        fontFamily: theme.typography.fontFamily,
-        fontSize: fontSize,
-        color: colorScale.textDefault,
+    final textStyle = TextStyle(
+      fontFamily: theme.typography.fontFamily,
+      fontSize: fontSize,
+      color: colorScale.textDefault,
+    );
+
+    // TextField requires Material, MaterialLocalizations, and
+    // Directionality ancestors. Provide them here so DsInput works in any
+    // context — including apps that don't use MaterialApp.
+    final locale =
+        Localizations.maybeLocaleOf(context) ?? const Locale('en');
+
+    final Widget input = Localizations(
+      locale: locale,
+      delegates: const [
+        DefaultMaterialLocalizations.delegate,
+        DefaultWidgetsLocalizations.delegate,
+      ],
+      child: Material(
+        type: MaterialType.transparency,
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            textSelectionTheme: TextSelectionThemeData(
+              cursorColor: colorScale.baseDefault,
+              selectionColor: colorScale.surfaceActive,
+              selectionHandleColor: colorScale.baseDefault,
+            ),
+          ),
+          child: TextField(
+            controller: _controller,
+            focusNode: _focusNode,
+            style: textStyle,
+            cursorColor: colorScale.baseDefault,
+            maxLines: widget.maxLines,
+            readOnly: widget.readOnly,
+            obscureText: widget.obscureText,
+            autofocus: widget.autofocus,
+            onChanged: widget.onChanged,
+            onSubmitted: widget.onSubmitted,
+            onTapOutside: (_) {},
+            keyboardType: widget.keyboardType,
+            maxLength: widget.maxLength,
+            buildCounter: (_, {required currentLength, required isFocused, maxLength}) => null,
+            expands: false,
+            decoration: InputDecoration.collapsed(
+              hintText: widget.placeholder,
+              hintStyle: textStyle.copyWith(color: colorScale.textSubtle),
+            ),
+          ),
+        ),
       ),
-      cursorColor: colorScale.baseDefault,
-      backgroundCursorColor: colorScale.surfaceDefault,
-      maxLines: widget.maxLines,
-      readOnly: widget.readOnly,
-      obscureText: widget.obscureText,
-      autofocus: widget.autofocus,
-      onChanged: widget.onChanged,
-      onSubmitted: widget.onSubmitted,
-      keyboardType: widget.keyboardType,
     );
 
     Widget result = AnimatedContainer(
@@ -184,15 +230,12 @@ class _DsInputState extends State<DsInput> {
       );
     }
 
-    return Semantics(
-      textField: true,
-      enabled: !widget.disabled,
-      readOnly: widget.readOnly,
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _isHovered = true),
-        onExit: (_) => setState(() => _isHovered = false),
-        child: result,
-      ),
+    // TextField provides its own Semantics (textField, enabled, readOnly,
+    // hintText). Only add the outer MouseRegion for hover tracking.
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: result,
     );
   }
 }
