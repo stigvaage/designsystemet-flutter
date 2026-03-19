@@ -25,7 +25,7 @@ Legg til i prosjektets `.mcp.json`:
 ```json
 {
   "mcpServers": {
-    "designsystemet": {
+    "designsystemet-flutter": {
       "command": "npx",
       "args": ["-y", "@stigvaage/designsystemet-flutter-mcp"],
       "env": {
@@ -41,7 +41,7 @@ Eller fra en lokal klon:
 ```json
 {
   "mcpServers": {
-    "designsystemet": {
+    "designsystemet-flutter": {
       "command": "node",
       "args": ["mcp-server/dist/index.js"],
       "env": {
@@ -59,7 +59,7 @@ Legg til i `.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
-    "designsystemet": {
+    "designsystemet-flutter": {
       "command": "npx",
       "args": ["-y", "@stigvaage/designsystemet-flutter-mcp"],
       "env": {

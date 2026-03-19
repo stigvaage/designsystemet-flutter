@@ -34,7 +34,7 @@ Legg til i prosjektets `.mcp.json`:
 ```json
 {
   "mcpServers": {
-    "designsystemet": {
+    "designsystemet-flutter": {
       "command": "node",
       "args": ["/sti/til/designsystemet-flutter/mcp-server/dist/index.js"],
       "env": {
@@ -50,7 +50,7 @@ For utvikling kan du bruke `tsx` i stedet:
 ```json
 {
   "mcpServers": {
-    "designsystemet": {
+    "designsystemet-flutter": {
       "command": "npx",
       "args": ["tsx", "/sti/til/designsystemet-flutter/mcp-server/src/index.ts"],
       "env": {
@@ -68,7 +68,7 @@ Legg til i `.vscode/mcp.json` i prosjektmappen din:
 ```json
 {
   "servers": {
-    "designsystemet": {
+    "designsystemet-flutter": {
       "command": "node",
       "args": ["/sti/til/designsystemet-flutter/mcp-server/dist/index.js"],
       "env": {
@@ -86,7 +86,7 @@ Legg til i `.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
-    "designsystemet": {
+    "designsystemet-flutter": {
       "command": "node",
       "args": ["/sti/til/designsystemet-flutter/mcp-server/dist/index.js"],
       "env": {

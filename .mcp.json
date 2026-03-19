@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "designsystemet": {
+    "designsystemet-flutter": {
       "command": "node",
       "args": ["mcp-server/dist/index.js"],
       "env": {

@@ -279,7 +279,7 @@ Legg til i `.mcp.json` (Claude Code) eller `.cursor/mcp.json` (Cursor):
 ```json
 {
   "mcpServers": {
-    "designsystemet": {
+    "designsystemet-flutter": {
       "command": "npx",
       "args": ["-y", "@stigvaage/designsystemet-flutter-mcp"],
       "env": {
@@ -297,7 +297,7 @@ Legg til i `.vscode/mcp.json`:
 ```json
 {
   "servers": {
-    "designsystemet": {
+    "designsystemet-flutter": {
       "command": "npx",
       "args": ["-y", "@stigvaage/designsystemet-flutter-mcp"],
       "env": {
