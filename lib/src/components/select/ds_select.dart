@@ -59,7 +59,8 @@ class DsSelect extends StatelessWidget {
         color: colorScale.backgroundDefault,
         borderRadius: BorderRadius.circular(theme.borderRadius.defaultRadius),
         border: Border.all(
-          color: hasError ? dangerScale.borderDefault : colorScale.borderDefault,
+          color:
+              hasError ? dangerScale.borderDefault : colorScale.borderDefault,
           width: 1,
         ),
       ),

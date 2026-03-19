@@ -8,7 +8,9 @@ final paginationComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        final totalPages = context.knobs.double.slider(label: 'Sider', min: 1, max: 10, initialValue: 5).toInt();
+        final totalPages = context.knobs.double
+            .slider(label: 'Sider', min: 1, max: 10, initialValue: 5)
+            .toInt();
         return Center(
           child: DsPagination(
             currentPage: 1,

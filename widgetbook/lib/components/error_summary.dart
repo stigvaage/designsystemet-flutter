@@ -11,7 +11,11 @@ final errorSummaryComponent = WidgetbookComponent(
         padding: EdgeInsets.all(16),
         child: DsErrorSummary(
           title: 'Rett følgende feil',
-          errors: ['Fornavn er påkrevd', 'E-post er ugyldig', 'Velg minst ett alternativ'],
+          errors: [
+            'Fornavn er påkrevd',
+            'E-post er ugyldig',
+            'Velg minst ett alternativ'
+          ],
         ),
       ),
     ),

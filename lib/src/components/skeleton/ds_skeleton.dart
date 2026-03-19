@@ -62,12 +62,14 @@ class _DsSkeletonState extends State<DsSkeleton>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
-        final opacity = 0.3 + 0.3 * (0.5 + 0.5 * (_controller.value * 3.14159 * 2).sin());
+        final opacity =
+            0.3 + 0.3 * (0.5 + 0.5 * (_controller.value * 3.14159 * 2).sin());
         return Container(
           width: widget.width,
           height: widget.height,
           decoration: BoxDecoration(
-            color: colorScale.surfaceDefault.withValues(alpha: opacity.clamp(0.0, 1.0)),
+            color: colorScale.surfaceDefault
+                .withValues(alpha: opacity.clamp(0.0, 1.0)),
             borderRadius: BorderRadius.circular(radius),
           ),
         );

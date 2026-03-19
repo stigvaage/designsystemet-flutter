@@ -70,8 +70,7 @@ class _DsPopoverState extends State<DsPopover> {
                   color: colorScale.backgroundDefault,
                   borderRadius:
                       BorderRadius.circular(theme.borderRadius.defaultRadius),
-                  border:
-                      Border.all(color: colorScale.borderSubtle, width: 1),
+                  border: Border.all(color: colorScale.borderSubtle, width: 1),
                   boxShadow: theme.shadows.md,
                 ),
                 padding: const EdgeInsets.all(16),

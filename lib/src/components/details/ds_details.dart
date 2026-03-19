@@ -75,8 +75,7 @@ class _DsDetailsState extends State<DsDetails>
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(color: colorScale.borderSubtle, width: 1),
-          borderRadius:
-              BorderRadius.circular(theme.borderRadius.defaultRadius),
+          borderRadius: BorderRadius.circular(theme.borderRadius.defaultRadius),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

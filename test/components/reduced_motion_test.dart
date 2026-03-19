@@ -15,7 +15,8 @@ Widget wrapWithTheme(Widget child, {bool disableAnimations = false}) {
 
 void main() {
   group('Reduced motion', () {
-    testWidgets('DsSpinner stops animating when disableAnimations is true', (tester) async {
+    testWidgets('DsSpinner stops animating when disableAnimations is true',
+        (tester) async {
       await tester.pumpWidget(wrapWithTheme(
         const DsSpinner(),
         disableAnimations: true,

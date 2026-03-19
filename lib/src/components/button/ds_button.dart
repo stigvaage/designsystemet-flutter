@@ -97,7 +97,8 @@ class _DsButtonState extends State<DsButton> {
         setState(() => _isFocused = focused);
       },
       child: MouseRegion(
-        cursor: _isDisabled ? SystemMouseCursors.basic : SystemMouseCursors.click,
+        cursor:
+            _isDisabled ? SystemMouseCursors.basic : SystemMouseCursors.click,
         onEnter: (_) {
           if (!_isDisabled) setState(() => _isHovered = true);
         },

@@ -51,12 +51,10 @@ class _DsSwitchState extends State<DsSwitch> {
     };
     final thumbSize = trackHeight - 4;
 
-    final trackColor = widget.value
-        ? colorScale.baseDefault
-        : colorScale.surfaceDefault;
-    final trackBorder = widget.value
-        ? colorScale.baseDefault
-        : colorScale.borderDefault;
+    final trackColor =
+        widget.value ? colorScale.baseDefault : colorScale.surfaceDefault;
+    final trackBorder =
+        widget.value ? colorScale.baseDefault : colorScale.borderDefault;
     final thumbColor = widget.value
         ? colorScale.baseContrastDefault
         : colorScale.backgroundDefault;
@@ -90,7 +88,8 @@ class _DsSwitchState extends State<DsSwitch> {
     if (_isFocused) {
       track = DecoratedBox(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(trackHeight / 2 + DsFocus.ringWidth),
+          borderRadius:
+              BorderRadius.circular(trackHeight / 2 + DsFocus.ringWidth),
           border: Border.all(
             color: colorScale.borderStrong,
             width: DsFocus.ringWidth,
@@ -110,7 +109,9 @@ class _DsSwitchState extends State<DsSwitch> {
         focusNode: widget.focusNode,
         onFocusChange: (f) => setState(() => _isFocused = f),
         child: GestureDetector(
-          onTap: widget.readOnly ? null : () => widget.onChanged?.call(!widget.value),
+          onTap: widget.readOnly
+              ? null
+              : () => widget.onChanged?.call(!widget.value),
           child: track,
         ),
       ),

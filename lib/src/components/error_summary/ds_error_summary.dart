@@ -49,9 +49,8 @@ class DsErrorSummary extends StatelessWidget {
                     '• ${errors[i]}',
                     style: theme.typography.bodyXs.copyWith(
                       color: dangerScale.textDefault,
-                      decoration: onErrorTap != null
-                          ? TextDecoration.underline
-                          : null,
+                      decoration:
+                          onErrorTap != null ? TextDecoration.underline : null,
                     ),
                   ),
                 ),

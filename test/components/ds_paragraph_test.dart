@@ -23,7 +23,8 @@ void main() {
       expect(find.text('Body text'), findsOneWidget);
     });
 
-    testWidgets('default body style has weight 400 and line-height 1.5', (tester) async {
+    testWidgets('default body style has weight 400 and line-height 1.5',
+        (tester) async {
       await tester.pumpWidget(wrapWithTheme(
         const DsParagraph(text: 'Test'),
       ));

@@ -8,13 +8,20 @@ class DartEmitter {
     buffer.writeln("import 'dart:ui' show Brightness, Color;");
     buffer.writeln();
     buffer.writeln("import 'package:komponentbibliotek_flutter/theme.dart';");
-    buffer.writeln("import 'package:komponentbibliotek_flutter/src/theme/ds_border_radius_tokens.dart';");
-    buffer.writeln("import 'package:komponentbibliotek_flutter/src/theme/ds_color_scale.dart';");
-    buffer.writeln("import 'package:komponentbibliotek_flutter/src/theme/ds_color_scheme.dart';");
-    buffer.writeln("import 'package:komponentbibliotek_flutter/src/theme/ds_shadow_tokens.dart';");
-    buffer.writeln("import 'package:komponentbibliotek_flutter/src/theme/ds_size_tokens.dart';");
-    buffer.writeln("import 'package:komponentbibliotek_flutter/src/theme/ds_theme_data.dart';");
-    buffer.writeln("import 'package:komponentbibliotek_flutter/src/theme/ds_typography.dart';");
+    buffer.writeln(
+        "import 'package:komponentbibliotek_flutter/src/theme/ds_border_radius_tokens.dart';");
+    buffer.writeln(
+        "import 'package:komponentbibliotek_flutter/src/theme/ds_color_scale.dart';");
+    buffer.writeln(
+        "import 'package:komponentbibliotek_flutter/src/theme/ds_color_scheme.dart';");
+    buffer.writeln(
+        "import 'package:komponentbibliotek_flutter/src/theme/ds_shadow_tokens.dart';");
+    buffer.writeln(
+        "import 'package:komponentbibliotek_flutter/src/theme/ds_size_tokens.dart';");
+    buffer.writeln(
+        "import 'package:komponentbibliotek_flutter/src/theme/ds_theme_data.dart';");
+    buffer.writeln(
+        "import 'package:komponentbibliotek_flutter/src/theme/ds_typography.dart';");
     buffer.writeln();
     buffer.writeln('class DsTheme$className {');
     buffer.writeln('  DsTheme$className._();');
@@ -25,7 +32,8 @@ class DartEmitter {
     buffer.writeln('        brightness: Brightness.light,');
     buffer.writeln('        colorScheme: _lightColorScheme,');
     buffer.writeln('        sizeTokens: DsSizeTokens.md,');
-    buffer.writeln('        typography: DsTypography.create(baseFontSize: 18),');
+    buffer
+        .writeln('        typography: DsTypography.create(baseFontSize: 18),');
     _emitBorderRadius(buffer, theme);
     buffer.writeln('        shadows: DsShadowTokens.standard,');
     buffer.writeln('      );');
@@ -36,7 +44,8 @@ class DartEmitter {
     buffer.writeln('        brightness: Brightness.dark,');
     buffer.writeln('        colorScheme: _darkColorScheme,');
     buffer.writeln('        sizeTokens: DsSizeTokens.md,');
-    buffer.writeln('        typography: DsTypography.create(baseFontSize: 18),');
+    buffer
+        .writeln('        typography: DsTypography.create(baseFontSize: 18),');
     _emitBorderRadius(buffer, theme);
     buffer.writeln('        shadows: DsShadowTokens.standard,');
     buffer.writeln('      );');
@@ -53,7 +62,8 @@ class DartEmitter {
 
   void _emitBorderRadius(StringBuffer buffer, ParsedTheme theme) {
     final base = theme.borderRadii['md'] ?? theme.borderRadii['default'] ?? 4.0;
-    buffer.writeln('        borderRadius: DsBorderRadiusTokens.fromBase($base),');
+    buffer
+        .writeln('        borderRadius: DsBorderRadiusTokens.fromBase($base),');
   }
 
   void _emitColorScheme(
@@ -63,8 +73,15 @@ class DartEmitter {
   ) {
     buffer.writeln('  static const $varName = DsColorScheme(');
     final scaleNames = [
-      'accent', 'neutral', 'brand1', 'brand2', 'brand3',
-      'success', 'danger', 'warning', 'info',
+      'accent',
+      'neutral',
+      'brand1',
+      'brand2',
+      'brand3',
+      'success',
+      'danger',
+      'warning',
+      'info',
     ];
     for (final name in scaleNames) {
       final scale = colors[name] ?? colors.values.firstOrNull;

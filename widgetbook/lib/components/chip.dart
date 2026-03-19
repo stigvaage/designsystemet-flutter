@@ -8,8 +8,10 @@ final chipComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        final selected = context.knobs.boolean(label: 'Valgt', initialValue: false);
-        final removable = context.knobs.boolean(label: 'Fjernbar', initialValue: false);
+        final selected =
+            context.knobs.boolean(label: 'Valgt', initialValue: false);
+        final removable =
+            context.knobs.boolean(label: 'Fjernbar', initialValue: false);
         return Center(
           child: DsChip(
             selected: selected,

@@ -15,20 +15,50 @@ sealed class DsColor {
   static const info = DsColorInfo();
   static DsColorCustom custom(String key) => DsColorCustom(key);
 }
-class DsColorAccent extends DsColor { const DsColorAccent(); }
-class DsColorNeutral extends DsColor { const DsColorNeutral(); }
-class DsColorBrand1 extends DsColor { const DsColorBrand1(); }
-class DsColorBrand2 extends DsColor { const DsColorBrand2(); }
-class DsColorBrand3 extends DsColor { const DsColorBrand3(); }
-class DsColorSuccess extends DsColor { const DsColorSuccess(); }
-class DsColorDanger extends DsColor { const DsColorDanger(); }
-class DsColorWarning extends DsColor { const DsColorWarning(); }
-class DsColorInfo extends DsColor { const DsColorInfo(); }
+
+class DsColorAccent extends DsColor {
+  const DsColorAccent();
+}
+
+class DsColorNeutral extends DsColor {
+  const DsColorNeutral();
+}
+
+class DsColorBrand1 extends DsColor {
+  const DsColorBrand1();
+}
+
+class DsColorBrand2 extends DsColor {
+  const DsColorBrand2();
+}
+
+class DsColorBrand3 extends DsColor {
+  const DsColorBrand3();
+}
+
+class DsColorSuccess extends DsColor {
+  const DsColorSuccess();
+}
+
+class DsColorDanger extends DsColor {
+  const DsColorDanger();
+}
+
+class DsColorWarning extends DsColor {
+  const DsColorWarning();
+}
+
+class DsColorInfo extends DsColor {
+  const DsColorInfo();
+}
+
 class DsColorCustom extends DsColor {
   final String key;
   const DsColorCustom(this.key);
-  @override bool operator ==(Object other) => other is DsColorCustom && other.key == key;
-  @override int get hashCode => key.hashCode;
+  @override
+  bool operator ==(Object other) => other is DsColorCustom && other.key == key;
+  @override
+  int get hashCode => key.hashCode;
 }
 
 // DsSeverity

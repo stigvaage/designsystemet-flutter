@@ -45,8 +45,7 @@ class DsField extends StatelessWidget {
             ),
           ),
         child,
-        if (error != null)
-          DsValidationMessage(message: error!),
+        if (error != null) DsValidationMessage(message: error!),
       ],
     );
   }

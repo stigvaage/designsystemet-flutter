@@ -134,7 +134,8 @@ class _ExampleAppState extends State<ExampleApp> {
                 const SizedBox(height: 24),
 
                 // Form controls
-                const DsHeading(text: 'Form Controls', level: DsHeadingLevel.md),
+                const DsHeading(
+                    text: 'Form Controls', level: DsHeadingLevel.md),
                 const SizedBox(height: 8),
                 const DsField(
                   label: 'Email',

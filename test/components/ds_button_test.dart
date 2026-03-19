@@ -58,7 +58,8 @@ void main() {
       expect(opacity.opacity, 0.3);
     });
 
-    testWidgets('loading shows spinner and disables interaction', (tester) async {
+    testWidgets('loading shows spinner and disables interaction',
+        (tester) async {
       var pressed = false;
       await tester.pumpWidget(wrapWithTheme(
         DsButton(

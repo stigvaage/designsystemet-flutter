@@ -14,7 +14,8 @@ final headingComponent = WidgetbookComponent(
           initialOption: DsHeadingLevel.md,
           labelBuilder: (v) => v.name,
         );
-        final text = context.knobs.string(label: 'Tekst', initialValue: 'Overskrift');
+        final text =
+            context.knobs.string(label: 'Tekst', initialValue: 'Overskrift');
         return Center(child: DsHeading(text: text, level: level));
       },
     ),
@@ -42,7 +43,8 @@ final paragraphComponent = WidgetbookComponent(
         return Padding(
           padding: const EdgeInsets.all(16),
           child: DsParagraph(
-            text: 'Dette er en eksempeltekst som viser hvordan brødtekst ser ut i Designsystemet.',
+            text:
+                'Dette er en eksempeltekst som viser hvordan brødtekst ser ut i Designsystemet.',
             bodySize: bodySize,
             variant: variant,
           ),
@@ -58,7 +60,8 @@ final labelComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        final text = context.knobs.string(label: 'Tekst', initialValue: 'Feltetikett');
+        final text =
+            context.knobs.string(label: 'Tekst', initialValue: 'Feltetikett');
         return Center(child: DsLabel(text: text));
       },
     ),
@@ -71,7 +74,8 @@ final validationMessageComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        final isError = context.knobs.boolean(label: 'Feil', initialValue: true);
+        final isError =
+            context.knobs.boolean(label: 'Feil', initialValue: true);
         return Center(
           child: DsValidationMessage(
             message: isError ? 'Dette feltet er påkrevd' : 'Gyldig verdi',

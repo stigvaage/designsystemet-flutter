@@ -51,8 +51,11 @@ class _DsCheckboxState extends State<DsCheckbox> {
     };
 
     final isChecked = widget.value || widget.indeterminate;
-    final bgColor = isChecked ? colorScale.baseDefault : colorScale.backgroundDefault;
-    final borderColor = isChecked ? colorScale.baseDefault : (_isHovered ? colorScale.borderStrong : colorScale.borderDefault);
+    final bgColor =
+        isChecked ? colorScale.baseDefault : colorScale.backgroundDefault;
+    final borderColor = isChecked
+        ? colorScale.baseDefault
+        : (_isHovered ? colorScale.borderStrong : colorScale.borderDefault);
     final checkColor = colorScale.baseContrastDefault;
     final radius = BorderRadius.circular(theme.borderRadius.sm);
 
@@ -89,9 +92,13 @@ class _DsCheckboxState extends State<DsCheckbox> {
       child: MouseRegion(
         onEnter: (_) => setState(() => _isHovered = true),
         onExit: (_) => setState(() => _isHovered = false),
-        cursor: widget.readOnly ? SystemMouseCursors.basic : SystemMouseCursors.click,
+        cursor: widget.readOnly
+            ? SystemMouseCursors.basic
+            : SystemMouseCursors.click,
         child: GestureDetector(
-          onTap: widget.readOnly ? null : () => widget.onChanged?.call(!widget.value),
+          onTap: widget.readOnly
+              ? null
+              : () => widget.onChanged?.call(!widget.value),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -135,7 +142,8 @@ class _CheckPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _CheckPainter oldDelegate) => oldDelegate.color != color;
+  bool shouldRepaint(covariant _CheckPainter oldDelegate) =>
+      oldDelegate.color != color;
 }
 
 class _IndeterminatePainter extends CustomPainter {
@@ -158,5 +166,6 @@ class _IndeterminatePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _IndeterminatePainter oldDelegate) => oldDelegate.color != color;
+  bool shouldRepaint(covariant _IndeterminatePainter oldDelegate) =>
+      oldDelegate.color != color;
 }

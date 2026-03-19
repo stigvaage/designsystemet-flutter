@@ -45,7 +45,8 @@ class _DsSkipLinkState extends State<DsSkipLink> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color: colorScale.baseDefault,
-            borderRadius: BorderRadius.circular(theme.borderRadius.defaultRadius),
+            borderRadius:
+                BorderRadius.circular(theme.borderRadius.defaultRadius),
           ),
           child: Text(
             widget.label,

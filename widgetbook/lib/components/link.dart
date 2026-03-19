@@ -8,7 +8,8 @@ final linkComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        final inverted = context.knobs.boolean(label: 'Invertert', initialValue: false);
+        final inverted =
+            context.knobs.boolean(label: 'Invertert', initialValue: false);
         return Center(
           child: DsLink(
             text: 'Gå til designsystemet.no',

@@ -115,7 +115,8 @@ class _DsToggleGroupState extends State<DsToggleGroup> {
                     style: TextStyle(
                       fontFamily: theme.typography.fontFamily,
                       fontSize: fontSize,
-                      fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
+                      fontWeight:
+                          isSelected ? FontWeight.w500 : FontWeight.w400,
                       color: isSelected
                           ? colorScale.baseContrastDefault
                           : colorScale.textDefault,

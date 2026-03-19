@@ -100,9 +100,13 @@ class _DsRadioState extends State<DsRadio> {
         child: MouseRegion(
           onEnter: (_) => setState(() => _isHovered = true),
           onExit: (_) => setState(() => _isHovered = false),
-          cursor: widget.readOnly ? SystemMouseCursors.basic : SystemMouseCursors.click,
+          cursor: widget.readOnly
+              ? SystemMouseCursors.basic
+              : SystemMouseCursors.click,
           child: GestureDetector(
-            onTap: widget.readOnly ? null : () => widget.onChanged?.call(!widget.value),
+            onTap: widget.readOnly
+                ? null
+                : () => widget.onChanged?.call(!widget.value),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [

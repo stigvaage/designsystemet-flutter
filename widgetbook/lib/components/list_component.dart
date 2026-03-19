@@ -8,12 +8,17 @@ final listComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        final ordered = context.knobs.boolean(label: 'Nummerert', initialValue: false);
+        final ordered =
+            context.knobs.boolean(label: 'Nummerert', initialValue: false);
         return Padding(
           padding: const EdgeInsets.all(16),
           child: DsList(
             ordered: ordered,
-            items: const [Text('Første element'), Text('Andre element'), Text('Tredje element')],
+            items: const [
+              Text('Første element'),
+              Text('Andre element'),
+              Text('Tredje element')
+            ],
           ),
         );
       },

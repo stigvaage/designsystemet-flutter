@@ -38,9 +38,8 @@ class DtcgParser {
     final themes = <ParsedTheme>[];
 
     for (final themeDir in themesDir.listSync().whereType<Directory>()) {
-      final themeName = themeDir.uri.pathSegments
-          .where((s) => s.isNotEmpty)
-          .last;
+      final themeName =
+          themeDir.uri.pathSegments.where((s) => s.isNotEmpty).last;
 
       final lightFile = File('${themeDir.path}/light.json');
       final darkFile = File('${themeDir.path}/dark.json');
@@ -92,7 +91,8 @@ class DtcgParser {
       final tokens = <String, String>{};
       for (final tokenEntry in scaleData.entries) {
         final tokenData = tokenEntry.value;
-        if (tokenData is Map<String, dynamic> && tokenData[r'$value'] is String) {
+        if (tokenData is Map<String, dynamic> &&
+            tokenData[r'$value'] is String) {
           tokens[tokenEntry.key] = tokenData[r'$value'] as String;
         }
       }

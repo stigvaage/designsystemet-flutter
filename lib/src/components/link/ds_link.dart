@@ -44,9 +44,8 @@ class _DsLinkState extends State<DsLink> {
           widget.text,
           style: theme.typography.bodyMd.copyWith(
             color: textColor,
-            decoration: _isHovered
-                ? TextDecoration.none
-                : TextDecoration.underline,
+            decoration:
+                _isHovered ? TextDecoration.none : TextDecoration.underline,
             decorationColor: textColor,
           ),
         ),

@@ -75,7 +75,8 @@ class _DsDropdownState extends State<DsDropdown> {
               constraints: const BoxConstraints(minWidth: 160),
               decoration: BoxDecoration(
                 color: colorScale.backgroundDefault,
-                borderRadius: BorderRadius.circular(theme.borderRadius.defaultRadius),
+                borderRadius:
+                    BorderRadius.circular(theme.borderRadius.defaultRadius),
                 border: Border.all(color: colorScale.borderSubtle, width: 1),
                 boxShadow: theme.shadows.md,
               ),
@@ -87,7 +88,8 @@ class _DsDropdownState extends State<DsDropdown> {
                     GestureDetector(
                       onTap: widget.items[i].enabled ? () => _select(i) : null,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                         child: Text(
                           widget.items[i].label,
                           style: theme.typography.bodySm.copyWith(

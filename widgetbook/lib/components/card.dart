@@ -8,8 +8,10 @@ final cardComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        final elevated = context.knobs.boolean(label: 'Opphøyd', initialValue: false);
-        final clickable = context.knobs.boolean(label: 'Klikkbar', initialValue: false);
+        final elevated =
+            context.knobs.boolean(label: 'Opphøyd', initialValue: false);
+        final clickable =
+            context.knobs.boolean(label: 'Klikkbar', initialValue: false);
 
         return Padding(
           padding: const EdgeInsets.all(16),
