@@ -64,29 +64,29 @@ class DsBadge extends StatelessWidget {
 
     final (top, right, bottom, left) = switch (placement) {
       DsBadgePlacement.topRight => (
-          offset,
-          offset,
-          null as double?,
-          null as double?
-        ),
+        offset,
+        offset,
+        null as double?,
+        null as double?,
+      ),
       DsBadgePlacement.topLeft => (
-          offset,
-          null as double?,
-          null as double?,
-          offset
-        ),
+        offset,
+        null as double?,
+        null as double?,
+        offset,
+      ),
       DsBadgePlacement.bottomRight => (
-          null as double?,
-          offset,
-          offset,
-          null as double?
-        ),
+        null as double?,
+        offset,
+        offset,
+        null as double?,
+      ),
       DsBadgePlacement.bottomLeft => (
-          null as double?,
-          null as double?,
-          offset,
-          offset
-        ),
+        null as double?,
+        null as double?,
+        offset,
+        offset,
+      ),
     };
 
     return Stack(

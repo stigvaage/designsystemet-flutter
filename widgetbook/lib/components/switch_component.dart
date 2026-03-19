@@ -9,15 +9,13 @@ final switchComponent = WidgetbookComponent(
       name: 'Standard',
       builder: (context) {
         final value = context.knobs.boolean(label: 'På', initialValue: false);
-        final readOnly = context.knobs
-            .boolean(label: 'Skrivebeskyttet', initialValue: false);
+        final readOnly = context.knobs.boolean(
+          label: 'Skrivebeskyttet',
+          initialValue: false,
+        );
 
         return Center(
-          child: DsSwitch(
-            value: value,
-            readOnly: readOnly,
-            onChanged: (_) {},
-          ),
+          child: DsSwitch(value: value, readOnly: readOnly, onChanged: (_) {}),
         );
       },
     ),

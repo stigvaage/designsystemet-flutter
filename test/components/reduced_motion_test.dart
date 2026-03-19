@@ -15,21 +15,20 @@ Widget wrapWithTheme(Widget child, {bool disableAnimations = false}) {
 
 void main() {
   group('Reduced motion', () {
-    testWidgets('DsSpinner stops animating when disableAnimations is true',
-        (tester) async {
-      await tester.pumpWidget(wrapWithTheme(
-        const DsSpinner(),
-        disableAnimations: true,
-      ));
+    testWidgets('DsSpinner stops animating when disableAnimations is true', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsSpinner(), disableAnimations: true),
+      );
       // Spinner should render but not animate
       expect(find.byType(DsSpinner), findsOneWidget);
     });
 
     testWidgets('DsSpinner animates normally by default', (tester) async {
-      await tester.pumpWidget(wrapWithTheme(
-        const DsSpinner(),
-        disableAnimations: false,
-      ));
+      await tester.pumpWidget(
+        wrapWithTheme(const DsSpinner(), disableAnimations: false),
+      );
       expect(find.byType(DsSpinner), findsOneWidget);
     });
   });

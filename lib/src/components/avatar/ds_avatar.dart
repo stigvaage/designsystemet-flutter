@@ -6,13 +6,7 @@ import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
 class DsAvatar extends StatelessWidget {
-  const DsAvatar({
-    super.key,
-    this.name,
-    this.imageUrl,
-    this.size,
-    this.color,
-  });
+  const DsAvatar({super.key, this.name, this.imageUrl, this.size, this.color});
 
   final String? name;
   final String? imageUrl;

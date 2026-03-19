@@ -8,8 +8,10 @@ final dividerComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        final vertical =
-            context.knobs.boolean(label: 'Vertikal', initialValue: false);
+        final vertical = context.knobs.boolean(
+          label: 'Vertikal',
+          initialValue: false,
+        );
         return Padding(
           padding: const EdgeInsets.all(16),
           child: SizedBox(

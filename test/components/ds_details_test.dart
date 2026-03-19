@@ -14,35 +14,38 @@ Widget wrapWithTheme(Widget child) {
 void main() {
   group('DsDetails', () {
     testWidgets('renders summary', (tester) async {
-      await tester.pumpWidget(wrapWithTheme(
-        const DsDetails(
-          summary: Text('Click to expand'),
-          child: Text('Hidden content'),
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsDetails(
+            summary: Text('Click to expand'),
+            child: Text('Hidden content'),
+          ),
         ),
-      ));
+      );
       expect(find.text('Click to expand'), findsOneWidget);
     });
 
     testWidgets('expands on tap', (tester) async {
-      await tester.pumpWidget(wrapWithTheme(
-        const DsDetails(
-          summary: Text('Summary'),
-          child: Text('Content'),
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsDetails(summary: Text('Summary'), child: Text('Content')),
         ),
-      ));
+      );
       await tester.tap(find.text('Summary'));
       await tester.pumpAndSettle();
       expect(find.text('Content'), findsOneWidget);
     });
 
     testWidgets('has expanded semantics', (tester) async {
-      await tester.pumpWidget(wrapWithTheme(
-        const DsDetails(
-          summary: Text('S'),
-          child: Text('C'),
-          initiallyExpanded: true,
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsDetails(
+            summary: Text('S'),
+            child: Text('C'),
+            initiallyExpanded: true,
+          ),
         ),
-      ));
+      );
       final semantics = tester.getSemantics(find.byType(DsDetails));
       expect(semantics.hasFlag(SemanticsFlag.hasExpandedState), isTrue);
     });

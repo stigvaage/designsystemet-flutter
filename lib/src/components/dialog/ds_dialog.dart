@@ -24,9 +24,7 @@ class DsDialog extends StatelessWidget {
     required BuildContext context,
     required WidgetBuilder builder,
   }) {
-    return Navigator.of(context).push<T>(
-      _DsDialogRoute<T>(builder: builder),
-    );
+    return Navigator.of(context).push<T>(_DsDialogRoute<T>(builder: builder));
   }
 
   @override

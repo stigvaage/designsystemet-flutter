@@ -76,10 +76,7 @@ class _ExampleAppState extends State<ExampleApp> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    DsButton(
-                      onPressed: () {},
-                      child: const Text('Primary'),
-                    ),
+                    DsButton(onPressed: () {}, child: const Text('Primary')),
                     DsButton(
                       variant: DsButtonVariant.secondary,
                       onPressed: () {},
@@ -118,10 +115,7 @@ class _ExampleAppState extends State<ExampleApp> {
                         child: const Text('Small'),
                       ),
                     ),
-                    DsButton(
-                      onPressed: () {},
-                      child: const Text('Medium'),
-                    ),
+                    DsButton(onPressed: () {}, child: const Text('Medium')),
                     DsSizeScope(
                       size: DsSize.lg,
                       child: DsButton(
@@ -135,7 +129,9 @@ class _ExampleAppState extends State<ExampleApp> {
 
                 // Form controls
                 const DsHeading(
-                    text: 'Form Controls', level: DsHeadingLevel.md),
+                  text: 'Form Controls',
+                  level: DsHeadingLevel.md,
+                ),
                 const SizedBox(height: 8),
                 const DsField(
                   label: 'Email',
@@ -143,10 +139,7 @@ class _ExampleAppState extends State<ExampleApp> {
                   child: DsTextfield(placeholder: 'name@example.com'),
                 ),
                 const SizedBox(height: 12),
-                const DsField(
-                  label: 'Message',
-                  child: DsTextarea(rows: 3),
-                ),
+                const DsField(label: 'Message', child: DsTextarea(rows: 3)),
                 const SizedBox(height: 12),
                 DsCheckbox(
                   value: _checkboxValue,
@@ -217,14 +210,8 @@ class _ExampleAppState extends State<ExampleApp> {
                     const DsTag(child: Text('Default')),
                     DsTag(color: DsColor.success, child: const Text('Success')),
                     DsTag(color: DsColor.danger, child: const Text('Danger')),
-                    DsChip(
-                      selected: true,
-                      child: const Text('Selected Chip'),
-                    ),
-                    DsChip(
-                      removable: true,
-                      child: const Text('Removable'),
-                    ),
+                    DsChip(selected: true, child: const Text('Selected Chip')),
+                    DsChip(removable: true, child: const Text('Removable')),
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -267,10 +254,7 @@ class _ExampleAppState extends State<ExampleApp> {
                 // Badge
                 const DsHeading(text: 'Badge', level: DsHeadingLevel.md),
                 const SizedBox(height: 8),
-                const DsBadge(
-                  count: 3,
-                  child: DsAvatar(name: 'John Doe'),
-                ),
+                const DsBadge(count: 3, child: DsAvatar(name: 'John Doe')),
                 const SizedBox(height: 24),
 
                 // Divider

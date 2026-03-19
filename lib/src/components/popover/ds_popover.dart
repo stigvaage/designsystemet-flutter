@@ -68,8 +68,9 @@ class _DsPopoverState extends State<DsPopover> {
                 constraints: const BoxConstraints(maxWidth: 320),
                 decoration: BoxDecoration(
                   color: colorScale.backgroundDefault,
-                  borderRadius:
-                      BorderRadius.circular(theme.borderRadius.defaultRadius),
+                  borderRadius: BorderRadius.circular(
+                    theme.borderRadius.defaultRadius,
+                  ),
                   border: Border.all(color: colorScale.borderSubtle, width: 1),
                   boxShadow: theme.shadows.md,
                 ),
@@ -93,10 +94,7 @@ class _DsPopoverState extends State<DsPopover> {
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: _layerLink,
-      child: GestureDetector(
-        onTap: _toggle,
-        child: widget.trigger,
-      ),
+      child: GestureDetector(onTap: _toggle, child: widget.trigger),
     );
   }
 }

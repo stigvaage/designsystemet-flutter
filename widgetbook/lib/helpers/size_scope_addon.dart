@@ -3,10 +3,7 @@ import 'package:komponentbibliotek_flutter/komponentbibliotek_flutter.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 class DsSizeScopeAddon extends WidgetbookAddon<DsSize> {
-  DsSizeScopeAddon()
-      : super(
-          name: 'Størrelse',
-        );
+  DsSizeScopeAddon() : super(name: 'Størrelse');
 
   static final _sizes = <String, DsSize>{
     'Liten (sm)': DsSize.sm,
@@ -16,13 +13,13 @@ class DsSizeScopeAddon extends WidgetbookAddon<DsSize> {
 
   @override
   List<Field> get fields => [
-        ObjectDropdownField<String>(
-          name: 'Størrelse',
-          values: _sizes.keys.toList(),
-          initialValue: 'Medium (md)',
-          labelBuilder: (value) => value.toString(),
-        ),
-      ];
+    ObjectDropdownField<String>(
+      name: 'Størrelse',
+      values: _sizes.keys.toList(),
+      initialValue: 'Medium (md)',
+      labelBuilder: (value) => value.toString(),
+    ),
+  ];
 
   @override
   DsSize valueFromQueryGroup(Map<String, String> group) {
@@ -31,14 +28,7 @@ class DsSizeScopeAddon extends WidgetbookAddon<DsSize> {
   }
 
   @override
-  Widget buildUseCase(
-    BuildContext context,
-    Widget child,
-    DsSize setting,
-  ) {
-    return DsSizeScope(
-      size: setting,
-      child: child,
-    );
+  Widget buildUseCase(BuildContext context, Widget child, DsSize setting) {
+    return DsSizeScope(size: setting, child: child);
   }
 }

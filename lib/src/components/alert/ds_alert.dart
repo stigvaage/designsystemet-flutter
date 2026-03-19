@@ -24,11 +24,11 @@ class DsAlert extends StatelessWidget {
   final DsSize? size;
 
   DsColor get _severityColor => switch (severity) {
-        DsSeverity.info => DsColor.info,
-        DsSeverity.warning => DsColor.warning,
-        DsSeverity.success => DsColor.success,
-        DsSeverity.danger => DsColor.danger,
-      };
+    DsSeverity.info => DsColor.info,
+    DsSeverity.warning => DsColor.warning,
+    DsSeverity.success => DsColor.success,
+    DsSeverity.danger => DsColor.danger,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -44,10 +44,7 @@ class DsAlert extends StatelessWidget {
           color: colorScale.surfaceTinted,
           borderRadius: radius,
           border: Border(
-            left: BorderSide(
-              color: colorScale.borderDefault,
-              width: 4,
-            ),
+            left: BorderSide(color: colorScale.borderDefault, width: 4),
           ),
         ),
         padding: const EdgeInsets.all(16),

@@ -14,22 +14,24 @@ void main() {
   group('Roving focus', () {
     testWidgets('DsTabs changes selection on tap', (tester) async {
       var selectedTab = 0;
-      await tester.pumpWidget(wrapWithTheme(
-        StatefulBuilder(
-          builder: (context, setState) {
-            return DsTabs(
-              tabs: const ['A', 'B', 'C'],
-              initialIndex: selectedTab,
-              onChanged: (i) => setState(() => selectedTab = i),
-              children: const [
-                Text('Panel A'),
-                Text('Panel B'),
-                Text('Panel C'),
-              ],
-            );
-          },
+      await tester.pumpWidget(
+        wrapWithTheme(
+          StatefulBuilder(
+            builder: (context, setState) {
+              return DsTabs(
+                tabs: const ['A', 'B', 'C'],
+                initialIndex: selectedTab,
+                onChanged: (i) => setState(() => selectedTab = i),
+                children: const [
+                  Text('Panel A'),
+                  Text('Panel B'),
+                  Text('Panel C'),
+                ],
+              );
+            },
+          ),
         ),
-      ));
+      );
       expect(selectedTab, 0);
       await tester.tap(find.text('B'));
       await tester.pump();
@@ -37,30 +39,34 @@ void main() {
     });
 
     testWidgets('DsTabs shows correct panel for selected tab', (tester) async {
-      await tester.pumpWidget(wrapWithTheme(
-        const DsTabs(
-          tabs: ['First', 'Second'],
-          initialIndex: 0,
-          children: [Text('Content 1'), Text('Content 2')],
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsTabs(
+            tabs: ['First', 'Second'],
+            initialIndex: 0,
+            children: [Text('Content 1'), Text('Content 2')],
+          ),
         ),
-      ));
+      );
       expect(find.text('Content 1'), findsOneWidget);
       expect(find.text('Content 2'), findsNothing);
     });
 
     testWidgets('DsToggleGroup changes selection on tap', (tester) async {
       var selected = 0;
-      await tester.pumpWidget(wrapWithTheme(
-        StatefulBuilder(
-          builder: (context, setState) {
-            return DsToggleGroup(
-              items: const ['X', 'Y', 'Z'],
-              selectedIndex: selected,
-              onChanged: (i) => setState(() => selected = i),
-            );
-          },
+      await tester.pumpWidget(
+        wrapWithTheme(
+          StatefulBuilder(
+            builder: (context, setState) {
+              return DsToggleGroup(
+                items: const ['X', 'Y', 'Z'],
+                selectedIndex: selected,
+                onChanged: (i) => setState(() => selected = i),
+              );
+            },
+          ),
         ),
-      ));
+      );
       expect(selected, 0);
       await tester.tap(find.text('Y'));
       await tester.pump();

@@ -339,6 +339,17 @@ npm run build
 
 Se [mcp-server/README.md](mcp-server/README.md) for full dokumentasjon og Docker-støtte.
 
+## Teknologi og arkitektur
+
+Prosjektet er bygget med flere teknologier og verktøy som samarbeider for å levere et komplett komponentbibliotek med dokumentasjon, interaktiv katalog og AI-integrasjon:
+
+- **Dart 3.8+ / Flutter 3.32+** -- Selve komponentbiblioteket med 40 UI-komponenter, tokendrevet temasystem, kodegenerator og full testdekning. Bygget uten Material- eller Cupertino-avhengigheter — kun `package:flutter/widgets.dart` og `package:flutter/rendering.dart`.
+- **Widgetbook 3.x** -- Interaktiv komponentkatalog som lar utviklere utforske, teste og justere alle komponenter med ulike egenskaper, temaer og størrelser. Bygges som en Flutter-webapp og publiseres som en del av dokumentasjonssiden.
+- **VitePress 1.6 / Vue 3** -- Dokumentasjonssiden ([stigvaage.github.io/komponentbibliotek-flutter](https://stigvaage.github.io/komponentbibliotek-flutter/)) med 67 norskspråklige sider. Egendefinert tema med Designsystemets fargepalett, komponentfaner (Oversikt/Kode/Tilgjengelighet), innebygd Widgetbook-forhåndsvisning og søk.
+- **MCP-server (TypeScript / Node.js)** -- Model Context Protocol-server som lar AI-kodeassistenter som Claude Code, Cursor og VS Code Copilot slå opp komponent-API-er, migrere fra Material-widgets, hente temaoppsett og søke i dokumentasjonen. Bygget med `@modelcontextprotocol/sdk`, `zod` og `minisearch`.
+- **GitHub Actions** -- CI/CD-pipeline med automatisk formatsjekk, statisk analyse, testing og publisering til GitHub Pages. Dependabot overvåker avhengigheter for Dart, npm og GitHub Actions.
+- **Designsystemet CLI** -- Integrasjon med `@digdir/designsystemet` for import av egendefinerte temaer via W3C DTCG-format designtokens og kodegenerering av Dart-temafiler.
+
 ## Bidra
 
 Vi ønsker bidrag velkommen! Se [CONTRIBUTING.md](CONTRIBUTING.md) for retningslinjer.

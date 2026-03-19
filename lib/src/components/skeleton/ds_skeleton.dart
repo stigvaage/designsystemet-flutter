@@ -68,8 +68,9 @@ class _DsSkeletonState extends State<DsSkeleton>
           width: widget.width,
           height: widget.height,
           decoration: BoxDecoration(
-            color: colorScale.surfaceDefault
-                .withValues(alpha: opacity.clamp(0.0, 1.0)),
+            color: colorScale.surfaceDefault.withValues(
+              alpha: opacity.clamp(0.0, 1.0),
+            ),
             borderRadius: BorderRadius.circular(radius),
           ),
         );

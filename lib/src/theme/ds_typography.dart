@@ -66,13 +66,13 @@ class DsTypography {
     final features = <FontFeature>[const FontFeature('cv05')];
 
     TextStyle heading(double size, double letterSpacing) => TextStyle(
-          fontFamily: fontFamily,
-          fontWeight: FontWeight.w500,
-          fontSize: size,
-          height: 1.3,
-          letterSpacing: letterSpacing,
-          fontFeatures: features,
-        );
+      fontFamily: fontFamily,
+      fontWeight: FontWeight.w500,
+      fontSize: size,
+      height: 1.3,
+      letterSpacing: letterSpacing,
+      fontFeatures: features,
+    );
 
     TextStyle body(double size, double lineHeight, double letterSpacing) =>
         TextStyle(

@@ -8,12 +8,18 @@ final checkboxComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        final checked =
-            context.knobs.boolean(label: 'Avkrysset', initialValue: false);
-        final indeterminate =
-            context.knobs.boolean(label: 'Ubestemt', initialValue: false);
-        final readOnly = context.knobs
-            .boolean(label: 'Skrivebeskyttet', initialValue: false);
+        final checked = context.knobs.boolean(
+          label: 'Avkrysset',
+          initialValue: false,
+        );
+        final indeterminate = context.knobs.boolean(
+          label: 'Ubestemt',
+          initialValue: false,
+        );
+        final readOnly = context.knobs.boolean(
+          label: 'Skrivebeskyttet',
+          initialValue: false,
+        );
 
         return Center(
           child: DsCheckbox(

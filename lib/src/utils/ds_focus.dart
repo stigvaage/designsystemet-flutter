@@ -9,10 +9,7 @@ class DsFocus {
 
   static BoxDecoration focusRing(DsColorScale colorScale) {
     return BoxDecoration(
-      border: Border.all(
-        color: colorScale.borderStrong,
-        width: ringWidth,
-      ),
+      border: Border.all(color: colorScale.borderStrong, width: ringWidth),
     );
   }
 
@@ -21,10 +18,7 @@ class DsFocus {
     BorderRadius borderRadius,
   ) {
     return BoxDecoration(
-      border: Border.all(
-        color: colorScale.borderStrong,
-        width: ringWidth,
-      ),
+      border: Border.all(color: colorScale.borderStrong, width: ringWidth),
       borderRadius: borderRadius,
     );
   }

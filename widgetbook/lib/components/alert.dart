@@ -14,10 +14,14 @@ final alertComponent = WidgetbookComponent(
           initialOption: DsSeverity.info,
           labelBuilder: (v) => v.name,
         );
-        final closable =
-            context.knobs.boolean(label: 'Lukkbar', initialValue: false);
-        final showTitle =
-            context.knobs.boolean(label: 'Vis tittel', initialValue: true);
+        final closable = context.knobs.boolean(
+          label: 'Lukkbar',
+          initialValue: false,
+        );
+        final showTitle = context.knobs.boolean(
+          label: 'Vis tittel',
+          initialValue: true,
+        );
 
         return Padding(
           padding: const EdgeInsets.all(16),

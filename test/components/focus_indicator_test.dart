@@ -14,13 +14,15 @@ void main() {
   group('Focus indicator', () {
     testWidgets('DsButton shows focus ring when focused', (tester) async {
       final focusNode = FocusNode();
-      await tester.pumpWidget(wrapWithTheme(
-        DsButton(
-          onPressed: () {},
-          focusNode: focusNode,
-          child: const Text('Focused'),
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsButton(
+            onPressed: () {},
+            focusNode: focusNode,
+            child: const Text('Focused'),
+          ),
         ),
-      ));
+      );
       focusNode.requestFocus();
       await tester.pump();
 
@@ -32,9 +34,11 @@ void main() {
 
     testWidgets('DsCheckbox shows focus ring when focused', (tester) async {
       final focusNode = FocusNode();
-      await tester.pumpWidget(wrapWithTheme(
-        DsCheckbox(value: false, onChanged: (_) {}, focusNode: focusNode),
-      ));
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(value: false, onChanged: (_) {}, focusNode: focusNode),
+        ),
+      );
       focusNode.requestFocus();
       await tester.pump();
       expect(find.byType(DecoratedBox), findsWidgets);
@@ -43,9 +47,11 @@ void main() {
 
     testWidgets('DsRadio shows focus ring when focused', (tester) async {
       final focusNode = FocusNode();
-      await tester.pumpWidget(wrapWithTheme(
-        DsRadio(value: false, onChanged: (_) {}, focusNode: focusNode),
-      ));
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(value: false, onChanged: (_) {}, focusNode: focusNode),
+        ),
+      );
       focusNode.requestFocus();
       await tester.pump();
       expect(find.byType(DecoratedBox), findsWidgets);

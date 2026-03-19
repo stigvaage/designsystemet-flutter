@@ -102,12 +102,16 @@ class _DsToggleGroupState extends State<DsToggleGroup> {
                     borderRadius: i == 0
                         ? BorderRadius.horizontal(
                             left: Radius.circular(
-                                theme.borderRadius.defaultRadius - 1))
+                              theme.borderRadius.defaultRadius - 1,
+                            ),
+                          )
                         : i == widget.items.length - 1
-                            ? BorderRadius.horizontal(
-                                right: Radius.circular(
-                                    theme.borderRadius.defaultRadius - 1))
-                            : null,
+                        ? BorderRadius.horizontal(
+                            right: Radius.circular(
+                              theme.borderRadius.defaultRadius - 1,
+                            ),
+                          )
+                        : null,
                   ),
                   alignment: Alignment.center,
                   child: Text(
@@ -115,8 +119,9 @@ class _DsToggleGroupState extends State<DsToggleGroup> {
                     style: TextStyle(
                       fontFamily: theme.typography.fontFamily,
                       fontSize: fontSize,
-                      fontWeight:
-                          isSelected ? FontWeight.w500 : FontWeight.w400,
+                      fontWeight: isSelected
+                          ? FontWeight.w500
+                          : FontWeight.w400,
                       color: isSelected
                           ? colorScale.baseContrastDefault
                           : colorScale.textDefault,

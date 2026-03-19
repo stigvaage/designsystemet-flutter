@@ -33,9 +33,9 @@ class DsParagraph extends StatelessWidget {
     final activeColor = color ?? DsColorScope.of(context);
     final colorScale = theme.colorScheme.resolve(activeColor);
 
-    final style = _resolveStyle(theme.typography).copyWith(
-      color: colorScale.textDefault,
-    );
+    final style = _resolveStyle(
+      theme.typography,
+    ).copyWith(color: colorScale.textDefault);
 
     return Text(
       text,
@@ -49,26 +49,26 @@ class DsParagraph extends StatelessWidget {
   TextStyle _resolveStyle(DsTypography typography) {
     return switch (variant) {
       DsBodyVariant.standard => switch (bodySize) {
-          DsBodySize.xl => typography.bodyXl,
-          DsBodySize.lg => typography.bodyLg,
-          DsBodySize.md => typography.bodyMd,
-          DsBodySize.sm => typography.bodySm,
-          DsBodySize.xs => typography.bodyXs,
-        },
+        DsBodySize.xl => typography.bodyXl,
+        DsBodySize.lg => typography.bodyLg,
+        DsBodySize.md => typography.bodyMd,
+        DsBodySize.sm => typography.bodySm,
+        DsBodySize.xs => typography.bodyXs,
+      },
       DsBodyVariant.short => switch (bodySize) {
-          DsBodySize.xl => typography.bodyShortXl,
-          DsBodySize.lg => typography.bodyShortLg,
-          DsBodySize.md => typography.bodyShortMd,
-          DsBodySize.sm => typography.bodyShortSm,
-          DsBodySize.xs => typography.bodyShortXs,
-        },
+        DsBodySize.xl => typography.bodyShortXl,
+        DsBodySize.lg => typography.bodyShortLg,
+        DsBodySize.md => typography.bodyShortMd,
+        DsBodySize.sm => typography.bodyShortSm,
+        DsBodySize.xs => typography.bodyShortXs,
+      },
       DsBodyVariant.long => switch (bodySize) {
-          DsBodySize.xl => typography.bodyLongXl,
-          DsBodySize.lg => typography.bodyLongLg,
-          DsBodySize.md => typography.bodyLongMd,
-          DsBodySize.sm => typography.bodyLongSm,
-          DsBodySize.xs => typography.bodyLongXs,
-        },
+        DsBodySize.xl => typography.bodyLongXl,
+        DsBodySize.lg => typography.bodyLongLg,
+        DsBodySize.md => typography.bodyLongMd,
+        DsBodySize.sm => typography.bodyLongSm,
+        DsBodySize.xs => typography.bodyLongXs,
+      },
     };
   }
 }

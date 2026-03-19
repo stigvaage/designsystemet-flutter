@@ -14,7 +14,7 @@ final errorSummaryComponent = WidgetbookComponent(
           errors: [
             'Fornavn er påkrevd',
             'E-post er ugyldig',
-            'Velg minst ett alternativ'
+            'Velg minst ett alternativ',
           ],
         ),
       ),

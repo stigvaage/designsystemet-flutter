@@ -43,8 +43,10 @@ class _DsDetailsState extends State<DsDetails>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _controller.duration =
-        DsAnimation.resolveDuration(context, DsAnimation.normal);
+    _controller.duration = DsAnimation.resolveDuration(
+      context,
+      DsAnimation.normal,
+    );
   }
 
   @override

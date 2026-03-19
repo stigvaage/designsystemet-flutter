@@ -40,11 +40,13 @@ void main() {
           builder: (context) {
             expect(
               () => DsTheme.of(context),
-              throwsA(isA<FlutterError>().having(
-                (e) => e.message,
-                'message',
-                contains('No DsTheme found'),
-              )),
+              throwsA(
+                isA<FlutterError>().having(
+                  (e) => e.message,
+                  'message',
+                  contains('No DsTheme found'),
+                ),
+              ),
             );
             return const SizedBox();
           },

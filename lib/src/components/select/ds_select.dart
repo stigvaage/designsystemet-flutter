@@ -59,8 +59,9 @@ class DsSelect extends StatelessWidget {
         color: colorScale.backgroundDefault,
         borderRadius: BorderRadius.circular(theme.borderRadius.defaultRadius),
         border: Border.all(
-          color:
-              hasError ? dangerScale.borderDefault : colorScale.borderDefault,
+          color: hasError
+              ? dangerScale.borderDefault
+              : colorScale.borderDefault,
           width: 1,
         ),
       ),
@@ -84,10 +85,7 @@ class DsSelect extends StatelessWidget {
     );
 
     if (disabled) {
-      return Opacity(
-        opacity: theme.disabledOpacity,
-        child: trigger,
-      );
+      return Opacity(opacity: theme.disabledOpacity, child: trigger);
     }
 
     return DsDropdown(

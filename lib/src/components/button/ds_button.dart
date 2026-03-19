@@ -85,10 +85,7 @@ class _DsButtonState extends State<DsButton> {
     }
 
     if (_isDisabled) {
-      button = Opacity(
-        opacity: theme.disabledOpacity,
-        child: button,
-      );
+      button = Opacity(opacity: theme.disabledOpacity, child: button);
     }
 
     return Focus(
@@ -97,8 +94,9 @@ class _DsButtonState extends State<DsButton> {
         setState(() => _isFocused = focused);
       },
       child: MouseRegion(
-        cursor:
-            _isDisabled ? SystemMouseCursors.basic : SystemMouseCursors.click,
+        cursor: _isDisabled
+            ? SystemMouseCursors.basic
+            : SystemMouseCursors.click,
         onEnter: (_) {
           if (!_isDisabled) setState(() => _isHovered = true);
         },
@@ -190,21 +188,24 @@ class _DsButtonState extends State<DsButton> {
 
   Color _resolveBackgroundColor(DsColorScale scale) {
     return switch (widget.variant) {
-      DsButtonVariant.primary => _isPressed
-          ? scale.baseActive
-          : _isHovered
-              ? scale.baseHover
-              : scale.baseDefault,
-      DsButtonVariant.secondary => _isPressed
-          ? scale.surfaceActive
-          : _isHovered
-              ? scale.surfaceHover
-              : const Color(0x00000000),
-      DsButtonVariant.tertiary => _isPressed
-          ? scale.surfaceActive
-          : _isHovered
-              ? scale.surfaceHover
-              : const Color(0x00000000),
+      DsButtonVariant.primary =>
+        _isPressed
+            ? scale.baseActive
+            : _isHovered
+            ? scale.baseHover
+            : scale.baseDefault,
+      DsButtonVariant.secondary =>
+        _isPressed
+            ? scale.surfaceActive
+            : _isHovered
+            ? scale.surfaceHover
+            : const Color(0x00000000),
+      DsButtonVariant.tertiary =>
+        _isPressed
+            ? scale.surfaceActive
+            : _isHovered
+            ? scale.surfaceHover
+            : const Color(0x00000000),
     };
   }
 
@@ -220,9 +221,9 @@ class _DsButtonState extends State<DsButton> {
     return switch (widget.variant) {
       DsButtonVariant.primary => null,
       DsButtonVariant.secondary => Border.all(
-          color: scale.borderDefault,
-          width: 1,
-        ),
+        color: scale.borderDefault,
+        width: 1,
+      ),
       DsButtonVariant.tertiary => null,
     };
   }

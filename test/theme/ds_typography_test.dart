@@ -48,17 +48,16 @@ void main() {
     });
 
     test('configurable fontFamily', () {
-      final custom =
-          DsTypography.create(fontFamily: 'Roboto', baseFontSize: 18);
+      final custom = DsTypography.create(
+        fontFamily: 'Roboto',
+        baseFontSize: 18,
+      );
       expect(custom.fontFamily, 'Roboto');
       expect(custom.heading2xl.fontFamily, 'Roboto');
     });
 
     test('has cv05 font feature', () {
-      expect(
-        typo.heading2xl.fontFeatures,
-        contains(const FontFeature('cv05')),
-      );
+      expect(typo.heading2xl.fontFeatures, contains(const FontFeature('cv05')));
     });
   });
 }

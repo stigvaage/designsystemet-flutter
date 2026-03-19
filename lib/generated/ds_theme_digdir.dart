@@ -17,22 +17,22 @@ class DsThemeDigdir {
   DsThemeDigdir._();
 
   static DsThemeData light() => DsThemeData(
-        brightness: Brightness.light,
-        colorScheme: _lightColorScheme,
-        sizeTokens: DsSizeTokens.md,
-        typography: DsTypography.create(baseFontSize: 18),
-        borderRadius: DsBorderRadiusTokens.fromBase(4),
-        shadows: DsShadowTokens.standard,
-      );
+    brightness: Brightness.light,
+    colorScheme: _lightColorScheme,
+    sizeTokens: DsSizeTokens.md,
+    typography: DsTypography.create(baseFontSize: 18),
+    borderRadius: DsBorderRadiusTokens.fromBase(4),
+    shadows: DsShadowTokens.standard,
+  );
 
   static DsThemeData dark() => DsThemeData(
-        brightness: Brightness.dark,
-        colorScheme: _darkColorScheme,
-        sizeTokens: DsSizeTokens.md,
-        typography: DsTypography.create(baseFontSize: 18),
-        borderRadius: DsBorderRadiusTokens.fromBase(4),
-        shadows: DsShadowTokens.standard,
-      );
+    brightness: Brightness.dark,
+    colorScheme: _darkColorScheme,
+    sizeTokens: DsSizeTokens.md,
+    typography: DsTypography.create(baseFontSize: 18),
+    borderRadius: DsBorderRadiusTokens.fromBase(4),
+    shadows: DsShadowTokens.standard,
+  );
 
   // ── Light color scheme ──────────────────────────────────────────────
 

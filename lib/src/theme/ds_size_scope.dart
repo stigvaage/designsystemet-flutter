@@ -2,11 +2,7 @@ import 'package:flutter/widgets.dart';
 import '../utils/ds_enums.dart';
 
 class DsSizeScope extends InheritedWidget {
-  const DsSizeScope({
-    super.key,
-    required this.size,
-    required super.child,
-  });
+  const DsSizeScope({super.key, required this.size, required super.child});
 
   final DsSize size;
 

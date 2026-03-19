@@ -8,11 +8,21 @@ final skeletonComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        final width = context.knobs.double
-            .slider(label: 'Bredde', min: 50, max: 400, initialValue: 200);
-        final height = context.knobs.double
-            .slider(label: 'Høyde', min: 10, max: 60, initialValue: 20);
-        return Center(child: DsSkeleton(width: width, height: height));
+        final width = context.knobs.double.slider(
+          label: 'Bredde',
+          min: 50,
+          max: 400,
+          initialValue: 200,
+        );
+        final height = context.knobs.double.slider(
+          label: 'Høyde',
+          min: 10,
+          max: 60,
+          initialValue: 20,
+        );
+        return Center(
+          child: DsSkeleton(width: width, height: height),
+        );
       },
     ),
   ],

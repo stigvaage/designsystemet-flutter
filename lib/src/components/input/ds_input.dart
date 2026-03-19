@@ -139,8 +139,11 @@ class _DsInputState extends State<DsInput> {
     // MaterialLocalizations is NOT already provided by an ancestor (e.g.
     // MaterialApp). Wrapping unconditionally creates a nested scope that
     // can interfere with the TextField's platform input connection.
-    final hasMaterialLocalizations = Localizations.of<MaterialLocalizations>(
-            context, MaterialLocalizations) !=
+    final hasMaterialLocalizations =
+        Localizations.of<MaterialLocalizations>(
+          context,
+          MaterialLocalizations,
+        ) !=
         null;
 
     Widget textFieldTree = Material(
@@ -167,9 +170,9 @@ class _DsInputState extends State<DsInput> {
           onTapOutside: (_) {},
           keyboardType: widget.keyboardType,
           maxLength: widget.maxLength,
-          buildCounter: (_,
-                  {required currentLength, required isFocused, maxLength}) =>
-              null,
+          buildCounter:
+              (_, {required currentLength, required isFocused, maxLength}) =>
+                  null,
           expands: false,
           decoration: InputDecoration.collapsed(
             hintText: widget.placeholder,
@@ -233,10 +236,7 @@ class _DsInputState extends State<DsInput> {
 
     if (widget.disabled) {
       result = IgnorePointer(
-        child: Opacity(
-          opacity: theme.disabledOpacity,
-          child: result,
-        ),
+        child: Opacity(opacity: theme.disabledOpacity, child: result),
       );
     }
 

@@ -8,8 +8,10 @@ final tagComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        final text =
-            context.knobs.string(label: 'Tekst', initialValue: 'Etikett');
+        final text = context.knobs.string(
+          label: 'Tekst',
+          initialValue: 'Etikett',
+        );
         return Center(child: DsTag(child: Text(text)));
       },
     ),

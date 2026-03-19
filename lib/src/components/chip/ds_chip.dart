@@ -39,10 +39,12 @@ class DsChip extends StatelessWidget {
       DsSize.lg => const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
     };
 
-    final bgColor =
-        selected ? colorScale.baseDefault : colorScale.surfaceTinted;
-    final fgColor =
-        selected ? colorScale.baseContrastDefault : colorScale.textDefault;
+    final bgColor = selected
+        ? colorScale.baseDefault
+        : colorScale.surfaceTinted;
+    final fgColor = selected
+        ? colorScale.baseContrastDefault
+        : colorScale.textDefault;
 
     return GestureDetector(
       onTap: onTap,

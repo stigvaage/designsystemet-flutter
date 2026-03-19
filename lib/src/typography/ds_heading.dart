@@ -31,9 +31,9 @@ class DsHeading extends StatelessWidget {
     final activeColor = color ?? DsColorScope.of(context);
     final colorScale = theme.colorScheme.resolve(activeColor);
 
-    final style = _resolveStyle(theme.typography).copyWith(
-      color: colorScale.textDefault,
-    );
+    final style = _resolveStyle(
+      theme.typography,
+    ).copyWith(color: colorScale.textDefault);
 
     return Semantics(
       header: true,

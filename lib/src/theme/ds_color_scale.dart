@@ -99,21 +99,21 @@ class DsColorScale {
 
   @override
   int get hashCode => Object.hash(
-        backgroundDefault,
-        backgroundTinted,
-        surfaceDefault,
-        surfaceTinted,
-        surfaceHover,
-        surfaceActive,
-        borderSubtle,
-        borderDefault,
-        borderStrong,
-        textSubtle,
-        textDefault,
-        baseDefault,
-        baseHover,
-        baseActive,
-        baseContrastSubtle,
-        baseContrastDefault,
-      );
+    backgroundDefault,
+    backgroundTinted,
+    surfaceDefault,
+    surfaceTinted,
+    surfaceHover,
+    surfaceActive,
+    borderSubtle,
+    borderDefault,
+    borderStrong,
+    textSubtle,
+    textDefault,
+    baseDefault,
+    baseHover,
+    baseActive,
+    baseContrastSubtle,
+    baseContrastDefault,
+  );
 }

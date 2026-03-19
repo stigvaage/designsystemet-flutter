@@ -77,9 +77,13 @@ class DsPagination extends StatelessWidget {
             width: buttonSize,
             height: buttonSize,
             alignment: Alignment.center,
-            child: Text('‹',
-                style: TextStyle(
-                    fontSize: fontSize + 4, color: colorScale.textDefault)),
+            child: Text(
+              '‹',
+              style: TextStyle(
+                fontSize: fontSize + 4,
+                color: colorScale.textDefault,
+              ),
+            ),
           ),
         ),
         // Pages
@@ -93,9 +97,13 @@ class DsPagination extends StatelessWidget {
             width: buttonSize,
             height: buttonSize,
             alignment: Alignment.center,
-            child: Text('›',
-                style: TextStyle(
-                    fontSize: fontSize + 4, color: colorScale.textDefault)),
+            child: Text(
+              '›',
+              style: TextStyle(
+                fontSize: fontSize + 4,
+                color: colorScale.textDefault,
+              ),
+            ),
           ),
         ),
       ],

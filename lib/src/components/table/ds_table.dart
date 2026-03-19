@@ -50,20 +50,22 @@ class DsTable extends StatelessWidget {
             color: colorScale.surfaceDefault,
             child: Row(
               children: columns
-                  .map((col) => Expanded(
-                        child: Padding(
-                          padding: cellPadding,
-                          child: Text(
-                            col,
-                            style: TextStyle(
-                              fontFamily: theme.typography.fontFamily,
-                              fontSize: fontSize,
-                              fontWeight: FontWeight.w600,
-                              color: colorScale.textDefault,
-                            ),
+                  .map(
+                    (col) => Expanded(
+                      child: Padding(
+                        padding: cellPadding,
+                        child: Text(
+                          col,
+                          style: TextStyle(
+                            fontFamily: theme.typography.fontFamily,
+                            fontSize: fontSize,
+                            fontWeight: FontWeight.w600,
+                            color: colorScale.textDefault,
                           ),
                         ),
-                      ))
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
           ),
@@ -77,19 +79,21 @@ class DsTable extends StatelessWidget {
               ),
               child: Row(
                 children: row
-                    .map((cell) => Expanded(
-                          child: Padding(
-                            padding: cellPadding,
-                            child: Text(
-                              cell,
-                              style: TextStyle(
-                                fontFamily: theme.typography.fontFamily,
-                                fontSize: fontSize,
-                                color: colorScale.textDefault,
-                              ),
+                    .map(
+                      (cell) => Expanded(
+                        child: Padding(
+                          padding: cellPadding,
+                          child: Text(
+                            cell,
+                            style: TextStyle(
+                              fontFamily: theme.typography.fontFamily,
+                              fontSize: fontSize,
+                              color: colorScale.textDefault,
                             ),
                           ),
-                        ))
+                        ),
+                      ),
+                    )
                     .toList(),
               ),
             ),

@@ -8,12 +8,18 @@ final inputComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        final disabled =
-            context.knobs.boolean(label: 'Deaktivert', initialValue: false);
-        final readOnly = context.knobs
-            .boolean(label: 'Skrivebeskyttet', initialValue: false);
-        final hasError =
-            context.knobs.boolean(label: 'Feil', initialValue: false);
+        final disabled = context.knobs.boolean(
+          label: 'Deaktivert',
+          initialValue: false,
+        );
+        final readOnly = context.knobs.boolean(
+          label: 'Skrivebeskyttet',
+          initialValue: false,
+        );
+        final hasError = context.knobs.boolean(
+          label: 'Feil',
+          initialValue: false,
+        );
         return Padding(
           padding: const EdgeInsets.all(16),
           child: DsInput(

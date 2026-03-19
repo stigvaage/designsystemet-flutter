@@ -5,12 +5,7 @@ import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
 class DsTag extends StatelessWidget {
-  const DsTag({
-    super.key,
-    required this.child,
-    this.size,
-    this.color,
-  });
+  const DsTag({super.key, required this.child, this.size, this.color});
 
   final Widget child;
   final DsSize? size;

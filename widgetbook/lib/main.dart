@@ -17,11 +17,7 @@ class WidgetbookApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Widgetbook.material(
       directories: widgetbookComponents,
-      addons: [
-        DsThemeAddon(),
-        DsColorScopeAddon(),
-        DsSizeScopeAddon(),
-      ],
+      addons: [DsThemeAddon(), DsColorScopeAddon(), DsSizeScopeAddon()],
     );
   }
 }

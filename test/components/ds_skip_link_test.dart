@@ -13,9 +13,9 @@ Widget wrapWithTheme(Widget child) {
 void main() {
   group('DsSkipLink', () {
     testWidgets('renders', (tester) async {
-      await tester.pumpWidget(wrapWithTheme(
-        DsSkipLink(label: 'Skip to content', onActivate: () {}),
-      ));
+      await tester.pumpWidget(
+        wrapWithTheme(DsSkipLink(label: 'Skip to content', onActivate: () {})),
+      );
       expect(find.byType(DsSkipLink), findsOneWidget);
     });
   });

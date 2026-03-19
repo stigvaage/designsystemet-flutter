@@ -4,10 +4,7 @@ import 'package:komponentbibliotek_flutter/komponentbibliotek_flutter.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 class DsThemeAddon extends WidgetbookAddon<DsThemeData> {
-  DsThemeAddon()
-      : super(
-          name: 'Tema',
-        );
+  DsThemeAddon() : super(name: 'Tema');
 
   final _themes = {
     'Lys (Light)': DsThemeDigdir.light(),
@@ -16,13 +13,13 @@ class DsThemeAddon extends WidgetbookAddon<DsThemeData> {
 
   @override
   List<Field> get fields => [
-        ObjectDropdownField<String>(
-          name: 'Tema',
-          values: _themes.keys.toList(),
-          initialValue: _themes.keys.first,
-          labelBuilder: (value) => value.toString(),
-        ),
-      ];
+    ObjectDropdownField<String>(
+      name: 'Tema',
+      values: _themes.keys.toList(),
+      initialValue: _themes.keys.first,
+      labelBuilder: (value) => value.toString(),
+    ),
+  ];
 
   @override
   DsThemeData valueFromQueryGroup(Map<String, String> group) {
@@ -31,11 +28,7 @@ class DsThemeAddon extends WidgetbookAddon<DsThemeData> {
   }
 
   @override
-  Widget buildUseCase(
-    BuildContext context,
-    Widget child,
-    DsThemeData setting,
-  ) {
+  Widget buildUseCase(BuildContext context, Widget child, DsThemeData setting) {
     return DsTheme(
       data: setting,
       child: ColoredBox(

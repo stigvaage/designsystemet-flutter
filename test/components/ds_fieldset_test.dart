@@ -13,17 +13,21 @@ Widget wrapWithTheme(Widget child) {
 void main() {
   group('DsFieldset', () {
     testWidgets('renders legend text', (tester) async {
-      await tester.pumpWidget(wrapWithTheme(
-        const DsFieldset(legend: 'Personal Info', children: [Text('Field')]),
-      ));
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsFieldset(legend: 'Personal Info', children: [Text('Field')]),
+        ),
+      );
       expect(find.text('Personal Info'), findsOneWidget);
       expect(find.text('Field'), findsOneWidget);
     });
 
     testWidgets('wraps content in Semantics widget', (tester) async {
-      await tester.pumpWidget(wrapWithTheme(
-        const DsFieldset(legend: 'Group', children: [Text('Child')]),
-      ));
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsFieldset(legend: 'Group', children: [Text('Child')]),
+        ),
+      );
       // Verify Semantics widget is present in the tree
       expect(find.byType(Semantics), findsWidgets);
     });

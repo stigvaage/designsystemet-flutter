@@ -8,10 +8,14 @@ final radioComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        final selected =
-            context.knobs.boolean(label: 'Valgt', initialValue: false);
-        final readOnly = context.knobs
-            .boolean(label: 'Skrivebeskyttet', initialValue: false);
+        final selected = context.knobs.boolean(
+          label: 'Valgt',
+          initialValue: false,
+        );
+        final readOnly = context.knobs.boolean(
+          label: 'Skrivebeskyttet',
+          initialValue: false,
+        );
 
         return Center(
           child: DsRadio(

@@ -51,8 +51,9 @@ class _DsCheckboxState extends State<DsCheckbox> {
     };
 
     final isChecked = widget.value || widget.indeterminate;
-    final bgColor =
-        isChecked ? colorScale.baseDefault : colorScale.backgroundDefault;
+    final bgColor = isChecked
+        ? colorScale.baseDefault
+        : colorScale.backgroundDefault;
     final borderColor = isChecked
         ? colorScale.baseDefault
         : (_isHovered ? colorScale.borderStrong : colorScale.borderDefault);

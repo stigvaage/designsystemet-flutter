@@ -14,12 +14,18 @@ final buttonComponent = WidgetbookComponent(
           initialOption: DsButtonVariant.primary,
           labelBuilder: (v) => v.name,
         );
-        final disabled =
-            context.knobs.boolean(label: 'Deaktivert', initialValue: false);
-        final loading =
-            context.knobs.boolean(label: 'Laster', initialValue: false);
-        final text =
-            context.knobs.string(label: 'Tekst', initialValue: 'Klikk her');
+        final disabled = context.knobs.boolean(
+          label: 'Deaktivert',
+          initialValue: false,
+        );
+        final loading = context.knobs.boolean(
+          label: 'Laster',
+          initialValue: false,
+        );
+        final text = context.knobs.string(
+          label: 'Tekst',
+          initialValue: 'Klikk her',
+        );
 
         return Center(
           child: DsButton(
@@ -47,8 +53,10 @@ final buttonComponent = WidgetbookComponent(
           initialOption: DsIconPosition.left,
           labelBuilder: (v) => v.name,
         );
-        final text =
-            context.knobs.string(label: 'Tekst', initialValue: 'Send inn');
+        final text = context.knobs.string(
+          label: 'Tekst',
+          initialValue: 'Send inn',
+        );
 
         return Center(
           child: DsButton(

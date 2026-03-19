@@ -11,8 +11,10 @@ final badgeComponent = WidgetbookComponent(
         final count = context.knobs.double
             .slider(label: 'Antall', min: 0, max: 99, initialValue: 3)
             .toInt();
-        final overlap =
-            context.knobs.boolean(label: 'Overlapp', initialValue: false);
+        final overlap = context.knobs.boolean(
+          label: 'Overlapp',
+          initialValue: false,
+        );
         return Center(
           child: DsBadge(
             count: count,

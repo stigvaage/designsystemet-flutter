@@ -8,8 +8,10 @@ final avatarComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        final name =
-            context.knobs.string(label: 'Navn', initialValue: 'Ola Nordmann');
+        final name = context.knobs.string(
+          label: 'Navn',
+          initialValue: 'Ola Nordmann',
+        );
         return Center(child: DsAvatar(name: name));
       },
     ),

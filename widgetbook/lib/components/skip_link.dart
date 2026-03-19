@@ -8,10 +8,7 @@ final skipLinkComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) => Center(
-        child: DsSkipLink(
-          label: 'Hopp til hovedinnhold',
-          onActivate: () {},
-        ),
+        child: DsSkipLink(label: 'Hopp til hovedinnhold', onActivate: () {}),
       ),
     ),
   ],

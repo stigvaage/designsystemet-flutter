@@ -22,14 +22,8 @@ class DsDivider extends StatelessWidget {
     final colorScale = theme.colorScheme.resolve(activeColor);
 
     if (vertical) {
-      return Container(
-        width: thickness,
-        color: colorScale.borderSubtle,
-      );
+      return Container(width: thickness, color: colorScale.borderSubtle);
     }
-    return Container(
-      height: thickness,
-      color: colorScale.borderSubtle,
-    );
+    return Container(height: thickness, color: colorScale.borderSubtle);
   }
 }

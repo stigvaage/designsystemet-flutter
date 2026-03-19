@@ -75,8 +75,9 @@ class _DsDropdownState extends State<DsDropdown> {
               constraints: const BoxConstraints(minWidth: 160),
               decoration: BoxDecoration(
                 color: colorScale.backgroundDefault,
-                borderRadius:
-                    BorderRadius.circular(theme.borderRadius.defaultRadius),
+                borderRadius: BorderRadius.circular(
+                  theme.borderRadius.defaultRadius,
+                ),
                 border: Border.all(color: colorScale.borderSubtle, width: 1),
                 boxShadow: theme.shadows.md,
               ),
@@ -89,7 +90,9 @@ class _DsDropdownState extends State<DsDropdown> {
                       onTap: widget.items[i].enabled ? () => _select(i) : null,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         child: Text(
                           widget.items[i].label,
                           style: theme.typography.bodySm.copyWith(
@@ -119,10 +122,7 @@ class _DsDropdownState extends State<DsDropdown> {
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: _layerLink,
-      child: GestureDetector(
-        onTap: _toggle,
-        child: widget.trigger,
-      ),
+      child: GestureDetector(onTap: _toggle, child: widget.trigger),
     );
   }
 }

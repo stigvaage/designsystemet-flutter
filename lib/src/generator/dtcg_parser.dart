@@ -38,8 +38,9 @@ class DtcgParser {
     final themes = <ParsedTheme>[];
 
     for (final themeDir in themesDir.listSync().whereType<Directory>()) {
-      final themeName =
-          themeDir.uri.pathSegments.where((s) => s.isNotEmpty).last;
+      final themeName = themeDir.uri.pathSegments
+          .where((s) => s.isNotEmpty)
+          .last;
 
       final lightFile = File('${themeDir.path}/light.json');
       final darkFile = File('${themeDir.path}/dark.json');
@@ -60,13 +61,15 @@ class DtcgParser {
         borderRadii = _parseDimensionGroup(globalData, 'border-radius');
       }
 
-      themes.add(ParsedTheme(
-        name: themeName,
-        lightColors: lightColors,
-        darkColors: darkColors,
-        sizes: sizes,
-        borderRadii: borderRadii,
-      ));
+      themes.add(
+        ParsedTheme(
+          name: themeName,
+          lightColors: lightColors,
+          darkColors: darkColors,
+          sizes: sizes,
+          borderRadii: borderRadii,
+        ),
+      );
     }
 
     if (themes.isEmpty) {

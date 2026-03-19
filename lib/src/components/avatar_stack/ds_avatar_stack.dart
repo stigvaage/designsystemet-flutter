@@ -25,10 +25,7 @@ class DsAvatarStack extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           for (var i = 0; i < visible.length; i++)
-            Positioned(
-              left: i * (48 - overlap),
-              child: visible[i],
-            ),
+            Positioned(left: i * (48 - overlap), child: visible[i]),
         ],
       ),
     );

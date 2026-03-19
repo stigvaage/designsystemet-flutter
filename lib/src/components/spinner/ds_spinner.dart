@@ -7,11 +7,7 @@ import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
 
 class DsSpinner extends StatefulWidget {
-  const DsSpinner({
-    super.key,
-    this.size,
-    this.color,
-  });
+  const DsSpinner({super.key, this.size, this.color});
 
   final DsSize? size;
   final DsColor? color;

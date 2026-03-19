@@ -37,8 +37,10 @@ class DsSuggestion extends StatelessWidget {
             GestureDetector(
               onTap: () => onSelected?.call(i),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 child: Text(
                   items[i],
                   style: theme.typography.bodySm.copyWith(

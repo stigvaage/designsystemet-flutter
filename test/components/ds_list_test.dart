@@ -13,18 +13,20 @@ Widget wrapWithTheme(Widget child) {
 void main() {
   group('DsList', () {
     testWidgets('renders unordered list with bullets', (tester) async {
-      await tester.pumpWidget(wrapWithTheme(
-        const DsList(items: [Text('Item A'), Text('Item B')]),
-      ));
+      await tester.pumpWidget(
+        wrapWithTheme(const DsList(items: [Text('Item A'), Text('Item B')])),
+      );
       expect(find.text('Item A'), findsOneWidget);
       expect(find.text('Item B'), findsOneWidget);
       expect(find.text('•'), findsNWidgets(2));
     });
 
     testWidgets('renders ordered list with numbers', (tester) async {
-      await tester.pumpWidget(wrapWithTheme(
-        const DsList(items: [Text('First'), Text('Second')], ordered: true),
-      ));
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsList(items: [Text('First'), Text('Second')], ordered: true),
+        ),
+      );
       expect(find.text('1.'), findsOneWidget);
       expect(find.text('2.'), findsOneWidget);
     });

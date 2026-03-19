@@ -2,11 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'ds_theme_data.dart';
 
 class DsTheme extends InheritedWidget {
-  const DsTheme({
-    super.key,
-    required this.data,
-    required super.child,
-  });
+  const DsTheme({super.key, required this.data, required super.child});
 
   final DsThemeData data;
 
