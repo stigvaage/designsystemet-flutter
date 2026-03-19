@@ -81,3 +81,9 @@ enum DsBodyVariant { standard, short, long }
 
 // DsBadgePlacement
 enum DsBadgePlacement { topRight, topLeft, bottomRight, bottomLeft }
+
+// DsBadgeVariant
+enum DsBadgeVariant { base, tinted }
+
+// DsSkeletonVariant
+enum DsSkeletonVariant { text, circle, rectangle }

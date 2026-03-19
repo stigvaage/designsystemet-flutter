@@ -10,11 +10,11 @@ final tableComponent = WidgetbookComponent(
       builder: (context) => const Padding(
         padding: EdgeInsets.all(16),
         child: DsTable(
-          columns: ['Navn', 'Epost', 'Rolle'],
+          columns: [Text('Navn'), Text('Epost'), Text('Rolle')],
           rows: [
-            ['Ola Nordmann', 'ola@example.no', 'Admin'],
-            ['Kari Hansen', 'kari@example.no', 'Bruker'],
-            ['Per Olsen', 'per@example.no', 'Redaktør'],
+            [Text('Ola Nordmann'), Text('ola@example.no'), Text('Admin')],
+            [Text('Kari Hansen'), Text('kari@example.no'), Text('Bruker')],
+            [Text('Per Olsen'), Text('per@example.no'), Text('Redaktør')],
           ],
         ),
       ),

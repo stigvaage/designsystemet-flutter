@@ -18,6 +18,7 @@ class DsSelect extends StatelessWidget {
     this.color,
     this.error,
     this.disabled = false,
+    this.readOnly = false,
   });
 
   final List<String> items;
@@ -28,6 +29,7 @@ class DsSelect extends StatelessWidget {
   final DsColor? color;
   final String? error;
   final bool disabled;
+  final bool readOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -84,13 +86,17 @@ class DsSelect extends StatelessWidget {
       ),
     );
 
-    if (disabled) {
+    if (disabled || readOnly) {
       return Semantics(
         button: true,
         label: 'Velg',
         value: displayText.isNotEmpty ? displayText : null,
-        enabled: false,
-        child: Opacity(opacity: theme.disabledOpacity, child: trigger),
+        enabled: !disabled,
+        readOnly: readOnly,
+        child: Opacity(
+          opacity: disabled ? theme.disabledOpacity : 1.0,
+          child: trigger,
+        ),
       );
     }
 

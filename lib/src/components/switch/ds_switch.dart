@@ -11,6 +11,8 @@ class DsSwitch extends StatefulWidget {
     super.key,
     required this.value,
     required this.onChanged,
+    this.label,
+    this.description,
     this.size,
     this.color,
     this.readOnly = false,
@@ -19,6 +21,8 @@ class DsSwitch extends StatefulWidget {
 
   final bool value;
   final ValueChanged<bool>? onChanged;
+  final Widget? label;
+  final Widget? description;
   final DsSize? size;
   final DsColor? color;
   final bool readOnly;
@@ -105,7 +109,9 @@ class _DsSwitchState extends State<DsSwitch> {
       );
     }
 
-    return Semantics(
+    final hasLabelContent = widget.label != null || widget.description != null;
+
+    Widget result = Semantics(
       toggled: widget.value,
       enabled: !widget.readOnly,
       child: Focus(
@@ -115,9 +121,36 @@ class _DsSwitchState extends State<DsSwitch> {
           onTap: widget.readOnly
               ? null
               : () => widget.onChanged?.call(!widget.value),
-          child: track,
+          child: hasLabelContent
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: widget.description != null
+                      ? CrossAxisAlignment.start
+                      : CrossAxisAlignment.center,
+                  children: [
+                    track,
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (widget.label != null) widget.label!,
+                        if (widget.description != null)
+                          DefaultTextStyle(
+                            style: theme.typography.bodySm.copyWith(
+                              color: colorScale.textSubtle,
+                            ),
+                            child: widget.description!,
+                          ),
+                      ],
+                    ),
+                  ],
+                )
+              : track,
         ),
       ),
     );
+
+    return result;
   }
 }

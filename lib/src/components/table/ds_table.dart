@@ -12,12 +12,18 @@ class DsTable extends StatelessWidget {
     required this.rows,
     this.size,
     this.color,
+    this.zebra = false,
+    this.stickyHeader = false,
+    this.hover = false,
   });
 
-  final List<String> columns;
-  final List<List<String>> rows;
+  final List<Widget> columns;
+  final List<List<Widget>> rows;
   final DsSize? size;
   final DsColor? color;
+  final bool zebra;
+  final bool stickyHeader;
+  final bool hover;
 
   @override
   Widget build(BuildContext context) {
@@ -36,69 +42,120 @@ class DsTable extends StatelessWidget {
       DsSize.lg => 16.0,
     };
 
+    final headerRow = Container(
+      color: colorScale.surfaceDefault,
+      child: DefaultTextStyle(
+        style: TextStyle(
+          fontFamily: theme.typography.fontFamily,
+          fontSize: fontSize,
+          fontWeight: FontWeight.w600,
+          color: colorScale.textDefault,
+        ),
+        child: Row(
+          children: columns
+              .map(
+                (col) => Expanded(
+                  child: Padding(padding: cellPadding, child: col),
+                ),
+              )
+              .toList(),
+        ),
+      ),
+    );
+
+    final dataRows = <Widget>[
+      for (var i = 0; i < rows.length; i++)
+        _DsTableRow(
+          cells: rows[i],
+          cellPadding: cellPadding,
+          borderColor: colorScale.borderSubtle,
+          backgroundColor: zebra && i.isOdd
+              ? colorScale.surfaceDefault
+              : colorScale.backgroundDefault,
+          hoverColor: hover ? colorScale.surfaceHover : null,
+          textStyle: TextStyle(
+            fontFamily: theme.typography.fontFamily,
+            fontSize: fontSize,
+            color: colorScale.textDefault,
+          ),
+        ),
+    ];
+
+    // Note: stickyHeader is accepted for API compatibility but not yet
+    // implemented — Column-based layout does not support sticky positioning.
+    final tableContent = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [headerRow, ...dataRows],
+    );
+
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: colorScale.borderSubtle, width: 1),
         borderRadius: BorderRadius.circular(theme.borderRadius.defaultRadius),
       ),
       clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Header
-          Container(
-            color: colorScale.surfaceDefault,
-            child: Row(
-              children: columns
-                  .map(
-                    (col) => Expanded(
-                      child: Padding(
-                        padding: cellPadding,
-                        child: Text(
-                          col,
-                          style: TextStyle(
-                            fontFamily: theme.typography.fontFamily,
-                            fontSize: fontSize,
-                            fontWeight: FontWeight.w600,
-                            color: colorScale.textDefault,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-          ),
-          // Rows
-          for (final row in rows)
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: colorScale.borderSubtle, width: 1),
+      child: tableContent,
+    );
+  }
+}
+
+class _DsTableRow extends StatefulWidget {
+  const _DsTableRow({
+    required this.cells,
+    required this.cellPadding,
+    required this.borderColor,
+    required this.backgroundColor,
+    required this.textStyle,
+    this.hoverColor,
+  });
+
+  final List<Widget> cells;
+  final EdgeInsets cellPadding;
+  final Color borderColor;
+  final Color backgroundColor;
+  final Color? hoverColor;
+  final TextStyle textStyle;
+
+  @override
+  State<_DsTableRow> createState() => _DsTableRowState();
+}
+
+class _DsTableRowState extends State<_DsTableRow> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final bgColor = _isHovered && widget.hoverColor != null
+        ? widget.hoverColor!
+        : widget.backgroundColor;
+
+    Widget row = Container(
+      decoration: BoxDecoration(
+        color: bgColor,
+        border: Border(top: BorderSide(color: widget.borderColor, width: 1)),
+      ),
+      child: DefaultTextStyle(
+        style: widget.textStyle,
+        child: Row(
+          children: widget.cells
+              .map(
+                (cell) => Expanded(
+                  child: Padding(padding: widget.cellPadding, child: cell),
                 ),
-              ),
-              child: Row(
-                children: row
-                    .map(
-                      (cell) => Expanded(
-                        child: Padding(
-                          padding: cellPadding,
-                          child: Text(
-                            cell,
-                            style: TextStyle(
-                              fontFamily: theme.typography.fontFamily,
-                              fontSize: fontSize,
-                              color: colorScale.textDefault,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-        ],
+              )
+              .toList(),
+        ),
       ),
     );
+
+    if (widget.hoverColor != null) {
+      row = MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: row,
+      );
+    }
+
+    return row;
   }
 }

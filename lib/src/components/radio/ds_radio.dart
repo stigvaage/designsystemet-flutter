@@ -12,6 +12,7 @@ class DsRadio extends StatefulWidget {
     required this.value,
     required this.onChanged,
     this.label,
+    this.description,
     this.size,
     this.color,
     this.error,
@@ -22,6 +23,7 @@ class DsRadio extends StatefulWidget {
   final bool value;
   final ValueChanged<bool>? onChanged;
   final Widget? label;
+  final Widget? description;
   final DsSize? size;
   final DsColor? color;
   final String? error;
@@ -130,11 +132,27 @@ class _DsRadioState extends State<DsRadio> {
                   : () => widget.onChanged?.call(!widget.value),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: widget.description != null
+                    ? CrossAxisAlignment.start
+                    : CrossAxisAlignment.center,
                 children: [
                   circle,
-                  if (widget.label != null) ...[
+                  if (widget.label != null || widget.description != null) ...[
                     const SizedBox(width: 8),
-                    widget.label!,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (widget.label != null) widget.label!,
+                        if (widget.description != null)
+                          DefaultTextStyle(
+                            style: theme.typography.bodySm.copyWith(
+                              color: colorScale.textSubtle,
+                            ),
+                            child: widget.description!,
+                          ),
+                      ],
+                    ),
                   ],
                 ],
               ),

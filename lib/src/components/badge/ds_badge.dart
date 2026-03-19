@@ -8,16 +8,20 @@ class DsBadge extends StatelessWidget {
     super.key,
     required this.child,
     this.count,
+    this.maxCount = 99,
     this.size,
     this.color,
+    this.variant = DsBadgeVariant.base,
     this.overlap = false,
     this.placement = DsBadgePlacement.topRight,
   });
 
   final Widget child;
   final int? count;
+  final int maxCount;
   final DsSize? size;
   final DsColor? color;
+  final DsBadgeVariant variant;
   final bool overlap;
   final DsBadgePlacement placement;
 
@@ -43,18 +47,32 @@ class DsBadge extends StatelessWidget {
 
     final offset = overlap ? -(badgeSize / 2) : 0.0;
 
+    final (bgColor, textColor, border) = switch (variant) {
+      DsBadgeVariant.base => (
+        colorScale.baseDefault,
+        colorScale.baseContrastDefault,
+        null as Border?,
+      ),
+      DsBadgeVariant.tinted => (
+        colorScale.surfaceTinted,
+        colorScale.textDefault,
+        Border.all(color: colorScale.borderSubtle, width: 1),
+      ),
+    };
+
     final badge = Container(
       constraints: BoxConstraints(minWidth: badgeSize, minHeight: badgeSize),
       padding: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
-        color: colorScale.baseDefault,
+        color: bgColor,
         borderRadius: BorderRadius.circular(badgeSize / 2),
+        border: border,
       ),
       child: Center(
         child: Text(
-          count! > 99 ? '99+' : count.toString(),
+          count! > maxCount ? '$maxCount+' : count.toString(),
           style: TextStyle(
-            color: colorScale.baseContrastDefault,
+            color: textColor,
             fontSize: fontSize,
             fontWeight: FontWeight.w600,
           ),
@@ -89,9 +107,9 @@ class DsBadge extends StatelessWidget {
       ),
     };
 
-    final badgeLabel = count! > 99
-        ? '99+ notifications'
-        : '$count notifications';
+    final badgeLabel = count! > maxCount
+        ? '$maxCount+ varsler'
+        : '$count ${count == 1 ? 'varsel' : 'varsler'}';
 
     return Semantics(
       label: badgeLabel,
