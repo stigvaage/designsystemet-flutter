@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:komponentbibliotek_flutter/komponentbibliotek_flutter.dart';
+import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 final paginationComponent = WidgetbookComponent(

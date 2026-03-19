@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:komponentbibliotek_flutter/src/generator/dtcg_parser.dart';
-import 'package:komponentbibliotek_flutter/src/generator/dart_emitter.dart';
+import 'package:designsystemet_flutter/src/generator/dtcg_parser.dart';
+import 'package:designsystemet_flutter/src/generator/dart_emitter.dart';
 
 void main() {
   group('DtcgParser', () {

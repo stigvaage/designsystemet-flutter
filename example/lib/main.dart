@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:komponentbibliotek_flutter/komponentbibliotek_flutter.dart';
-import 'package:komponentbibliotek_flutter/generated/ds_theme_digdir.dart';
+import 'package:designsystemet_flutter/designsystemet_flutter.dart';
+import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 
 void main() {
   runApp(const ExampleApp());
@@ -261,7 +261,7 @@ class _ExampleAppState extends State<ExampleApp> {
                 const DsDivider(),
                 const SizedBox(height: 8),
                 DsParagraph(
-                  text: 'komponentbibliotek_flutter v0.0.1',
+                  text: 'designsystemet_flutter v0.0.1',
                   bodySize: DsBodySize.xs,
                   color: DsColor.neutral,
                 ),

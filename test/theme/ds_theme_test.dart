@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:komponentbibliotek_flutter/theme.dart';
-import 'package:komponentbibliotek_flutter/generated/ds_theme_digdir.dart';
+import 'package:designsystemet_flutter/theme.dart';
+import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 
 void main() {
   group('DsTheme', () {

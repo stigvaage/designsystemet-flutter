@@ -1,8 +1,8 @@
 import 'dart:ui' show SemanticsFlag;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:komponentbibliotek_flutter/komponentbibliotek_flutter.dart';
-import 'package:komponentbibliotek_flutter/generated/ds_theme_digdir.dart';
+import 'package:designsystemet_flutter/designsystemet_flutter.dart';
+import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 
 Widget wrapWithTheme(Widget child) {
   return DsTheme(

@@ -1,5 +1,5 @@
 name: example
-description: Eksempelapp for komponentbibliotek_flutter
+description: Eksempelapp for designsystemet_flutter
 
 environment:
   sdk: ^3.8.0
@@ -7,5 +7,5 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  komponentbibliotek_flutter:
+  designsystemet_flutter:
     path: ../

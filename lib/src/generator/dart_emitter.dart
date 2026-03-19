@@ -7,27 +7,27 @@ class DartEmitter {
 
     buffer.writeln("import 'dart:ui' show Brightness, Color;");
     buffer.writeln();
-    buffer.writeln("import 'package:komponentbibliotek_flutter/theme.dart';");
+    buffer.writeln("import 'package:designsystemet_flutter/theme.dart';");
     buffer.writeln(
-      "import 'package:komponentbibliotek_flutter/src/theme/ds_border_radius_tokens.dart';",
+      "import 'package:designsystemet_flutter/src/theme/ds_border_radius_tokens.dart';",
     );
     buffer.writeln(
-      "import 'package:komponentbibliotek_flutter/src/theme/ds_color_scale.dart';",
+      "import 'package:designsystemet_flutter/src/theme/ds_color_scale.dart';",
     );
     buffer.writeln(
-      "import 'package:komponentbibliotek_flutter/src/theme/ds_color_scheme.dart';",
+      "import 'package:designsystemet_flutter/src/theme/ds_color_scheme.dart';",
     );
     buffer.writeln(
-      "import 'package:komponentbibliotek_flutter/src/theme/ds_shadow_tokens.dart';",
+      "import 'package:designsystemet_flutter/src/theme/ds_shadow_tokens.dart';",
     );
     buffer.writeln(
-      "import 'package:komponentbibliotek_flutter/src/theme/ds_size_tokens.dart';",
+      "import 'package:designsystemet_flutter/src/theme/ds_size_tokens.dart';",
     );
     buffer.writeln(
-      "import 'package:komponentbibliotek_flutter/src/theme/ds_theme_data.dart';",
+      "import 'package:designsystemet_flutter/src/theme/ds_theme_data.dart';",
     );
     buffer.writeln(
-      "import 'package:komponentbibliotek_flutter/src/theme/ds_typography.dart';",
+      "import 'package:designsystemet_flutter/src/theme/ds_typography.dart';",
     );
     buffer.writeln();
     buffer.writeln('class DsTheme$className {');

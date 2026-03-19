@@ -12,7 +12,7 @@ import '../src/theme/ds_typography.dart';
 ///
 /// These values are sourced from the official Digdir theme.
 /// For custom themes, use the code generator:
-/// `dart run komponentbibliotek_flutter:generate`
+/// `dart run designsystemet_flutter:generate`
 class DsThemeDigdir {
   DsThemeDigdir._();
 

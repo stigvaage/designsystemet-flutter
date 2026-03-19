@@ -31,7 +31,7 @@ class DsThemeData extends ThemeExtension<DsThemeData> {
     // This is a placeholder; actual values come from ds_theme_digdir.dart
     throw UnimplementedError(
       'DsThemeData.digdir() requires the generated Digdir theme. '
-      'Import package:komponentbibliotek_flutter/generated/ds_theme_digdir.dart '
+      'Import package:designsystemet_flutter/generated/ds_theme_digdir.dart '
       'and use DsThemeDigdir.light() or DsThemeDigdir.dark().',
     );
   }

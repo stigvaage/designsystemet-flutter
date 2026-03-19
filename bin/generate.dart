@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:komponentbibliotek_flutter/src/generator/dart_emitter.dart';
-import 'package:komponentbibliotek_flutter/src/generator/dtcg_parser.dart';
+import 'package:designsystemet_flutter/src/generator/dart_emitter.dart';
+import 'package:designsystemet_flutter/src/generator/dtcg_parser.dart';
 
 void main(List<String> args) {
   String? tokensDir;
@@ -55,7 +55,7 @@ void main(List<String> args) {
 }
 
 void _printUsage() {
-  stdout.writeln('Usage: dart run komponentbibliotek_flutter:generate \\');
+  stdout.writeln('Usage: dart run designsystemet_flutter:generate \\');
   stdout.writeln('  --tokens-dir <path-to-design-tokens> \\');
   stdout.writeln('  --output <output-directory>');
 }

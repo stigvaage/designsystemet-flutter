@@ -3,9 +3,9 @@
 ///
 /// This is the main barrel export. For tree-shaking, prefer importing
 /// specific entry points:
-/// - `package:komponentbibliotek_flutter/theme.dart` — theme infrastructure
-/// - `package:komponentbibliotek_flutter/components.dart` — component widgets
-/// - `package:komponentbibliotek_flutter/typography.dart` — typography components
+/// - `package:designsystemet_flutter/theme.dart` — theme infrastructure
+/// - `package:designsystemet_flutter/components.dart` — component widgets
+/// - `package:designsystemet_flutter/typography.dart` — typography components
 library;
 
 export 'components.dart';

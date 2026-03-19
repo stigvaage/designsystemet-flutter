@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:komponentbibliotek_flutter/theme.dart';
+import 'package:designsystemet_flutter/theme.dart';
 
 void main() {
   group('DsBorderRadiusTokens', () {
