@@ -4,6 +4,7 @@ import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
+/// A small label tag with a tinted background and subtle border.
 class DsTag extends StatelessWidget {
   const DsTag({super.key, required this.child, this.size, this.color});
 

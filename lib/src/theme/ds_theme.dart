@@ -1,6 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'ds_theme_data.dart';
 
+/// Provides [DsThemeData] to all Designsystemet components in the widget tree.
+///
+/// Wrap your app or a subtree with [DsTheme] to supply design tokens.
+/// Retrieve the active theme with [DsTheme.of].
 class DsTheme extends InheritedWidget {
   const DsTheme({super.key, required this.data, required super.child});
 

@@ -27,7 +27,7 @@ Komponenter som dialoger, popovere og nedtrekkslister bruker skyggetokens automa
 Både avrunding og skygger kan overstyres når du oppretter et egendefinert tema:
 
 ```dart
-final tema = DsThemeData.digdir().copyWith(
+final tema = DsThemeDigdir.light().copyWith(
   borderRadius: DsBorderRadiusTokens(...),
   shadows: DsShadowTokens(...),
 );

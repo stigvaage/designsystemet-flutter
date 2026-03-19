@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+/// The result of parsing a single theme directory, containing light/dark
+/// color scales, size values, and border radii.
 class ParsedTheme {
   final String name;
   final Map<String, ParsedColorScale> lightColors;
@@ -17,11 +19,14 @@ class ParsedTheme {
   });
 }
 
+/// A map of token names to hex color strings for a single color scale.
 class ParsedColorScale {
   final Map<String, String> tokens; // token-name -> hex color
   const ParsedColorScale(this.tokens);
 }
 
+/// Parses a DTCG (Design Token Community Group) JSON token directory
+/// into a list of [ParsedTheme] objects.
 class DtcgParser {
   /// Parses a design-tokens/ directory and returns parsed themes.
   List<ParsedTheme> parse(String tokensDir) {
@@ -140,6 +145,7 @@ class DtcgParser {
   }
 }
 
+/// Exception thrown when [DtcgParser] encounters invalid or missing token data.
 class DtcgParseException implements Exception {
   final String message;
   const DtcgParseException(this.message);

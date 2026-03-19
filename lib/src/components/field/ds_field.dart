@@ -5,6 +5,10 @@ import '../../typography/ds_label.dart';
 import '../../typography/ds_validation_message.dart';
 import '../../utils/ds_enums.dart';
 
+/// Form field wrapper that composes a label, description, input, and validation message.
+///
+/// Place any input widget (e.g. [DsTextfield], [DsCheckbox]) as [child].
+/// When [error] is set, a [DsValidationMessage] is shown below the input.
 class DsField extends StatelessWidget {
   const DsField({
     super.key,

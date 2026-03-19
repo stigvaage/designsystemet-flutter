@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../theme/ds_color_scope.dart';
@@ -5,6 +6,9 @@ import '../../theme/ds_theme.dart';
 import '../../theme/ds_theme_data.dart';
 import '../../utils/ds_enums.dart';
 
+/// An overlay popover anchored below a trigger widget.
+///
+/// Toggles open/closed on tap and closes on outside tap or Escape key.
 class DsPopover extends StatefulWidget {
   const DsPopover({
     super.key,
@@ -106,9 +110,20 @@ class _DsPopoverState extends State<DsPopover> {
 
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: GestureDetector(onTap: _toggle, child: widget.trigger),
+    return Focus(
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.escape &&
+            _isOpen) {
+          _close();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: CompositedTransformTarget(
+        link: _layerLink,
+        child: GestureDetector(onTap: _toggle, child: widget.trigger),
+      ),
     );
   }
 }

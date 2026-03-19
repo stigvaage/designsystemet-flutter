@@ -1,4 +1,4 @@
-import 'dart:ui' show SemanticsFlag;
+import 'dart:ui' show Tristate;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
@@ -47,7 +47,7 @@ void main() {
         ),
       );
       final semantics = tester.getSemantics(find.byType(DsDetails));
-      expect(semantics.hasFlag(SemanticsFlag.hasExpandedState), isTrue);
+      expect(semantics.flagsCollection.isExpanded, isNot(Tristate.none));
     });
   });
 }

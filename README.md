@@ -48,12 +48,13 @@ Pakk inn applikasjonen din med `DsTheme` og bruk Designsystemet-komponenter dire
 
 ```dart
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
+import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:flutter/widgets.dart';
 
 void main() {
   runApp(
     DsTheme(
-      data: DsThemeData.digdir(), // Innebygd Digdir-tema, lyst modus
+      data: DsThemeDigdir.light(), // Innebygd Digdir-tema, lyst modus
       child: const MinApp(),
     ),
   );
@@ -86,13 +87,13 @@ Bytt mellom lyst og mørkt modus ved å endre `brightness`-parameteren:
 ```dart
 // Lyst modus (standard)
 DsTheme(
-  data: DsThemeData.digdir(brightness: Brightness.light),
+  data: DsThemeDigdir.light(),
   child: const MinApp(),
 )
 
 // Mørkt modus
 DsTheme(
-  data: DsThemeData.digdir(brightness: Brightness.dark),
+  data: DsThemeDigdir.dark(),
   child: const MinApp(),
 )
 ```
@@ -104,10 +105,10 @@ Dersom applikasjonen din allerede bruker `MaterialApp`, kan du integrere via `Th
 ```dart
 MaterialApp(
   theme: ThemeData(
-    extensions: [DsThemeData.digdir()],
+    extensions: [DsThemeDigdir.light()],
   ),
   home: DsTheme(
-    data: DsThemeData.digdir(),
+    data: DsThemeDigdir.light(),
     child: const MinApp(),
   ),
 )

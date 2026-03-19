@@ -1,5 +1,9 @@
 import 'dart:ui' show Color;
 
+/// A 16-step color scale with background, surface, border, text, and base tokens.
+///
+/// Mirrors the Designsystemet color-scale structure. Each step maps to a
+/// specific UI role (e.g. [baseDefault] for filled buttons, [textDefault] for body text).
 class DsColorScale {
   final Color backgroundDefault;
   final Color backgroundTinted;

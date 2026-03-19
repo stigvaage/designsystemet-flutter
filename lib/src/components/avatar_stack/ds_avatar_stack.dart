@@ -2,6 +2,9 @@ import 'package:flutter/widgets.dart';
 
 import '../../utils/ds_enums.dart';
 
+/// Displays a horizontal stack of overlapping avatar widgets.
+///
+/// Shows up to [maxVisible] children with a configurable [overlap] offset.
 class DsAvatarStack extends StatelessWidget {
   const DsAvatarStack({
     super.key,

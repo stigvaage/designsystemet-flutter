@@ -1,4 +1,3 @@
-import 'dart:ui' show SemanticsFlag;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:designsystemet_flutter/theme.dart';
@@ -87,7 +86,7 @@ void main() {
         wrapWithTheme(DsButton(onPressed: () {}, child: const Text('Btn'))),
       );
       final semantics = tester.getSemantics(find.byType(Semantics).first);
-      expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(semantics.flagsCollection.isButton, isTrue);
     });
 
     testWidgets('secondary variant has border', (tester) async {

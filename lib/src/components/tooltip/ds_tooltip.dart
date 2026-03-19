@@ -5,6 +5,10 @@ import '../../theme/ds_theme.dart';
 import '../../theme/ds_theme_data.dart';
 import '../../utils/ds_enums.dart';
 
+/// A tooltip that appears above its child on mouse hover.
+///
+/// Uses an overlay to render the tooltip message with theme-aware colors
+/// and shadows.
 class DsTooltip extends StatefulWidget {
   const DsTooltip({
     super.key,

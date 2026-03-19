@@ -4,6 +4,9 @@ import '../../utils/ds_enums.dart';
 import '../../utils/ds_icons.dart';
 import '../input/ds_input.dart';
 
+/// A search input field with a magnifying-glass icon prefix.
+///
+/// Built on [DsInput] and forwards text change and submit callbacks.
 class DsSearch extends StatelessWidget {
   const DsSearch({
     super.key,

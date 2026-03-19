@@ -6,6 +6,10 @@ import '../../theme/ds_theme.dart';
 import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
 
+/// An animated circular loading spinner.
+///
+/// Paints a rotating arc using [CustomPaint] and respects the platform
+/// reduce-motion setting.
 class DsSpinner extends StatefulWidget {
   const DsSpinner({super.key, this.size, this.color});
 

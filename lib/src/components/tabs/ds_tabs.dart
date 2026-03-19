@@ -7,6 +7,10 @@ import '../../theme/ds_theme.dart';
 import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
 
+/// Tab bar with keyboard navigation and content panels.
+///
+/// Supports arrow-key, Home, and End navigation per WAI-ARIA Tabs pattern.
+/// Inherits color/size from [DsColorScope]/[DsSizeScope] when not set explicitly.
 class DsTabs extends StatefulWidget {
   const DsTabs({
     super.key,

@@ -7,6 +7,9 @@ import '../../theme/ds_theme.dart';
 import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
 
+/// A segmented toggle control where one item is selected at a time.
+///
+/// Supports arrow-key navigation between segments.
 class DsToggleGroup extends StatefulWidget {
   const DsToggleGroup({
     super.key,

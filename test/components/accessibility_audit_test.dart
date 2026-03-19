@@ -1,5 +1,5 @@
-import 'dart:ui' show SemanticsFlag;
-import 'package:flutter/material.dart';
+import 'dart:ui' show CheckedState, Tristate;
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
@@ -18,7 +18,7 @@ void main() {
         wrapWithTheme(DsButton(onPressed: () {}, child: const Text('Click'))),
       );
       final semantics = tester.getSemantics(find.byType(Semantics).first);
-      expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(semantics.flagsCollection.isButton, isTrue);
     });
 
     testWidgets('DsCheckbox has checked semantics', (tester) async {
@@ -26,7 +26,7 @@ void main() {
         wrapWithTheme(DsCheckbox(value: true, onChanged: (_) {})),
       );
       final semantics = tester.getSemantics(find.byType(Semantics).first);
-      expect(semantics.hasFlag(SemanticsFlag.isChecked), isTrue);
+      expect(semantics.flagsCollection.isChecked, CheckedState.isTrue);
     });
 
     testWidgets('DsCheckbox unchecked semantics', (tester) async {
@@ -34,7 +34,7 @@ void main() {
         wrapWithTheme(DsCheckbox(value: false, onChanged: (_) {})),
       );
       final semantics = tester.getSemantics(find.byType(Semantics).first);
-      expect(semantics.hasFlag(SemanticsFlag.hasCheckedState), isTrue);
+      expect(semantics.flagsCollection.isChecked, isNot(CheckedState.none));
     });
 
     testWidgets('DsRadio has selected semantics when selected', (tester) async {
@@ -42,7 +42,7 @@ void main() {
         wrapWithTheme(DsRadio(value: true, onChanged: (_) {})),
       );
       final semantics = tester.getSemantics(find.byType(Semantics).first);
-      expect(semantics.hasFlag(SemanticsFlag.isSelected), isTrue);
+      expect(semantics.flagsCollection.isSelected, Tristate.isTrue);
     });
 
     testWidgets('DsSwitch has toggled semantics', (tester) async {
@@ -50,19 +50,19 @@ void main() {
         wrapWithTheme(DsSwitch(value: true, onChanged: (_) {})),
       );
       final semantics = tester.getSemantics(find.byType(Semantics).first);
-      expect(semantics.hasFlag(SemanticsFlag.isToggled), isTrue);
+      expect(semantics.flagsCollection.isToggled, Tristate.isTrue);
     });
 
     testWidgets('DsInput has textField semantics', (tester) async {
       await tester.pumpWidget(wrapWithTheme(const DsInput()));
       final semantics = tester.getSemantics(find.byType(EditableText));
-      expect(semantics.hasFlag(SemanticsFlag.isTextField), isTrue);
+      expect(semantics.flagsCollection.isTextField, isTrue);
     });
 
     testWidgets('DsHeading has header semantics', (tester) async {
       await tester.pumpWidget(wrapWithTheme(const DsHeading(text: 'Title')));
       final semantics = tester.getSemantics(find.byType(Semantics).first);
-      expect(semantics.hasFlag(SemanticsFlag.isHeader), isTrue);
+      expect(semantics.flagsCollection.isHeader, isTrue);
     });
 
     testWidgets('Disabled button has enabled=false', (tester) async {
@@ -72,7 +72,7 @@ void main() {
         ),
       );
       final semantics = tester.getSemantics(find.byType(Semantics).first);
-      expect(semantics.hasFlag(SemanticsFlag.hasEnabledState), isTrue);
+      expect(semantics.flagsCollection.isEnabled, isNot(Tristate.none));
     });
   });
 }

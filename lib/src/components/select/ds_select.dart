@@ -7,6 +7,9 @@ import '../../utils/ds_enums.dart';
 import '../../utils/ds_icons.dart';
 import '../dropdown/ds_dropdown.dart';
 
+/// A select control that opens a [DsDropdown] to choose from a list of
+/// string items. Supports placeholder text, error state, disabled, and
+/// read-only modes.
 class DsSelect extends StatelessWidget {
   const DsSelect({
     super.key,

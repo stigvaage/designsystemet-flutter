@@ -3,6 +3,10 @@ import 'package:flutter/widgets.dart';
 import '../../utils/ds_enums.dart';
 import '../input/ds_input.dart';
 
+/// Single-line text input styled with Designsystemet tokens.
+///
+/// A convenience wrapper around [DsInput] with `maxLines: 1`.
+/// Use [DsField] to add a label, description, and validation message.
 class DsTextfield extends StatelessWidget {
   const DsTextfield({
     super.key,

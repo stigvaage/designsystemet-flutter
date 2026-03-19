@@ -10,6 +10,10 @@ import '../../utils/ds_enums.dart';
 import '../../utils/ds_focus.dart';
 import '../spinner/ds_spinner.dart';
 
+/// A Designsystemet button with primary, secondary, and tertiary variants.
+///
+/// Supports [loading] state (shows spinner), [icon] placement, and inherits
+/// color/size from [DsColorScope]/[DsSizeScope] when not set explicitly.
 class DsButton extends StatefulWidget {
   const DsButton({
     super.key,

@@ -1,5 +1,9 @@
 import 'package:flutter/widgets.dart';
 
+/// Typography token set generated from Designsystemet font-size and line-height scales.
+///
+/// Provides heading (2xl–2xs), body, body-short, and body-long text styles.
+/// Create an instance with [DsTypography.create] specifying the base font size.
 class DsTypography {
   final String fontFamily;
 

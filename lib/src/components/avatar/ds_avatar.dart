@@ -5,6 +5,8 @@ import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
+/// A circular avatar that displays initials derived from [name], or an
+/// image loaded from [imageUrl] with an initials fallback.
 class DsAvatar extends StatelessWidget {
   const DsAvatar({super.key, this.name, this.imageUrl, this.size, this.color});
 

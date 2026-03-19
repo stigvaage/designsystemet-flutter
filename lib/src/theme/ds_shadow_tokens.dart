@@ -1,6 +1,9 @@
 import 'dart:ui' show Color, Offset;
 import 'package:flutter/painting.dart' show BoxShadow;
 
+/// Design tokens for box shadows at five elevation levels (xs–xl).
+///
+/// Provides [standard] (light) and [dark] presets with adjusted opacity.
 class DsShadowTokens {
   final List<BoxShadow> xs;
   final List<BoxShadow> sm;

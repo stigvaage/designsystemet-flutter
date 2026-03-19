@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
@@ -6,6 +7,10 @@ import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_focus.dart';
 
+/// A toggle switch with an animated sliding thumb.
+///
+/// Supports optional label and description, keyboard activation (Space),
+/// and a read-only mode.
 class DsSwitch extends StatefulWidget {
   const DsSwitch({
     super.key,
@@ -116,6 +121,15 @@ class _DsSwitchState extends State<DsSwitch> {
       enabled: !widget.readOnly,
       child: Focus(
         focusNode: widget.focusNode,
+        onKeyEvent: (node, event) {
+          if (!widget.readOnly &&
+              event is KeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.space) {
+            widget.onChanged?.call(!widget.value);
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
         onFocusChange: (f) => setState(() => _isFocused = f),
         child: GestureDetector(
           onTap: widget.readOnly

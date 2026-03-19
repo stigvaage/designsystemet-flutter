@@ -6,6 +6,10 @@ import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_focus.dart';
 
+/// A Designsystemet checkbox with optional label, description, and error state.
+///
+/// Supports [indeterminate] mode and [readOnly] to prevent interaction.
+/// Inherits color/size from [DsColorScope]/[DsSizeScope] when not set explicitly.
 class DsCheckbox extends StatefulWidget {
   const DsCheckbox({
     super.key,

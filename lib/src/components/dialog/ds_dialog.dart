@@ -6,6 +6,10 @@ import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_icons.dart';
 
+/// Modal dialog with title, optional close button, and focus-trap management.
+///
+/// Show with [DsDialog.show]. The dialog traps focus, closes on Escape,
+/// and fires [onClose] even when dismissed via barrier tap or back navigation.
 class DsDialog extends StatefulWidget {
   const DsDialog({
     super.key,

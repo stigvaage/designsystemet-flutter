@@ -4,6 +4,9 @@ import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
+/// A styled text link with underline that disappears on hover.
+///
+/// Supports keyboard activation (Enter) and shows a focus ring when focused.
 class DsLink extends StatefulWidget {
   const DsLink({
     super.key,

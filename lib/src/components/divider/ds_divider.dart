@@ -3,6 +3,7 @@ import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
+/// A horizontal or vertical divider line using the theme's border color.
 class DsDivider extends StatelessWidget {
   const DsDivider({
     super.key,

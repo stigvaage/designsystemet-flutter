@@ -4,6 +4,9 @@ import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
+/// A suggestion list panel for autocomplete-style selection.
+///
+/// Renders a bordered column of tappable string items with a subtle shadow.
 class DsSuggestion extends StatelessWidget {
   const DsSuggestion({
     super.key,
@@ -34,17 +37,21 @@ class DsSuggestion extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (var i = 0; i < items.length; i++)
-            GestureDetector(
-              onTap: () => onSelected?.call(i),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                child: Text(
-                  items[i],
-                  style: theme.typography.bodySm.copyWith(
-                    color: colorScale.textDefault,
+            Semantics(
+              button: true,
+              label: items[i],
+              child: GestureDetector(
+                onTap: () => onSelected?.call(i),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  child: Text(
+                    items[i],
+                    style: theme.typography.bodySm.copyWith(
+                      color: colorScale.textDefault,
+                    ),
                   ),
                 ),
               ),

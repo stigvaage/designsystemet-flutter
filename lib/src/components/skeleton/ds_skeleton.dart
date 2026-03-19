@@ -5,6 +5,10 @@ import '../../theme/ds_theme.dart';
 import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
 
+/// A placeholder loading indicator with a pulsing shimmer animation.
+///
+/// Supports text, circle, and rectangle variants. Respects the
+/// platform reduce-motion setting.
 class DsSkeleton extends StatefulWidget {
   const DsSkeleton({
     super.key,

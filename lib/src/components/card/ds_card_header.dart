@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+/// Header section for a [DsCard], providing top-aligned padding.
 class DsCardHeader extends StatelessWidget {
   const DsCardHeader({super.key, required this.child});
   final Widget child;

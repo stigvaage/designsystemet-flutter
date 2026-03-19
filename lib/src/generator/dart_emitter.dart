@@ -1,5 +1,7 @@
 import 'dtcg_parser.dart';
 
+/// Generates a Dart source file containing a [DsThemeData] factory class
+/// from a [ParsedTheme] produced by [DtcgParser].
 class DartEmitter {
   String emit(ParsedTheme theme) {
     final className = _toPascalCase(theme.name);

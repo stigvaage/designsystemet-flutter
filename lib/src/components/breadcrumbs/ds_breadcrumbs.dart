@@ -1,9 +1,13 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
+/// A breadcrumb navigation trail with slash-separated links.
+///
+/// All items except the last are rendered as tappable links with underlines.
 class DsBreadcrumbs extends StatelessWidget {
   const DsBreadcrumbs({
     super.key,
@@ -37,13 +41,29 @@ class DsBreadcrumbs extends StatelessWidget {
                 ),
               ),
             if (i < items.length - 1)
-              GestureDetector(
-                onTap: () => onItemTap?.call(i),
-                child: Text(
-                  items[i],
-                  style: theme.typography.bodySm.copyWith(
-                    color: colorScale.textDefault,
-                    decoration: TextDecoration.underline,
+              Semantics(
+                link: true,
+                child: Focus(
+                  onKeyEvent: (node, event) {
+                    if (event is KeyDownEvent &&
+                        event.logicalKey == LogicalKeyboardKey.enter) {
+                      onItemTap?.call(i);
+                      return KeyEventResult.handled;
+                    }
+                    return KeyEventResult.ignored;
+                  },
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () => onItemTap?.call(i),
+                      child: Text(
+                        items[i],
+                        style: theme.typography.bodySm.copyWith(
+                          color: colorScale.textDefault,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               )

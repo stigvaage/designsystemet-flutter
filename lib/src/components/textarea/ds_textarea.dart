@@ -3,6 +3,9 @@ import 'package:flutter/widgets.dart';
 import '../../utils/ds_enums.dart';
 import '../input/ds_input.dart';
 
+/// A multi-line text input area built on [DsInput].
+///
+/// The number of visible lines is controlled by [rows].
 class DsTextarea extends StatelessWidget {
   const DsTextarea({
     super.key,

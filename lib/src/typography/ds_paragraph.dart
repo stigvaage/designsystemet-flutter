@@ -11,7 +11,6 @@ class DsParagraph extends StatelessWidget {
     required this.text,
     this.bodySize = DsBodySize.md,
     this.variant = DsBodyVariant.standard,
-    this.size,
     this.color,
     this.textAlign,
     this.maxLines,
@@ -21,7 +20,6 @@ class DsParagraph extends StatelessWidget {
   final String text;
   final DsBodySize bodySize;
   final DsBodyVariant variant;
-  final DsSize? size;
   final DsColor? color;
   final TextAlign? textAlign;
   final int? maxLines;

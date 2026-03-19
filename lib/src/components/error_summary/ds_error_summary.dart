@@ -1,7 +1,12 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../theme/ds_theme.dart';
 
+/// A summary panel listing validation errors styled with danger colors.
+///
+/// Each error can optionally be tapped to navigate to the relevant field.
+/// Marked as a live region for screen-reader announcements.
 class DsErrorSummary extends StatelessWidget {
   const DsErrorSummary({
     super.key,
@@ -43,18 +48,42 @@ class DsErrorSummary extends StatelessWidget {
             for (var i = 0; i < errors.length; i++)
               Padding(
                 padding: const EdgeInsets.only(bottom: 4),
-                child: GestureDetector(
-                  onTap: onErrorTap != null ? () => onErrorTap!(i) : null,
-                  child: Text(
-                    '• ${errors[i]}',
-                    style: theme.typography.bodyMd.copyWith(
-                      color: dangerScale.textDefault,
-                      decoration: onErrorTap != null
-                          ? TextDecoration.underline
-                          : null,
-                    ),
-                  ),
-                ),
+                child: onErrorTap != null
+                    ? Semantics(
+                        link: true,
+                        child: Focus(
+                          onKeyEvent: (node, event) {
+                            if (event is KeyDownEvent &&
+                                (event.logicalKey ==
+                                        LogicalKeyboardKey.enter ||
+                                    event.logicalKey ==
+                                        LogicalKeyboardKey.space)) {
+                              onErrorTap!(i);
+                              return KeyEventResult.handled;
+                            }
+                            return KeyEventResult.ignored;
+                          },
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: () => onErrorTap!(i),
+                              child: Text(
+                                '• ${errors[i]}',
+                                style: theme.typography.bodyMd.copyWith(
+                                  color: dangerScale.textDefault,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : Text(
+                        '• ${errors[i]}',
+                        style: theme.typography.bodyMd.copyWith(
+                          color: dangerScale.textDefault,
+                        ),
+                      ),
               ),
           ],
         ),

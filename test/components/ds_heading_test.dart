@@ -1,4 +1,3 @@
-import 'dart:ui' show SemanticsFlag;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:designsystemet_flutter/theme.dart';
@@ -33,7 +32,7 @@ void main() {
     testWidgets('has header semantics', (tester) async {
       await tester.pumpWidget(wrapWithTheme(const DsHeading(text: 'Title')));
       final semantics = tester.getSemantics(find.byType(Semantics));
-      expect(semantics.hasFlag(SemanticsFlag.isHeader), isTrue);
+      expect(semantics.flagsCollection.isHeader, isTrue);
     });
 
     testWidgets('inherits color from DsColorScope', (tester) async {

@@ -6,6 +6,10 @@ import '../../theme/ds_theme.dart';
 import '../../theme/ds_theme_data.dart';
 import '../../utils/ds_enums.dart';
 
+/// An overlay-based dropdown menu that appears below a trigger widget.
+///
+/// Displays a list of [DsDropdownItem]s and notifies via [onSelected] when
+/// an item is tapped. Closes on outside tap or Escape key.
 class DsDropdown extends StatefulWidget {
   const DsDropdown({
     super.key,
@@ -24,6 +28,7 @@ class DsDropdown extends StatefulWidget {
   State<DsDropdown> createState() => _DsDropdownState();
 }
 
+/// A data model for a single item within a [DsDropdown] menu.
 class DsDropdownItem {
   final String label;
   final bool enabled;

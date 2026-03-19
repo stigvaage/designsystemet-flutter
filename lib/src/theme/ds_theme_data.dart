@@ -7,6 +7,10 @@ import 'ds_shadow_tokens.dart';
 import 'ds_size_tokens.dart';
 import 'ds_typography.dart';
 
+/// Immutable collection of all Designsystemet design tokens.
+///
+/// Contains color scheme, typography, size tokens, border radii, and shadows.
+/// Use [DsTheme.of] to access the active instance from the widget tree.
 class DsThemeData extends ThemeExtension<DsThemeData> {
   final Brightness brightness;
   final DsColorScheme colorScheme;
@@ -25,21 +29,6 @@ class DsThemeData extends ThemeExtension<DsThemeData> {
     required this.shadows,
     this.disabledOpacity = 0.3,
   });
-
-  factory DsThemeData.digdir({Brightness brightness = Brightness.light}) {
-    // Digdir default theme — values imported from generated file
-    // This is a placeholder; actual values come from ds_theme_digdir.dart
-    throw UnimplementedError(
-      'DsThemeData.digdir() requires the generated Digdir theme. '
-      'Import package:designsystemet_flutter/generated/ds_theme_digdir.dart '
-      'and use DsThemeDigdir.light() or DsThemeDigdir.dark().',
-    );
-  }
-
-  factory DsThemeData.fromTokens(Map<String, dynamic> json) {
-    // TODO: Implement JSON token parsing in US4
-    throw UnimplementedError('DsThemeData.fromTokens() not yet implemented');
-  }
 
   @override
   DsThemeData copyWith({

@@ -23,8 +23,10 @@ Arkitekturen er bygget rundt to hovedelementer:
 - **`DsTheme`** — En `InheritedWidget` som gjør `DsThemeData` tilgjengelig for hele widgettreet. Komponenter henter sine visuelle verdier herfra.
 
 ```dart
+import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+
 DsTheme(
-  data: DsThemeData.digdirLight(),
+  data: DsThemeDigdir.light(),
   child: MyApp(),
 )
 ```
@@ -33,8 +35,8 @@ DsTheme(
 
 Biblioteket leveres med Digitaliseringsdirektoratets offisielle tema i to varianter:
 
-- **`DsThemeData.digdirLight()`** — Lyst modus
-- **`DsThemeData.digdirDark()`** — Mørkt modus
+- **`DsThemeDigdir.light()`** — Lyst modus
+- **`DsThemeDigdir.dark()`** — Mørkt modus
 
 Temaene er generert direkte fra de offisielle designtokens og er alltid oppdatert med siste versjon av Designsystemet.
 

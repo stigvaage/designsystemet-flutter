@@ -58,12 +58,13 @@ Pakk inn rotwidgeten din med `DsTheme` for å gjøre temaet tilgjengelig for all
 
 ```dart
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
+import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:flutter/widgets.dart';
 
 void main() {
   runApp(
     DsTheme(
-      data: DsThemeData.digdir(), // Innebygd Digdir-tema, lyst modus
+      data: DsThemeDigdir.light(), // Innebygd Digdir-tema, lyst modus
       child: const MinApp(),
     ),
   );
@@ -92,15 +93,13 @@ Bibliotekets temasystem er bygget rundt designtokens som styrer alle visuelle eg
 | `shadows` | `DsShadowTokens` | Skyggetokens |
 | `disabledOpacity` | `double` | Gjennomsiktighet for deaktivert tilstand (standard: 0.3) |
 
-**Fabrikkmetoder:**
+**Innebygd Digdir-tema:**
 
 ```dart
-// Innebygd Digdir-tema
-final lystTema = DsThemeData.digdir(); // lyst modus (standard)
-final mørktTema = DsThemeData.digdir(brightness: Brightness.dark);
+import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 
-// Fra JSON-tokens (brukes av kodegeneratoren)
-final egendefinertTema = DsThemeData.fromTokens(jsonMap);
+final lystTema = DsThemeDigdir.light();
+final mørktTema = DsThemeDigdir.dark();
 ```
 
 ### DsTheme (InheritedWidget)
@@ -110,7 +109,7 @@ final egendefinertTema = DsThemeData.fromTokens(jsonMap);
 ```dart
 // Sett tema på rotnivå
 DsTheme(
-  data: DsThemeData.digdir(),
+  data: DsThemeDigdir.light(),
   child: MinApp(),
 )
 
@@ -134,10 +133,10 @@ final typografi = tema.typography;
 ```dart
 MaterialApp(
   theme: ThemeData(
-    extensions: [DsThemeData.digdir()],
+    extensions: [DsThemeDigdir.light()],
   ),
   home: DsTheme(
-    data: DsThemeData.digdir(),
+    data: DsThemeDigdir.light(),
     child: const MinApp(),
   ),
 )

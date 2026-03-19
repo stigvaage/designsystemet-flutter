@@ -11,12 +11,10 @@ class DsValidationMessage extends StatelessWidget {
     super.key,
     required this.message,
     this.isError = true,
-    this.size,
   });
 
   final String message;
   final bool isError;
-  final DsSize? size;
 
   @override
   Widget build(BuildContext context) {

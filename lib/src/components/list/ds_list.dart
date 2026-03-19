@@ -4,6 +4,7 @@ import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
+/// An ordered or unordered list of items with bullet or number markers.
 class DsList extends StatelessWidget {
   const DsList({
     super.key,

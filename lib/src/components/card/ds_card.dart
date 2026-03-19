@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
@@ -5,6 +6,10 @@ import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_focus.dart';
 
+/// A container card with a border or elevation shadow.
+///
+/// When [onTap] is provided the card becomes interactive with hover
+/// highlighting, focus ring, and keyboard activation.
 class DsCard extends StatefulWidget {
   const DsCard({
     super.key,
@@ -74,6 +79,15 @@ class _DsCardState extends State<DsCard> {
       button: true,
       child: Focus(
         focusNode: widget.focusNode,
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent &&
+              (event.logicalKey == LogicalKeyboardKey.enter ||
+                  event.logicalKey == LogicalKeyboardKey.space)) {
+            widget.onTap?.call();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
         onFocusChange: (f) => setState(() => _isFocused = f),
         child: MouseRegion(
           cursor: SystemMouseCursors.click,

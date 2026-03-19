@@ -1,6 +1,10 @@
 import '../utils/ds_enums.dart';
 import 'ds_color_scale.dart';
 
+/// Named set of [DsColorScale]s for semantic and brand colors.
+///
+/// Each scale (accent, neutral, brand1–3, success, danger, warning, info)
+/// provides a full 16-step palette. Use [resolve] to map a [DsColor] to its scale.
 class DsColorScheme {
   final DsColorScale accent;
   final DsColorScale neutral;

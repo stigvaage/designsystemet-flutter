@@ -4,6 +4,7 @@ import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
+/// Groups related form controls under a visible [legend] label.
 class DsFieldset extends StatelessWidget {
   const DsFieldset({
     super.key,

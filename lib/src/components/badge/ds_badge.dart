@@ -3,6 +3,10 @@ import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
+/// A numeric badge overlay positioned on a corner of its [child] widget.
+///
+/// Displays a [count] value (capped at [maxCount]) in a colored pill.
+/// Supports base and tinted variants and configurable corner placement.
 class DsBadge extends StatelessWidget {
   const DsBadge({
     super.key,

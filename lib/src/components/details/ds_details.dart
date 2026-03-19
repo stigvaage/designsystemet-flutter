@@ -6,6 +6,8 @@ import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_icons.dart';
 
+/// An expandable disclosure widget that toggles between a summary and
+/// its child content with a size transition animation.
 class DsDetails extends StatefulWidget {
   const DsDetails({
     super.key,

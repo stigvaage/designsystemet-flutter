@@ -4,6 +4,10 @@ import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_icons.dart';
 
+/// Severity-based notification banner for inline messages.
+///
+/// Displays an icon, optional [title], body content, and an optional close
+/// button. Set [severity] to info, warning, success, or danger.
 class DsAlert extends StatelessWidget {
   const DsAlert({
     super.key,

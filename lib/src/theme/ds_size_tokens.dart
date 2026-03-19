@@ -1,3 +1,5 @@
+/// Spacing and sizing tokens generated from a [base] value and [step]
+/// multiplier, producing 31 sizes (size0–size30).
 class DsSizeTokens {
   final double base;
   final double step;

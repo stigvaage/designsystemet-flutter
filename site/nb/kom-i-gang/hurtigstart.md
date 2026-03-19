@@ -6,12 +6,13 @@ Et komplett minimalt eksempel som viser hvordan du kommer i gang.
 
 ```dart
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
+import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:flutter/widgets.dart';
 
 void main() {
   runApp(
     DsTheme(
-      data: DsThemeData.digdir(),
+      data: DsThemeDigdir.light(),
       child: const MinApp(),
     ),
   );
@@ -40,7 +41,7 @@ class MinApp extends StatelessWidget {
 ## Slik fungerer det
 
 1. **`DsTheme`** pakker inn rot-widgeten og gjør tema-data tilgjengelig for alle komponenter nedover i treet.
-2. **`DsThemeData.digdir()`** gir deg standardtemaet fra Digdir (Digitaliseringsdirektoratet).
+2. **`DsThemeDigdir.light()`** gir deg standardtemaet fra Digdir (Digitaliseringsdirektoratet).
 3. Komponenter som `DsHeading`, `DsParagraph` og `DsButton` henter automatisk stil fra temaet.
 
 ## DsTheme er påkrevd

@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import '../theme/ds_color_scale.dart';
 
+/// Utility for creating focus ring [BoxDecoration]s around interactive widgets.
 class DsFocus {
   DsFocus._();
 

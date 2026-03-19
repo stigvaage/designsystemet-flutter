@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
@@ -5,6 +6,9 @@ import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_icons.dart';
 
+/// A pill-shaped chip with optional selection state and remove button.
+///
+/// Supports keyboard activation (Enter/Space to tap, Delete to remove).
 class DsChip extends StatelessWidget {
   const DsChip({
     super.key,
@@ -46,40 +50,74 @@ class DsChip extends StatelessWidget {
         ? colorScale.baseContrastDefault
         : colorScale.textDefault;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: radius,
-        border: Border.all(
-          color: selected ? colorScale.baseDefault : colorScale.borderSubtle,
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          GestureDetector(
+    return Semantics(
+      button: onTap != null,
+      selected: selected,
+      child: Focus(
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent) {
+            if ((event.logicalKey == LogicalKeyboardKey.enter ||
+                    event.logicalKey == LogicalKeyboardKey.space) &&
+                onTap != null) {
+              onTap!();
+              return KeyEventResult.handled;
+            }
+            if (event.logicalKey == LogicalKeyboardKey.delete &&
+                removable &&
+                onRemove != null) {
+              onRemove!();
+              return KeyEventResult.handled;
+            }
+          }
+          return KeyEventResult.ignored;
+        },
+        child: MouseRegion(
+          cursor: onTap != null
+              ? SystemMouseCursors.click
+              : SystemMouseCursors.basic,
+          child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: onTap,
-            child: Padding(
-              padding: padding,
-              child: DefaultTextStyle(
-                style: theme.typography.bodyMd.copyWith(color: fgColor),
-                child: child,
+            child: Container(
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: radius,
+                border: Border.all(
+                  color: selected
+                      ? colorScale.baseDefault
+                      : colorScale.borderSubtle,
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: padding,
+                    child: DefaultTextStyle(
+                      style: theme.typography.bodyMd.copyWith(color: fgColor),
+                      child: child,
+                    ),
+                  ),
+                  if (removable) ...[
+                    Semantics(
+                      button: true,
+                      label: 'Fjern',
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: onRemove,
+                        child: Padding(
+                          padding: EdgeInsets.only(right: padding.right),
+                          child: Icon(DsIcons.x, size: 14, color: fgColor),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
           ),
-          if (removable) ...[
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: onRemove,
-              child: Padding(
-                padding: EdgeInsets.only(right: padding.right),
-                child: Icon(DsIcons.x, size: 14, color: fgColor),
-              ),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }

@@ -21,21 +21,23 @@ Temasystemet i Designsystemet Flutter styres gjennom `DsThemeData`, som samler a
 ### Digdir-tema (lyst modus)
 
 ```dart
-final lystTema = DsThemeData.digdir();
+import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+
+final lystTema = DsThemeDigdir.light();
 ```
 
 ### Digdir-tema (mørkt modus)
 
 ```dart
-final mørktTema = DsThemeData.digdir(brightness: Brightness.dark);
+final mørktTema = DsThemeDigdir.dark();
 ```
 
-### Egendefinert tema fra JSON
+### Egendefinert tema
 
-Brukes typisk sammen med tokens generert fra Designsystemet CLI:
+Bruk kodegeneratoren til å lage en temafil fra Designsystemet CLI-tokens:
 
-```dart
-final egendefinertTema = DsThemeData.fromTokens(jsonMap);
+```bash
+dart run designsystemet_flutter:generate --tokens-dir ./design-tokens --output lib/generated/
 ```
 
 ## DsTheme InheritedWidget
@@ -58,7 +60,7 @@ final tema = DsTheme.maybeOf(context);
 void main() {
   runApp(
     DsTheme(
-      data: DsThemeData.digdir(),
+      data: DsThemeDigdir.light(),
       child: const MinApp(),
     ),
   );
@@ -72,10 +74,10 @@ void main() {
 ```dart
 MaterialApp(
   theme: ThemeData(
-    extensions: [DsThemeData.digdir()],
+    extensions: [DsThemeDigdir.light()],
   ),
   home: DsTheme(
-    data: DsThemeData.digdir(),
+    data: DsThemeDigdir.light(),
     child: const MinApp(),
   ),
 );
@@ -88,7 +90,7 @@ MaterialApp(
 ### Overstyre enkeltverdier
 
 ```dart
-final tilpassetTema = DsThemeData.digdir().copyWith(
+final tilpassetTema = DsThemeDigdir.light().copyWith(
   disabledOpacity: 0.5,
 );
 ```

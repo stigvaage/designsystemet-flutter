@@ -5,6 +5,10 @@ import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
+/// A data table with a styled header row and body rows.
+///
+/// Supports zebra-striped rows and row hover highlighting via the [zebra]
+/// and [hover] flags.
 class DsTable extends StatelessWidget {
   const DsTable({
     super.key,

@@ -10,7 +10,6 @@ class DsHeading extends StatelessWidget {
     super.key,
     required this.text,
     this.level = DsHeadingLevel.md,
-    this.size,
     this.color,
     this.textAlign,
     this.maxLines,
@@ -19,7 +18,6 @@ class DsHeading extends StatelessWidget {
 
   final String text;
   final DsHeadingLevel level;
-  final DsSize? size;
   final DsColor? color;
   final TextAlign? textAlign;
   final int? maxLines;

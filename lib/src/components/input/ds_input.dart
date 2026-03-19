@@ -8,6 +8,10 @@ import '../../utils/ds_enums.dart';
 import '../../utils/ds_focus.dart';
 import '../field/ds_field.dart';
 
+/// Core text input component styled with Designsystemet tokens.
+///
+/// Wraps Material [TextField] for platform-native editing behavior.
+/// Prefer [DsTextfield] for single-line inputs or [DsField] to add labels.
 class DsInput extends StatefulWidget {
   const DsInput({
     super.key,

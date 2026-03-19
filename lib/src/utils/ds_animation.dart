@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+/// Animation duration constants and helpers that respect the platform
+/// reduce-motion accessibility setting.
 class DsAnimation {
   DsAnimation._();
 

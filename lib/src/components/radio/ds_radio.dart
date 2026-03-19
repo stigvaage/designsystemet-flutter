@@ -6,6 +6,9 @@ import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_focus.dart';
 
+/// A radio button with optional label and description.
+///
+/// Supports keyboard activation (Space), focus ring, and three size modes.
 class DsRadio extends StatefulWidget {
   const DsRadio({
     super.key,

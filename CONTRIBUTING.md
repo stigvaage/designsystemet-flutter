@@ -105,7 +105,7 @@ Alle komponenter skal ha widget-tester som verifiserer:
 testWidgets('DsButton rendrer med primaervariant', (tester) async {
   await tester.pumpWidget(
     DsTheme(
-      data: DsThemeData.digdir(),
+      data: DsThemeDigdir.light(),
       child: DsButton(
         variant: DsButtonVariant.primary,
         onPressed: () {},

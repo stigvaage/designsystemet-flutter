@@ -5,6 +5,7 @@ import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
+/// A page navigation control with numbered page buttons and prev/next arrows.
 class DsPagination extends StatelessWidget {
   const DsPagination({
     super.key,
@@ -43,7 +44,9 @@ class DsPagination extends StatelessWidget {
       return GestureDetector(
         onTap: isActive ? null : () => onPageChanged(page),
         child: Semantics(
+          button: true,
           selected: isActive,
+          label: 'Side $page',
           child: Container(
             width: buttonSize,
             height: buttonSize,
@@ -67,21 +70,32 @@ class DsPagination extends StatelessWidget {
       );
     }
 
+    final hasPrev = currentPage > 1;
+    final hasNext = currentPage < totalPages;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         // Previous
-        GestureDetector(
-          onTap: currentPage > 1 ? () => onPageChanged(currentPage - 1) : null,
-          child: Container(
-            width: buttonSize,
-            height: buttonSize,
-            alignment: Alignment.center,
-            child: Text(
-              '‹',
-              style: TextStyle(
-                fontSize: fontSize + 4,
-                color: colorScale.textDefault,
+        Semantics(
+          button: true,
+          enabled: hasPrev,
+          label: 'Forrige side',
+          child: Opacity(
+            opacity: hasPrev ? 1.0 : theme.disabledOpacity,
+            child: GestureDetector(
+              onTap: hasPrev ? () => onPageChanged(currentPage - 1) : null,
+              child: Container(
+                width: buttonSize,
+                height: buttonSize,
+                alignment: Alignment.center,
+                child: Text(
+                  '‹',
+                  style: TextStyle(
+                    fontSize: fontSize + 4,
+                    color: colorScale.textDefault,
+                  ),
+                ),
               ),
             ),
           ),
@@ -89,19 +103,25 @@ class DsPagination extends StatelessWidget {
         // Pages
         for (var i = 1; i <= totalPages; i++) pageButton(i),
         // Next
-        GestureDetector(
-          onTap: currentPage < totalPages
-              ? () => onPageChanged(currentPage + 1)
-              : null,
-          child: Container(
-            width: buttonSize,
-            height: buttonSize,
-            alignment: Alignment.center,
-            child: Text(
-              '›',
-              style: TextStyle(
-                fontSize: fontSize + 4,
-                color: colorScale.textDefault,
+        Semantics(
+          button: true,
+          enabled: hasNext,
+          label: 'Neste side',
+          child: Opacity(
+            opacity: hasNext ? 1.0 : theme.disabledOpacity,
+            child: GestureDetector(
+              onTap: hasNext ? () => onPageChanged(currentPage + 1) : null,
+              child: Container(
+                width: buttonSize,
+                height: buttonSize,
+                alignment: Alignment.center,
+                child: Text(
+                  '›',
+                  style: TextStyle(
+                    fontSize: fontSize + 4,
+                    color: colorScale.textDefault,
+                  ),
+                ),
               ),
             ),
           ),

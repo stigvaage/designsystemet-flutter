@@ -1,3 +1,5 @@
+/// Design tokens for border radius values at five scale levels (sm–xl)
+/// plus a [full] value for pill shapes.
 class DsBorderRadiusTokens {
   final double sm;
   final double md;
