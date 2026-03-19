@@ -27,9 +27,9 @@ void main(List<String> args) {
 
   try {
     final parser = DtcgParser();
-    final themes = parser.parse(tokensDir!);
+    final themes = parser.parse(tokensDir);
 
-    final outDir = Directory(outputDir!);
+    final outDir = Directory(outputDir);
     if (!outDir.existsSync()) {
       outDir.createSync(recursive: true);
     }
