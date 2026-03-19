@@ -85,14 +85,27 @@ class DsSelect extends StatelessWidget {
     );
 
     if (disabled) {
-      return Opacity(opacity: theme.disabledOpacity, child: trigger);
+      return Semantics(
+        button: true,
+        label: 'Velg',
+        value: displayText.isNotEmpty ? displayText : null,
+        enabled: false,
+        child: Opacity(opacity: theme.disabledOpacity, child: trigger),
+      );
     }
 
-    return DsDropdown(
-      trigger: trigger,
-      items: items.map((label) => DsDropdownItem(label: label)).toList(),
-      onSelected: onChanged,
-      color: color,
+    return Semantics(
+      button: true,
+      label: 'Velg',
+      value: displayText.isNotEmpty ? displayText : null,
+      child: Focus(
+        child: DsDropdown(
+          trigger: trigger,
+          items: items.map((label) => DsDropdownItem(label: label)).toList(),
+          onSelected: onChanged,
+          color: color,
+        ),
+      ),
     );
   }
 }

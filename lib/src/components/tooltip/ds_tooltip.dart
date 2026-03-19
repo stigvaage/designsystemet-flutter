@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
+import '../../theme/ds_theme_data.dart';
 import '../../utils/ds_enums.dart';
 
 class DsTooltip extends StatefulWidget {
@@ -24,10 +25,14 @@ class _DsTooltipState extends State<DsTooltip> {
   final _layerLink = LayerLink();
   OverlayEntry? _entry;
   bool _isVisible = false;
+  DsThemeData? _capturedTheme;
+  DsColor? _capturedColor;
 
   void _show() {
     if (_isVisible) return;
     _isVisible = true;
+    _capturedTheme = DsTheme.of(context);
+    _capturedColor = DsColorScope.of(context);
     _entry = OverlayEntry(builder: _buildOverlay);
     Overlay.of(context).insert(_entry!);
   }
@@ -40,27 +45,33 @@ class _DsTooltipState extends State<DsTooltip> {
   }
 
   Widget _buildOverlay(BuildContext context) {
-    final theme = DsTheme.of(context);
-    final activeColor = widget.color ?? DsColorScope.of(context);
+    final theme = _capturedTheme!;
+    final activeColor = widget.color ?? _capturedColor!;
     final colorScale = theme.colorScheme.resolve(activeColor);
 
-    return Positioned(
-      child: CompositedTransformFollower(
-        link: _layerLink,
-        targetAnchor: Alignment.topCenter,
-        followerAnchor: Alignment.bottomCenter,
-        offset: const Offset(0, -8),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: colorScale.baseDefault,
-            borderRadius: BorderRadius.circular(theme.borderRadius.sm),
-            boxShadow: theme.shadows.sm,
-          ),
-          child: Text(
-            widget.message,
-            style: theme.typography.bodyXs.copyWith(
-              color: colorScale.baseContrastDefault,
+    return DsTheme(
+      data: theme,
+      child: DsColorScope(
+        color: activeColor,
+        child: Positioned(
+          child: CompositedTransformFollower(
+            link: _layerLink,
+            targetAnchor: Alignment.topCenter,
+            followerAnchor: Alignment.bottomCenter,
+            offset: const Offset(0, -8),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: colorScale.baseDefault,
+                borderRadius: BorderRadius.circular(theme.borderRadius.sm),
+                boxShadow: theme.shadows.sm,
+              ),
+              child: Text(
+                widget.message,
+                style: theme.typography.bodyXs.copyWith(
+                  color: colorScale.baseContrastDefault,
+                ),
+              ),
             ),
           ),
         ),

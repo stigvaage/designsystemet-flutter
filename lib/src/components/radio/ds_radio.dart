@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
@@ -75,47 +76,68 @@ class _DsRadioState extends State<DsRadio> {
           : null,
     );
 
-    if (_isFocused) {
-      circle = DecoratedBox(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: colorScale.borderStrong,
-            width: DsFocus.ringWidth,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(DsFocus.ringWidth),
-          child: circle,
-        ),
-      );
-    }
+    // Always reserve focus ring space to prevent layout shift
+    final focusDecoration = _isFocused && !widget.readOnly
+        ? BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: colorScale.borderStrong,
+              width: DsFocus.ringWidth,
+            ),
+          )
+        : BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: const Color(0x00000000),
+              width: DsFocus.ringWidth,
+            ),
+          );
+
+    circle = DecoratedBox(
+      decoration: focusDecoration,
+      child: Padding(
+        padding: const EdgeInsets.all(DsFocus.ringWidth),
+        child: circle,
+      ),
+    );
 
     return Semantics(
       selected: widget.value,
       enabled: !widget.readOnly,
-      child: Focus(
-        focusNode: widget.focusNode,
-        onFocusChange: (f) => setState(() => _isFocused = f),
-        child: MouseRegion(
-          onEnter: (_) => setState(() => _isHovered = true),
-          onExit: (_) => setState(() => _isHovered = false),
-          cursor: widget.readOnly
-              ? SystemMouseCursors.basic
-              : SystemMouseCursors.click,
-          child: GestureDetector(
-            onTap: widget.readOnly
-                ? null
-                : () => widget.onChanged?.call(!widget.value),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                circle,
-                if (widget.label != null) ...[
-                  const SizedBox(width: 8),
-                  widget.label!,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
+        child: Focus(
+          focusNode: widget.focusNode,
+          onKeyEvent: (node, event) {
+            if (!widget.readOnly &&
+                event is KeyDownEvent &&
+                event.logicalKey == LogicalKeyboardKey.space) {
+              widget.onChanged?.call(!widget.value);
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          onFocusChange: (f) => setState(() => _isFocused = f),
+          child: MouseRegion(
+            onEnter: (_) => setState(() => _isHovered = true),
+            onExit: (_) => setState(() => _isHovered = false),
+            cursor: widget.readOnly
+                ? SystemMouseCursors.basic
+                : SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: widget.readOnly
+                  ? null
+                  : () => widget.onChanged?.call(!widget.value),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  circle,
+                  if (widget.label != null) ...[
+                    const SizedBox(width: 8),
+                    widget.label!,
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

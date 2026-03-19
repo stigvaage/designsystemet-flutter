@@ -34,7 +34,7 @@ class DsErrorSummary extends StatelessWidget {
           children: [
             Text(
               title ?? 'Errors',
-              style: theme.typography.bodySm.copyWith(
+              style: theme.typography.bodyMd.copyWith(
                 fontWeight: FontWeight.w600,
                 color: dangerScale.textDefault,
               ),
@@ -47,7 +47,7 @@ class DsErrorSummary extends StatelessWidget {
                   onTap: onErrorTap != null ? () => onErrorTap!(i) : null,
                   child: Text(
                     '• ${errors[i]}',
-                    style: theme.typography.bodyXs.copyWith(
+                    style: theme.typography.bodyMd.copyWith(
                       color: dangerScale.textDefault,
                       decoration: onErrorTap != null
                           ? TextDecoration.underline

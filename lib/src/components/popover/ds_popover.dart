@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
+import '../../theme/ds_theme_data.dart';
 import '../../utils/ds_enums.dart';
 
 class DsPopover extends StatefulWidget {
@@ -24,6 +25,8 @@ class _DsPopoverState extends State<DsPopover> {
   final _layerLink = LayerLink();
   OverlayEntry? _entry;
   bool _isOpen = false;
+  DsThemeData? _capturedTheme;
+  DsColor? _capturedColor;
 
   void _toggle() {
     if (_isOpen) {
@@ -36,6 +39,8 @@ class _DsPopoverState extends State<DsPopover> {
   void _open() {
     if (_isOpen) return;
     _isOpen = true;
+    _capturedTheme = DsTheme.of(context);
+    _capturedColor = DsColorScope.of(context);
     _entry = OverlayEntry(builder: _buildOverlay);
     Overlay.of(context).insert(_entry!);
   }
@@ -48,38 +53,47 @@ class _DsPopoverState extends State<DsPopover> {
   }
 
   Widget _buildOverlay(BuildContext context) {
-    final theme = DsTheme.of(context);
-    final activeColor = widget.color ?? DsColorScope.of(context);
+    final theme = _capturedTheme!;
+    final activeColor = widget.color ?? _capturedColor!;
     final colorScale = theme.colorScheme.resolve(activeColor);
 
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: _close,
-      child: Stack(
-        children: [
-          CompositedTransformFollower(
-            link: _layerLink,
-            targetAnchor: Alignment.bottomLeft,
-            followerAnchor: Alignment.topLeft,
-            offset: const Offset(0, 4),
-            child: GestureDetector(
-              onTap: () {}, // Absorb taps on popover content
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 320),
-                decoration: BoxDecoration(
-                  color: colorScale.backgroundDefault,
-                  borderRadius: BorderRadius.circular(
-                    theme.borderRadius.defaultRadius,
+    return DsTheme(
+      data: theme,
+      child: DsColorScope(
+        color: activeColor,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: _close,
+          child: Stack(
+            children: [
+              CompositedTransformFollower(
+                link: _layerLink,
+                targetAnchor: Alignment.bottomLeft,
+                followerAnchor: Alignment.topLeft,
+                offset: const Offset(0, 4),
+                child: GestureDetector(
+                  onTap: () {}, // Absorb taps on popover content
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 320),
+                    decoration: BoxDecoration(
+                      color: colorScale.backgroundDefault,
+                      borderRadius: BorderRadius.circular(
+                        theme.borderRadius.defaultRadius,
+                      ),
+                      border: Border.all(
+                        color: colorScale.borderSubtle,
+                        width: 1,
+                      ),
+                      boxShadow: theme.shadows.md,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: widget.content,
                   ),
-                  border: Border.all(color: colorScale.borderSubtle, width: 1),
-                  boxShadow: theme.shadows.md,
                 ),
-                padding: const EdgeInsets.all(16),
-                child: widget.content,
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

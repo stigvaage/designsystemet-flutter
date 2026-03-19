@@ -25,7 +25,7 @@ class DsValidationMessage extends StatelessWidget {
       isError ? DsColor.danger : DsColor.success,
     );
 
-    final style = theme.typography.bodyXs.copyWith(
+    final style = theme.typography.bodyMd.copyWith(
       color: colorScale.textDefault,
     );
 

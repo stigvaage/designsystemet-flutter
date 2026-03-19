@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
@@ -77,38 +78,61 @@ class _DsCheckboxState extends State<DsCheckbox> {
           : null,
     );
 
-    if (_isFocused) {
-      box = DecoratedBox(
-        decoration: DsFocus.focusRingWithRadius(colorScale, radius),
-        child: Padding(
-          padding: const EdgeInsets.all(DsFocus.ringWidth),
-          child: box,
-        ),
-      );
-    }
+    // Always reserve focus ring space to prevent layout shift
+    final focusDecoration = _isFocused && !widget.readOnly
+        ? DsFocus.focusRingWithRadius(colorScale, radius)
+        : BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              radius.topLeft.x + DsFocus.ringWidth,
+            ),
+            border: Border.all(
+              color: const Color(0x00000000),
+              width: DsFocus.ringWidth,
+            ),
+          );
 
-    final Widget result = Focus(
-      focusNode: widget.focusNode,
-      onFocusChange: (f) => setState(() => _isFocused = f),
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _isHovered = true),
-        onExit: (_) => setState(() => _isHovered = false),
-        cursor: widget.readOnly
-            ? SystemMouseCursors.basic
-            : SystemMouseCursors.click,
-        child: GestureDetector(
-          onTap: widget.readOnly
-              ? null
-              : () => widget.onChanged?.call(!widget.value),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              box,
-              if (widget.label != null) ...[
-                const SizedBox(width: 8),
-                widget.label!,
+    box = DecoratedBox(
+      decoration: focusDecoration,
+      child: Padding(
+        padding: const EdgeInsets.all(DsFocus.ringWidth),
+        child: box,
+      ),
+    );
+
+    final Widget result = ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
+      child: Focus(
+        focusNode: widget.focusNode,
+        onKeyEvent: (node, event) {
+          if (!widget.readOnly &&
+              event is KeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.space) {
+            widget.onChanged?.call(!widget.value);
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        onFocusChange: (f) => setState(() => _isFocused = f),
+        child: MouseRegion(
+          onEnter: (_) => setState(() => _isHovered = true),
+          onExit: (_) => setState(() => _isHovered = false),
+          cursor: widget.readOnly
+              ? SystemMouseCursors.basic
+              : SystemMouseCursors.click,
+          child: GestureDetector(
+            onTap: widget.readOnly
+                ? null
+                : () => widget.onChanged?.call(!widget.value),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                box,
+                if (widget.label != null) ...[
+                  const SizedBox(width: 8),
+                  widget.label!,
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),

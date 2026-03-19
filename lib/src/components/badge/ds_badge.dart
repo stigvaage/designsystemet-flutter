@@ -89,18 +89,25 @@ class DsBadge extends StatelessWidget {
       ),
     };
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        child,
-        Positioned(
-          top: top,
-          right: right,
-          bottom: bottom,
-          left: left,
-          child: badge,
-        ),
-      ],
+    final badgeLabel = count! > 99
+        ? '99+ notifications'
+        : '$count notifications';
+
+    return Semantics(
+      label: badgeLabel,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          child,
+          Positioned(
+            top: top,
+            right: right,
+            bottom: bottom,
+            left: left,
+            child: badge,
+          ),
+        ],
+      ),
     );
   }
 }

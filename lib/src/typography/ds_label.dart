@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import '../theme/ds_color_scope.dart';
+import '../theme/ds_size_scope.dart';
 import '../theme/ds_theme.dart';
 import '../utils/ds_enums.dart';
 
@@ -26,7 +27,15 @@ class DsLabel extends StatelessWidget {
     final activeColor = color ?? DsColorScope.of(context);
     final colorScale = theme.colorScheme.resolve(activeColor);
 
-    final style = theme.typography.bodySm.copyWith(
+    final sizeMode = size ?? DsSizeScope.of(context);
+
+    final baseStyle = switch (sizeMode) {
+      DsSize.sm => theme.typography.bodyMd,
+      DsSize.md => theme.typography.bodyLg,
+      DsSize.lg => theme.typography.bodyXl,
+    };
+
+    final style = baseStyle.copyWith(
       color: colorScale.textDefault,
       fontWeight: weight ?? FontWeight.w500,
     );

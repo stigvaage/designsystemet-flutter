@@ -58,20 +58,24 @@ class _DsSpinnerState extends State<DsSpinner>
       DsSize.lg => 24.0,
     };
 
-    return SizedBox(
-      width: dimension,
-      height: dimension,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          return CustomPaint(
-            painter: _SpinnerPainter(
-              color: colorScale.baseDefault,
-              progress: _controller.value,
-              strokeWidth: 2.5,
-            ),
-          );
-        },
+    return Semantics(
+      label: 'Laster inn',
+      liveRegion: true,
+      child: SizedBox(
+        width: dimension,
+        height: dimension,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            return CustomPaint(
+              painter: _SpinnerPainter(
+                color: colorScale.baseDefault,
+                progress: _controller.value,
+                strokeWidth: 2.5,
+              ),
+            );
+          },
+        ),
       ),
     );
   }

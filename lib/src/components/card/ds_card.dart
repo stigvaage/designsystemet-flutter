@@ -70,17 +70,20 @@ class _DsCardState extends State<DsCard> {
 
     if (!isClickable) return card;
 
-    return Focus(
-      focusNode: widget.focusNode,
-      onFocusChange: (f) => setState(() => _isFocused = f),
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) => setState(() => _isHovered = true),
-        onExit: (_) => setState(() => _isHovered = false),
-        child: GestureDetector(
-          onTap: widget.onTap,
-          behavior: HitTestBehavior.opaque,
-          child: card,
+    return Semantics(
+      button: true,
+      child: Focus(
+        focusNode: widget.focusNode,
+        onFocusChange: (f) => setState(() => _isFocused = f),
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          onEnter: (_) => setState(() => _isHovered = true),
+          onExit: (_) => setState(() => _isHovered = false),
+          child: GestureDetector(
+            onTap: widget.onTap,
+            behavior: HitTestBehavior.opaque,
+            child: card,
+          ),
         ),
       ),
     );

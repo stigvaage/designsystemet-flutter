@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_focus.dart';
+import '../field/ds_field.dart';
 
 class DsInput extends StatefulWidget {
   const DsInput({
@@ -25,6 +27,13 @@ class DsInput extends StatefulWidget {
     this.maxLines = 1,
     this.autofocus = false,
     this.placeholder,
+    this.textInputAction,
+    this.inputFormatters,
+    this.autocorrect = true,
+    this.enableSuggestions = true,
+    this.textCapitalization = TextCapitalization.none,
+    this.onTap,
+    this.textAlign = TextAlign.start,
   });
 
   final TextEditingController? controller;
@@ -43,6 +52,13 @@ class DsInput extends StatefulWidget {
   final int? maxLines;
   final bool autofocus;
   final String? placeholder;
+  final TextInputAction? textInputAction;
+  final List<TextInputFormatter>? inputFormatters;
+  final bool autocorrect;
+  final bool enableSuggestions;
+  final TextCapitalization textCapitalization;
+  final VoidCallback? onTap;
+  final TextAlign textAlign;
 
   @override
   State<DsInput> createState() => _DsInputState();
@@ -95,7 +111,8 @@ class _DsInputState extends State<DsInput> {
     final colorScale = theme.colorScheme.resolve(activeColor);
     final dangerScale = theme.colorScheme.danger;
     final sizeMode = widget.size ?? DsSizeScope.of(context);
-    final hasError = widget.error != null;
+    final effectiveError = widget.error ?? DsFieldScope.of(context)?.error;
+    final hasError = effectiveError != null;
     final radius = BorderRadius.circular(theme.borderRadius.defaultRadius);
     final duration = DsAnimation.resolveDuration(context, DsAnimation.fast);
 
@@ -159,6 +176,7 @@ class _DsInputState extends State<DsInput> {
         child: TextField(
           controller: _controller,
           focusNode: _focusNode,
+          enabled: !widget.disabled,
           style: textStyle,
           cursorColor: colorScale.baseDefault,
           maxLines: widget.maxLines,
@@ -167,9 +185,15 @@ class _DsInputState extends State<DsInput> {
           autofocus: widget.autofocus,
           onChanged: widget.onChanged,
           onSubmitted: widget.onSubmitted,
-          onTapOutside: (_) {},
           keyboardType: widget.keyboardType,
           maxLength: widget.maxLength,
+          textInputAction: widget.textInputAction,
+          inputFormatters: widget.inputFormatters,
+          autocorrect: widget.autocorrect,
+          enableSuggestions: widget.enableSuggestions,
+          textCapitalization: widget.textCapitalization,
+          onTap: widget.onTap,
+          textAlign: widget.textAlign,
           buildCounter:
               (_, {required currentLength, required isFocused, maxLength}) =>
                   null,

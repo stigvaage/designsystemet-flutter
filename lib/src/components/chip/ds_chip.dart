@@ -46,34 +46,40 @@ class DsChip extends StatelessWidget {
         ? colorScale.baseContrastDefault
         : colorScale.textDefault;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: padding,
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: radius,
-          border: Border.all(
-            color: selected ? colorScale.baseDefault : colorScale.borderSubtle,
-            width: 1,
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: radius,
+        border: Border.all(
+          color: selected ? colorScale.baseDefault : colorScale.borderSubtle,
+          width: 1,
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            DefaultTextStyle(
-              style: theme.typography.bodySm.copyWith(color: fgColor),
-              child: child,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onTap,
+            child: Padding(
+              padding: padding,
+              child: DefaultTextStyle(
+                style: theme.typography.bodyMd.copyWith(color: fgColor),
+                child: child,
+              ),
             ),
-            if (removable) ...[
-              const SizedBox(width: 4),
-              GestureDetector(
-                onTap: onRemove,
+          ),
+          if (removable) ...[
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onRemove,
+              child: Padding(
+                padding: EdgeInsets.only(right: padding.right),
                 child: Icon(DsIcons.x, size: 14, color: fgColor),
               ),
-            ],
+            ),
           ],
-        ),
+        ],
       ),
     );
   }

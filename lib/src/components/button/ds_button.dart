@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../theme/ds_color_scale.dart';
@@ -60,29 +61,43 @@ class _DsButtonState extends State<DsButton> {
 
     final content = _buildContent(fgColor);
 
-    Widget button = Semantics(
-      button: true,
-      enabled: !_isDisabled,
-      child: AnimatedContainer(
-        duration: duration,
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: radius,
-          border: border,
+    Widget button = ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 44),
+      child: Semantics(
+        button: true,
+        enabled: !_isDisabled,
+        child: AnimatedContainer(
+          duration: duration,
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: radius,
+            border: border,
+          ),
+          child: content,
         ),
-        child: content,
       ),
     );
 
-    if (_isFocused && !_isDisabled) {
-      button = DecoratedBox(
-        decoration: DsFocus.focusRingWithRadius(colorScale, radius),
-        child: Padding(
-          padding: const EdgeInsets.all(DsFocus.ringWidth),
-          child: button,
-        ),
-      );
-    }
+    // Always reserve focus ring space to prevent layout shift
+    final focusDecoration = _isFocused && !_isDisabled
+        ? DsFocus.focusRingWithRadius(colorScale, radius)
+        : BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              radius.topLeft.x + DsFocus.ringWidth,
+            ),
+            border: Border.all(
+              color: const Color(0x00000000),
+              width: DsFocus.ringWidth,
+            ),
+          );
+
+    button = DecoratedBox(
+      decoration: focusDecoration,
+      child: Padding(
+        padding: const EdgeInsets.all(DsFocus.ringWidth),
+        child: button,
+      ),
+    );
 
     if (_isDisabled) {
       button = Opacity(opacity: theme.disabledOpacity, child: button);
@@ -90,6 +105,16 @@ class _DsButtonState extends State<DsButton> {
 
     return Focus(
       focusNode: widget.focusNode,
+      onKeyEvent: (node, event) {
+        if (!_isDisabled &&
+            event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.enter ||
+                event.logicalKey == LogicalKeyboardKey.space)) {
+          widget.onPressed?.call();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
       onFocusChange: (focused) {
         setState(() => _isFocused = focused);
       },

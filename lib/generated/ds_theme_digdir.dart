@@ -22,7 +22,7 @@ class DsThemeDigdir {
     sizeTokens: DsSizeTokens.md,
     typography: DsTypography.create(baseFontSize: 18),
     borderRadius: DsBorderRadiusTokens.fromBase(4),
-    shadows: DsShadowTokens.standard,
+    shadows: DsShadowTokens.light,
   );
 
   static DsThemeData dark() => DsThemeData(
@@ -31,7 +31,7 @@ class DsThemeDigdir {
     sizeTokens: DsSizeTokens.md,
     typography: DsTypography.create(baseFontSize: 18),
     borderRadius: DsBorderRadiusTokens.fromBase(4),
-    shadows: DsShadowTokens.standard,
+    shadows: DsShadowTokens.dark,
   );
 
   // ── Light color scheme ──────────────────────────────────────────────

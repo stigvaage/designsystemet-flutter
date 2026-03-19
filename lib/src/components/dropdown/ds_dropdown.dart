@@ -1,7 +1,9 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
+import '../../theme/ds_theme_data.dart';
 import '../../utils/ds_enums.dart';
 
 class DsDropdown extends StatefulWidget {
@@ -39,14 +41,20 @@ class _DsDropdownState extends State<DsDropdown> {
 
   void _open() {
     if (_isOpen) return;
-    _isOpen = true;
-    _entry = OverlayEntry(builder: _buildMenu);
+    // Capture theme and color scope BEFORE creating OverlayEntry (Issue #27)
+    final capturedTheme = DsTheme.of(context);
+    final capturedColor = widget.color ?? DsColorScope.of(context);
+    setState(() => _isOpen = true);
+    _entry = OverlayEntry(
+      builder: (overlayContext) =>
+          _buildMenuWithTheme(overlayContext, capturedTheme, capturedColor),
+    );
     Overlay.of(context).insert(_entry!);
   }
 
   void _close() {
     if (!_isOpen) return;
-    _isOpen = false;
+    setState(() => _isOpen = false);
     _entry?.remove();
     _entry = null;
   }
@@ -56,9 +64,11 @@ class _DsDropdownState extends State<DsDropdown> {
     _close();
   }
 
-  Widget _buildMenu(BuildContext context) {
-    final theme = DsTheme.of(context);
-    final activeColor = widget.color ?? DsColorScope.of(context);
+  Widget _buildMenuWithTheme(
+    BuildContext context,
+    DsThemeData theme,
+    DsColor activeColor,
+  ) {
     final colorScale = theme.colorScheme.resolve(activeColor);
 
     return GestureDetector(
@@ -118,11 +128,27 @@ class _DsDropdownState extends State<DsDropdown> {
     super.dispose();
   }
 
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.escape &&
+        _isOpen) {
+      _close();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: GestureDetector(onTap: _toggle, child: widget.trigger),
+    return Focus(
+      onKeyEvent: _handleKeyEvent,
+      child: Semantics(
+        expanded: _isOpen,
+        child: CompositedTransformTarget(
+          link: _layerLink,
+          child: GestureDetector(onTap: _toggle, child: widget.trigger),
+        ),
+      ),
     );
   }
 }

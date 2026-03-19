@@ -39,22 +39,26 @@ class DsAvatar extends StatelessWidget {
       DsSize.lg => 16.0,
     };
 
-    return Container(
-      width: dimension,
-      height: dimension,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: colorScale.surfaceTinted,
-        border: Border.all(color: colorScale.borderSubtle, width: 1),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        _initials,
-        style: TextStyle(
-          fontFamily: theme.typography.fontFamily,
-          fontSize: fontSize,
-          fontWeight: FontWeight.w500,
-          color: colorScale.textDefault,
+    return Semantics(
+      label: name ?? 'Avatar',
+      image: true,
+      child: Container(
+        width: dimension,
+        height: dimension,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: colorScale.surfaceTinted,
+          border: Border.all(color: colorScale.borderSubtle, width: 1),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          _initials,
+          style: TextStyle(
+            fontFamily: theme.typography.fontFamily,
+            fontSize: fontSize,
+            fontWeight: FontWeight.w500,
+            color: colorScale.textDefault,
+          ),
         ),
       ),
     );

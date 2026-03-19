@@ -112,4 +112,200 @@ class DsShadowTokens {
       ),
     ],
   );
+
+  /// Light mode shadows (same as standard).
+  static const light = DsShadowTokens(
+    xs: [
+      BoxShadow(
+        offset: Offset(0, 0),
+        blurRadius: 1,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.16),
+      ),
+      BoxShadow(
+        offset: Offset(0, 1),
+        blurRadius: 2,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.12),
+      ),
+    ],
+    sm: [
+      BoxShadow(
+        offset: Offset(0, 0),
+        blurRadius: 1,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.15),
+      ),
+      BoxShadow(
+        offset: Offset(0, 1),
+        blurRadius: 2,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.12),
+      ),
+      BoxShadow(
+        offset: Offset(0, 2),
+        blurRadius: 4,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.10),
+      ),
+    ],
+    md: [
+      BoxShadow(
+        offset: Offset(0, 0),
+        blurRadius: 1,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.14),
+      ),
+      BoxShadow(
+        offset: Offset(0, 2),
+        blurRadius: 4,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.12),
+      ),
+      BoxShadow(
+        offset: Offset(0, 4),
+        blurRadius: 8,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.12),
+      ),
+    ],
+    lg: [
+      BoxShadow(
+        offset: Offset(0, 0),
+        blurRadius: 1,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.13),
+      ),
+      BoxShadow(
+        offset: Offset(0, 3),
+        blurRadius: 5,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.13),
+      ),
+      BoxShadow(
+        offset: Offset(0, 6),
+        blurRadius: 12,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.14),
+      ),
+    ],
+    xl: [
+      BoxShadow(
+        offset: Offset(0, 0),
+        blurRadius: 1,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.12),
+      ),
+      BoxShadow(
+        offset: Offset(0, 4),
+        blurRadius: 8,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.16),
+      ),
+      BoxShadow(
+        offset: Offset(0, 12),
+        blurRadius: 24,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.16),
+      ),
+    ],
+  );
+
+  /// Dark mode shadows with higher opacity for visibility on dark backgrounds.
+  static const dark = DsShadowTokens(
+    xs: [
+      BoxShadow(
+        offset: Offset(0, 0),
+        blurRadius: 1,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.32),
+      ),
+      BoxShadow(
+        offset: Offset(0, 1),
+        blurRadius: 2,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.24),
+      ),
+    ],
+    sm: [
+      BoxShadow(
+        offset: Offset(0, 0),
+        blurRadius: 1,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.30),
+      ),
+      BoxShadow(
+        offset: Offset(0, 1),
+        blurRadius: 2,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.24),
+      ),
+      BoxShadow(
+        offset: Offset(0, 2),
+        blurRadius: 4,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.20),
+      ),
+    ],
+    md: [
+      BoxShadow(
+        offset: Offset(0, 0),
+        blurRadius: 1,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.28),
+      ),
+      BoxShadow(
+        offset: Offset(0, 2),
+        blurRadius: 4,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.24),
+      ),
+      BoxShadow(
+        offset: Offset(0, 4),
+        blurRadius: 8,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.24),
+      ),
+    ],
+    lg: [
+      BoxShadow(
+        offset: Offset(0, 0),
+        blurRadius: 1,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.26),
+      ),
+      BoxShadow(
+        offset: Offset(0, 3),
+        blurRadius: 5,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.26),
+      ),
+      BoxShadow(
+        offset: Offset(0, 6),
+        blurRadius: 12,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.28),
+      ),
+    ],
+    xl: [
+      BoxShadow(
+        offset: Offset(0, 0),
+        blurRadius: 1,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.24),
+      ),
+      BoxShadow(
+        offset: Offset(0, 4),
+        blurRadius: 8,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.32),
+      ),
+      BoxShadow(
+        offset: Offset(0, 12),
+        blurRadius: 24,
+        spreadRadius: 0,
+        color: Color.fromRGBO(0, 0, 0, 0.32),
+      ),
+    ],
+  );
 }

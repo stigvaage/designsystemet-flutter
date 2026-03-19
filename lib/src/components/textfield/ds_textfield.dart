@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../../utils/ds_enums.dart';
 import '../input/ds_input.dart';
@@ -20,6 +21,13 @@ class DsTextfield extends StatelessWidget {
     this.maxLength,
     this.autofocus = false,
     this.placeholder,
+    this.textInputAction,
+    this.inputFormatters,
+    this.autocorrect = true,
+    this.enableSuggestions = true,
+    this.textCapitalization = TextCapitalization.none,
+    this.onTap,
+    this.textAlign = TextAlign.start,
   });
 
   final TextEditingController? controller;
@@ -37,6 +45,13 @@ class DsTextfield extends StatelessWidget {
   final int? maxLength;
   final bool autofocus;
   final String? placeholder;
+  final TextInputAction? textInputAction;
+  final List<TextInputFormatter>? inputFormatters;
+  final bool autocorrect;
+  final bool enableSuggestions;
+  final TextCapitalization textCapitalization;
+  final VoidCallback? onTap;
+  final TextAlign textAlign;
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +72,13 @@ class DsTextfield extends StatelessWidget {
       maxLines: 1,
       autofocus: autofocus,
       placeholder: placeholder,
+      textInputAction: textInputAction,
+      inputFormatters: inputFormatters,
+      autocorrect: autocorrect,
+      enableSuggestions: enableSuggestions,
+      textCapitalization: textCapitalization,
+      onTap: onTap,
+      textAlign: textAlign,
     );
   }
 }

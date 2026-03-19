@@ -39,14 +39,26 @@ class DsField extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 4),
             child: Text(
               description!,
-              style: theme.typography.bodyXs.copyWith(
+              style: theme.typography.bodyMd.copyWith(
                 color: theme.colorScheme.neutral.textSubtle,
               ),
             ),
           ),
-        child,
+        DsFieldScope(error: error, child: child),
         if (error != null) DsValidationMessage(message: error!),
       ],
     );
   }
+}
+
+class DsFieldScope extends InheritedWidget {
+  const DsFieldScope({super.key, required this.error, required super.child});
+
+  final String? error;
+
+  static DsFieldScope? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<DsFieldScope>();
+
+  @override
+  bool updateShouldNotify(DsFieldScope oldWidget) => error != oldWidget.error;
 }

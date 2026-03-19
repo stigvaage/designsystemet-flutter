@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
@@ -23,6 +24,7 @@ class DsLink extends StatefulWidget {
 
 class _DsLinkState extends State<DsLink> {
   bool _isHovered = false;
+  bool _isFocused = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,20 +36,46 @@ class _DsLinkState extends State<DsLink> {
         ? colorScale.baseContrastDefault
         : colorScale.textDefault;
 
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Text(
-          widget.text,
-          style: theme.typography.bodyMd.copyWith(
-            color: textColor,
-            decoration: _isHovered
-                ? TextDecoration.none
-                : TextDecoration.underline,
-            decorationColor: textColor,
+    return Semantics(
+      link: true,
+      label: widget.text,
+      child: Focus(
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.enter) {
+            widget.onTap?.call();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        onFocusChange: (f) => setState(() => _isFocused = f),
+        child: MouseRegion(
+          onEnter: (_) => setState(() => _isHovered = true),
+          onExit: (_) => setState(() => _isHovered = false),
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            onTap: widget.onTap,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                border: _isFocused
+                    ? Border.all(color: colorScale.borderStrong, width: 2)
+                    : Border.all(color: const Color(0x00000000), width: 2),
+                borderRadius: BorderRadius.circular(2),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                child: Text(
+                  widget.text,
+                  style: theme.typography.bodyMd.copyWith(
+                    color: textColor,
+                    decoration: _isHovered
+                        ? TextDecoration.none
+                        : TextDecoration.underline,
+                    decorationColor: textColor,
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ),

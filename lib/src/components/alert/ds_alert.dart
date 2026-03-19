@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
@@ -69,7 +70,7 @@ class DsAlert extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 4),
                       child: DefaultTextStyle(
-                        style: theme.typography.bodySm.copyWith(
+                        style: theme.typography.bodyMd.copyWith(
                           fontWeight: FontWeight.w600,
                           color: colorScale.textDefault,
                         ),
@@ -77,7 +78,7 @@ class DsAlert extends StatelessWidget {
                       ),
                     ),
                   DefaultTextStyle(
-                    style: theme.typography.bodySm.copyWith(
+                    style: theme.typography.bodyMd.copyWith(
                       color: colorScale.textDefault,
                     ),
                     child: child,
@@ -87,14 +88,35 @@ class DsAlert extends StatelessWidget {
             ),
             // Close button
             if (closable)
-              GestureDetector(
-                onTap: onClose,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: Icon(
-                    DsIcons.x,
-                    size: 16,
-                    color: colorScale.textSubtle,
+              Semantics(
+                button: true,
+                label: 'Lukk varsel',
+                child: Focus(
+                  onKeyEvent: (node, event) {
+                    if (event is KeyDownEvent &&
+                        (event.logicalKey == LogicalKeyboardKey.enter ||
+                            event.logicalKey == LogicalKeyboardKey.space)) {
+                      onClose?.call();
+                      return KeyEventResult.handled;
+                    }
+                    return KeyEventResult.ignored;
+                  },
+                  child: GestureDetector(
+                    onTap: onClose,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: Center(
+                          child: Icon(
+                            DsIcons.x,
+                            size: 16,
+                            color: colorScale.textSubtle,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),

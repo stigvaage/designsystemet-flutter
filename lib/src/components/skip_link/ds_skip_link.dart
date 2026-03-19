@@ -29,30 +29,25 @@ class _DsSkipLinkState extends State<DsSkipLink> {
     final activeColor = widget.color ?? DsColorScope.of(context);
     final colorScale = theme.colorScheme.resolve(activeColor);
 
-    // Only visible when focused
-    if (!_isFocused) {
-      return Focus(
-        onFocusChange: (f) => setState(() => _isFocused = f),
-        child: const SizedBox.shrink(),
-      );
-    }
-
     return Focus(
       onFocusChange: (f) => setState(() => _isFocused = f),
-      child: GestureDetector(
-        onTap: widget.onActivate,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: colorScale.baseDefault,
-            borderRadius: BorderRadius.circular(
-              theme.borderRadius.defaultRadius,
+      child: Offstage(
+        offstage: !_isFocused,
+        child: GestureDetector(
+          onTap: widget.onActivate,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: colorScale.baseDefault,
+              borderRadius: BorderRadius.circular(
+                theme.borderRadius.defaultRadius,
+              ),
             ),
-          ),
-          child: Text(
-            widget.label,
-            style: theme.typography.bodySm.copyWith(
-              color: colorScale.baseContrastDefault,
+            child: Text(
+              widget.label,
+              style: theme.typography.bodyMd.copyWith(
+                color: colorScale.baseContrastDefault,
+              ),
             ),
           ),
         ),
