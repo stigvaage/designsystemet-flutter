@@ -1,39 +1,78 @@
-# komponentbibliotek.flutter Development Guidelines
+# komponentbibliotek.flutter — Utviklingsretningslinjer
 
-Auto-generated from all feature plans. Last updated: 2026-03-17
+Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra Digitaliseringsdirektoratet.
+Utviklet av Stig H. Våge og Claude Code.
 
-## Active Technologies
-- Dart 3.3+ / Flutter 3.19+ (matches library) + `widgetbook` (latest stable), `widgetbook_annotation`, `widgetbook_generator` (for code-gen approach), `build_runner` (002-widgetbook-docs-site)
-- N/A (static web app) (002-widgetbook-docs-site)
-- TypeScript 5.x / Node.js >= 18 + `@modelcontextprotocol/sdk` v1.x, `zod` v3, `minisearch` (doc search indexing) (003-mcp-server)
-- Filesystem (read-only) + pre-processed JSON bundles in `dist/data/` (003-mcp-server)
-- TypeScript (VitePress theme), Dart 3.3+ (Widgetbook app), YAML (GitHub Actions) + VitePress 1.6.4, Widgetbook 3.22.0, Vue 3 (VitePress theme components) (004-fix-docs-site)
-- N/A (static site) (004-fix-docs-site)
-- YAML (GitHub Actions workflow), Dart 3.3+ (Flutter Widgetbook build), TypeScript (VitePress docs build) + `actions/checkout@v4`, `subosito/flutter-action@v2`, `actions/setup-node@v4`, `actions/upload-pages-artifact@v3`, `actions/deploy-pages@v4` (005-fix-build-deploy)
-- N/A (static site deployment) (005-fix-build-deploy)
+## Teknologi
 
-- Dart 3.3+ (null-safe, pattern matching, sealed classes) + `package:flutter/widgets.dart`, `package:flutter/rendering.dart` (no Material/Cupertino visual deps); Inter font bundled as package asse (001-designsystemet-flutter-lib)
+- **Dart 3.8+ / Flutter 3.32+** — Komponentbiblioteket (40 komponenter, tokendrevet tema, ingen Material/Cupertino-avhengigheter)
+- **TypeScript 5.x / Node.js 18+** — MCP-server (`@modelcontextprotocol/sdk`, `zod`, `minisearch`)
+- **VitePress 1.6 / Vue 3** — Dokumentasjonsside (67 norskspråklige sider)
+- **Widgetbook 3.x** — Interaktiv komponentkatalog
+- **GitHub Actions** — CI (format, analyse, test) + deploy til GitHub Pages
 
-## Project Structure
+## Prosjektstruktur
 
-```text
-src/
-tests/
+```
+lib/                    # Hovedbiblioteket
+  src/components/       # 40 komponentmapper (ds_button, ds_alert, ...)
+  src/theme/            # Temasystem (DsTheme, DsThemeData, tokens)
+  src/typography/       # Typografikomponenter
+  src/generator/        # Kodegenerator for egendefinerte temaer
+  src/utils/            # Verktøy (enums, ikoner, fokus, animasjon)
+  generated/            # Genererte temafiler (DsThemeDigdir)
+  fonts/                # Inter TTF-filer (400, 500, 600)
+widgetbook/             # Widgetbook-app (Flutter web)
+site/                   # VitePress-dokumentasjonsside
+  nb/                   # Norske markdown-sider
+  .vitepress/           # Config og egendefinert tema
+mcp-server/             # MCP-server (TypeScript)
+  src/tools/            # 6 MCP-verktøy
+  src/resources/        # 2 ressursbehandlere
+  src/parsers/          # Dart-, markdown-, tokenparsere
+example/                # Eksempelapp
+test/                   # Dart-tester (widget, tema, tilgjengelighet)
 ```
 
-## Commands
+## Kommandoer
 
-# Add commands for Dart 3.3+ (null-safe, pattern matching, sealed classes)
+```bash
+# Formater
+dart format .
 
-## Code Style
+# Analyse
+flutter analyze --no-fatal-infos
 
-Dart 3.3+ (null-safe, pattern matching, sealed classes): Follow standard conventions
+# Test
+flutter test
 
-## Recent Changes
-- 005-fix-build-deploy: Added YAML (GitHub Actions workflow), Dart 3.3+ (Flutter Widgetbook build), TypeScript (VitePress docs build) + `actions/checkout@v4`, `subosito/flutter-action@v2`, `actions/setup-node@v4`, `actions/upload-pages-artifact@v3`, `actions/deploy-pages@v4`
-- 004-fix-docs-site: Added TypeScript (VitePress theme), Dart 3.3+ (Widgetbook app), YAML (GitHub Actions) + VitePress 1.6.4, Widgetbook 3.22.0, Vue 3 (VitePress theme components)
-- 003-mcp-server: Added TypeScript 5.x / Node.js >= 18 + `@modelcontextprotocol/sdk` v1.x, `zod` v3, `minisearch` (doc search indexing)
+# Widgetbook
+cd widgetbook && flutter pub get && flutter build web
 
+# Dokumentasjonsside
+cd site && npm ci && npm run build
 
-<!-- MANUAL ADDITIONS START -->
-<!-- MANUAL ADDITIONS END -->
+# MCP-server
+cd mcp-server && npm install && npm run build
+```
+
+## Kodestil
+
+- **Ds-prefiks** på alle offentlige klasser (`DsButton`, `DsAlert`, `DsThemeData`)
+- **Ingen hardkodede verdier** — alle visuelle egenskaper via `DsTheme.of(context)`
+- **Ingen Material/Cupertino** — kun `package:flutter/widgets.dart` og `rendering.dart`
+- **Null-sikkerhet** — bruk `required` for påkrevde parametre
+- **Dartdoc** på alle offentlige API-er
+- Følg `flutter_lints` og `analysis_options.yaml` (strict-casts, strict-inference, strict-raw-types)
+
+## Språk
+
+All brukersynlig tekst (README, dokumentasjon, issue-maler, SECURITY.md, pubspec-beskrivelser) skal være på **norsk** med korrekt bruk av **æ, ø, å**. Teknisk kode og identifikatorer forblir på engelsk.
+
+## Tilgjengelighet
+
+Alle komponenter skal oppfylle **WCAG 2.1 AA**: riktig semantikk, tastaturnavigasjon, fokusindikatorer, fargekontrast (4.5:1 tekst, 3:1 grensesnitt), og respektere `MediaQuery.disableAnimations`.
+
+## MCP-server
+
+Prosjektet inkluderer en MCP-server i `mcp-server/` som eksponerer komponent-API-er, migreringsmappinger, tokens og dokumentasjon for AI-kodeassistenter. Se `.mcp.json` for konfigurasjon.

@@ -19,13 +19,7 @@ Bruk i stedet [GitHub Security Advisories](https://github.com/stigvaage/komponen
 - Konsekvensene du har identifisert
 - Eventuelt forslag til løsning (valgfritt)
 
-### Responstidslinje
-
-- **48 timer**: Bekreftelse på mottatt rapport
-- **7 dager**: Første vurdering og alvorlighetsklassifisering
-- **30 dager**: Mål for utgivelse av fiks eller avbøtende tiltak
-
-Vi holder deg informert gjennom hele prosessen og krediterer deg i rådgivningen (med mindre du foretrekker å forbli anonym).
+Vi gjør vårt beste for å følge opp rapporter så raskt som mulig og holder deg informert underveis. Bidragsytere krediteres i rådgivningen med mindre de foretrekker å forbli anonyme.
 
 ## Sikkerhetsretningslinjer for bidragsytere
 
