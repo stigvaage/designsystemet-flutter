@@ -2,7 +2,7 @@ name: example
 description: Showcase app for komponentbibliotek_flutter
 
 environment:
-  sdk: ^3.3.0
+  sdk: ^3.8.0
 
 dependencies:
   flutter:
