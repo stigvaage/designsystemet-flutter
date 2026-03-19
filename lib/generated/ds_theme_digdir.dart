@@ -272,7 +272,26 @@ class DsThemeDigdir {
   );
 
   static const _darkBrand1 = _darkAccent;
-  static const _darkBrand2 = _darkAccent;
+
+  static const _darkBrand2 = DsColorScale(
+    backgroundDefault: Color(0xFF071520),
+    backgroundTinted: Color(0xFF0E2338),
+    surfaceDefault: Color(0xFF16334D),
+    surfaceTinted: Color(0xFF1F4363),
+    surfaceHover: Color(0xFF2C5A7E),
+    surfaceActive: Color(0xFF3A7099),
+    borderSubtle: Color(0xFF4987B0),
+    borderDefault: Color(0xFF68A5CB),
+    borderStrong: Color(0xFF8DC1DF),
+    textSubtle: Color(0xFFA2D0E8),
+    textDefault: Color(0xFFD4EBF5),
+    baseDefault: Color(0xFF4AAFE0),
+    baseHover: Color(0xFF65BFEA),
+    baseActive: Color(0xFF82CEF0),
+    baseContrastSubtle: Color(0xFF0E2338),
+    baseContrastDefault: Color(0xFF000000),
+  );
+
   static const _darkBrand3 = _darkAccent;
 
   static const _darkSuccess = DsColorScale(

@@ -43,7 +43,7 @@ class DartEmitter {
       '        typography: DsTypography.create(baseFontSize: 18),',
     );
     _emitBorderRadius(buffer, theme);
-    buffer.writeln('        shadows: DsShadowTokens.standard,');
+    buffer.writeln('        shadows: DsShadowTokens.light,');
     buffer.writeln('      );');
     buffer.writeln();
 
@@ -56,7 +56,7 @@ class DartEmitter {
       '        typography: DsTypography.create(baseFontSize: 18),',
     );
     _emitBorderRadius(buffer, theme);
-    buffer.writeln('        shadows: DsShadowTokens.standard,');
+    buffer.writeln('        shadows: DsShadowTokens.dark,');
     buffer.writeln('      );');
     buffer.writeln();
 
