@@ -1,8 +1,8 @@
-# Komponentbibliotek MCP Server
+# Komponentbibliotek MCP-server
 
-MCP server that exposes the Komponentbibliotek-Flutter component library to AI coding assistants. Provides component API lookup, Material-to-Designsystemet migration mappings, theme/token reference, and documentation search.
+MCP-server som gjør komponentbiblioteket tilgjengelig for AI-kodeassistenter. Tilbyr oppslag av komponent-API-er, migreringsmapping fra Material til Designsystemet, tema-/tokenreferanse og dokumentasjonssøk.
 
-## Quick Start
+## Hurtigstart
 
 ```bash
 cd mcp-server
@@ -11,70 +11,70 @@ npm run build
 npm start
 ```
 
-## Tools
+## Verktøy
 
-| Tool | Description |
-|------|-------------|
-| `lookup_component` | Look up a component by name — returns properties, examples, imports |
-| `list_components` | List all components, optionally filtered by category |
-| `get_migration_mapping` | Map a Material widget to its Designsystemet equivalent |
-| `get_theme_setup` | Get step-by-step theme setup instructions |
-| `list_tokens` | List design tokens by category (colors, typography, sizes, etc.) |
-| `search_docs` | Search across all documentation content |
+| Verktøy | Beskrivelse |
+|---------|-------------|
+| `lookup_component` | Slå opp en komponent etter navn — returnerer egenskaper, eksempler og import |
+| `list_components` | List alle komponenter, valgfritt filtrert på kategori |
+| `get_migration_mapping` | Kartlegg en Material-widget til dens Designsystemet-ekvivalent |
+| `get_theme_setup` | Få trinnvis veiledning for temaoppsett |
+| `list_tokens` | List designtokens etter kategori (farger, typografi, størrelser m.m.) |
+| `search_docs` | Søk på tvers av all dokumentasjon |
 
-## Resources
+## Ressurser
 
-| Resource | Description |
-|----------|-------------|
-| `component:///{path}` | Read component Dart source files |
-| `docs:///{path}` | Read documentation markdown files |
+| Ressurs | Beskrivelse |
+|---------|-------------|
+| `component:///{sti}` | Les Dart-kildefiler for komponenter |
+| `docs:///{sti}` | Les markdown-dokumentasjonsfiler |
 
-## Connect to Claude Code
+## Koble til Claude Code
 
-Add to your project's `.mcp.json`:
+Legg til i prosjektets `.mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "komponentbibliotek": {
       "command": "node",
-      "args": ["/path/to/komponentbibliotek.flutter/mcp-server/dist/index.js"],
+      "args": ["/sti/til/komponentbibliotek.flutter/mcp-server/dist/index.js"],
       "env": {
-        "REPO_ROOT": "/path/to/komponentbibliotek.flutter"
+        "REPO_ROOT": "/sti/til/komponentbibliotek.flutter"
       }
     }
   }
 }
 ```
 
-Or run in dev mode:
+Eller kjør i utviklingsmodus:
 
 ```json
 {
   "mcpServers": {
     "komponentbibliotek": {
       "command": "npx",
-      "args": ["tsx", "/path/to/komponentbibliotek.flutter/mcp-server/src/index.ts"],
+      "args": ["tsx", "/sti/til/komponentbibliotek.flutter/mcp-server/src/index.ts"],
       "env": {
-        "REPO_ROOT": "/path/to/komponentbibliotek.flutter"
+        "REPO_ROOT": "/sti/til/komponentbibliotek.flutter"
       }
     }
   }
 }
 ```
 
-## Connect to Cursor
+## Koble til Cursor
 
-Add to `.cursor/mcp.json`:
+Legg til i `.cursor/mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "komponentbibliotek": {
       "command": "node",
-      "args": ["/path/to/komponentbibliotek.flutter/mcp-server/dist/index.js"],
+      "args": ["/sti/til/komponentbibliotek.flutter/mcp-server/dist/index.js"],
       "env": {
-        "REPO_ROOT": "/path/to/komponentbibliotek.flutter"
+        "REPO_ROOT": "/sti/til/komponentbibliotek.flutter"
       }
     }
   }
@@ -84,17 +84,17 @@ Add to `.cursor/mcp.json`:
 ## Docker
 
 ```bash
-cd /path/to/komponentbibliotek.flutter
+cd /sti/til/komponentbibliotek.flutter
 docker build -t komponentbibliotek-mcp -f mcp-server/Dockerfile .
 docker run -i komponentbibliotek-mcp
 ```
 
-## Standalone Distribution
+## Frittstående distribusjon
 
-To run without a repo checkout, pre-bundle the data:
+For å kjøre uten en repo-checkout, forhåndsbygg dataene:
 
 ```bash
 npm run build
 npm run build-data
-# dist/ now contains everything needed
+# dist/ inneholder nå alt som trengs
 ```

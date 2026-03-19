@@ -1,5 +1,5 @@
 name: widgetbook_komponentbibliotek
-description: Interactive component catalog for komponentbibliotek_flutter
+description: Interaktiv komponentkatalog for komponentbibliotek_flutter
 
 environment:
   sdk: ^3.8.0

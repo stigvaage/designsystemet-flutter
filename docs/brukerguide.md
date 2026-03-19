@@ -14,8 +14,8 @@ Denne brukerguiden dekker alt du trenger for å ta biblioteket i bruk, fra oppse
 
 ### Systemkrav
 
-- Flutter 3.19 eller nyere
-- Dart 3.3 eller nyere
+- Flutter 3.32 eller nyere
+- Dart 3.8 eller nyere
 - Alle Flutter-plattformer støttet: Android, iOS, Web, macOS, Linux, Windows
 
 ### Installer pakken
@@ -1118,4 +1118,4 @@ Biblioteket støtter alle plattformer som Flutter støtter:
 - **Inter-font**: Levert som pakkeressurs (TTF-filer). Ingen nettverkstilgang kreves.
 - **Hover-effekter**: Bruker `MouseRegion` som kun aktiveres på pekerenheter, ikke berøring.
 - **Fokusindikatorer**: Tilpasset plattformens fokuskonvensjoner.
-- **Minste Flutter-versjon**: 3.19+ (kreves for Dart 3.3-funksjoner som mønstermatching og forseglede klasser).
+- **Minste Flutter-versjon**: 3.32+ (kreves for Dart 3.8-funksjoner som mønstermatching og forseglede klasser).

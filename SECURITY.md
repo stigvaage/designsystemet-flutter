@@ -1,35 +1,35 @@
-# Security Policy
+# Sikkerhetspolicy
 
-## Supported Versions
+## Støttede versjoner
 
-| Version | Supported          |
-|---------|--------------------|
+| Versjon | Støttet          |
+|---------|-------------------|
 | 0.x     | :white_check_mark: |
 
-## Reporting a Vulnerability
+## Rapportere en sårbarhet
 
-**Do not open a public issue for security vulnerabilities.**
+**Ikke opprett en offentlig issue for sikkerhetssårbarheter.**
 
-Instead, please use [GitHub Security Advisories](https://github.com/stigvaage/komponentbibliotek-flutter/security/advisories/new) to report vulnerabilities privately.
+Bruk i stedet [GitHub Security Advisories](https://github.com/stigvaage/komponentbibliotek-flutter/security/advisories/new) for å rapportere sårbarheter privat.
 
-### What to include
+### Hva du bør inkludere
 
-- A description of the vulnerability
-- Steps to reproduce or a proof of concept
-- The impact you have identified
-- Any suggested fix (optional)
+- En beskrivelse av sårbarheten
+- Steg for å reprodusere, eller et proof of concept
+- Konsekvensene du har identifisert
+- Eventuelt forslag til løsning (valgfritt)
 
-### Response timeline
+### Responstidslinje
 
-- **48 hours**: Acknowledgment of your report
-- **7 days**: Initial assessment and severity classification
-- **30 days**: Target for a fix or mitigation to be released
+- **48 timer**: Bekreftelse på mottatt rapport
+- **7 dager**: Første vurdering og alvorlighetsklassifisering
+- **30 dager**: Mål for utgivelse av fiks eller avbøtende tiltak
 
-We will keep you informed throughout the process and credit you in the advisory (unless you prefer to remain anonymous).
+Vi holder deg informert gjennom hele prosessen og krediterer deg i rådgivningen (med mindre du foretrekker å forbli anonym).
 
-## Security Guidelines for Contributors
+## Sikkerhetsretningslinjer for bidragsytere
 
-- **No secrets in code**: Never commit API keys, tokens, passwords, or other credentials. Use environment variables or GitHub Secrets for CI/CD.
-- **Least privilege CI**: Workflows should request only the permissions they need.
-- **Keep dependencies updated**: Use Dependabot alerts and keep dependencies current.
-- **Review third-party code**: Evaluate new dependencies for known vulnerabilities before adding them.
+- **Ingen hemmeligheter i kode**: Aldri commit API-nøkler, tokens, passord eller andre legitimasjonsdetaljer. Bruk miljøvariabler eller GitHub Secrets for CI/CD.
+- **Minst mulig tilgang i CI**: Arbeidsflyter skal kun be om de tillatelsene de trenger.
+- **Hold avhengigheter oppdatert**: Bruk Dependabot-varsler og hold avhengigheter oppdatert.
+- **Gjennomgå tredjepartskode**: Evaluer nye avhengigheter for kjente sårbarheter før du legger dem til.

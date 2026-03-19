@@ -2,7 +2,7 @@
 
 Fullstendig referanse for alle 40 komponenter i `komponentbibliotek_flutter`. Hver komponent er dokumentert med beskrivelse, viktige egenskaper og kodeeksempel.
 
-> **Felles egenskaper:** Alle synlige komponenter aksepterer valgfri `DsSize? size` (arves fra `DsSizeScope` nar `null`) og `DsColor? color` (arves fra `DsColorScope` nar `null`).
+> **Felles egenskaper:** Alle synlige komponenter aksepterer valgfri `DsSize? size` (arves fra `DsSizeScope` når `null`) og `DsColor? color` (arves fra `DsColorScope` når `null`).
 
 ---
 
@@ -10,7 +10,7 @@ Fullstendig referanse for alle 40 komponenter i `komponentbibliotek_flutter`. Hv
 
 ### DsButton
 
-Knapp med tre varianter og stotte for ikon, lastetilstand og deaktivert tilstand.
+Knapp med tre varianter og støtte for ikon, lastetilstand og deaktivert tilstand.
 
 **Egenskaper:**
 
@@ -19,7 +19,7 @@ Knapp med tre varianter og stotte for ikon, lastetilstand og deaktivert tilstand
 | `onPressed` | `VoidCallback?` | påkrevd | Handling ved trykk |
 | `child` | `Widget` | påkrevd | Knappens innhold (typisk `Text`) |
 | `variant` | `DsButtonVariant` | `primary` | Visuell variant: primary, secondary, tertiary |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `color` | `DsColor?` | `null` | Fargeskala |
 | `disabled` | `bool` | `false` | Deaktiver knappen |
 | `loading` | `bool` | `false` | Vis lastespinner |
@@ -49,7 +49,7 @@ Tekstfelt for enlinjes inndata.
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | `controller` | `TextEditingController?` | `null` | Tekstkontroller |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `error` | `String?` | `null` | Feilmelding (aktiverer feiltilstand) |
 | `disabled` | `bool` | `false` | Deaktiver feltet |
 | `readOnly` | `bool` | `false` | Skrivebeskyttet |
@@ -77,14 +77,14 @@ DsTextfield(
 
 ### DsTextarea
 
-Tekstomrade for flerlinjes inndata.
+Tekstområde for flerlinjes inndata.
 
 **Egenskaper:**
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | `controller` | `TextEditingController?` | `null` | Tekstkontroller |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `error` | `String?` | `null` | Feilmelding |
 | `disabled` | `bool` | `false` | Deaktiver feltet |
 | `readOnly` | `bool` | `false` | Skrivebeskyttet |
@@ -106,7 +106,7 @@ DsTextarea(
 
 ### DsCheckbox
 
-Avkrysningsboks med stotte for ubestemt tilstand.
+Avkrysningsboks med støtte for ubestemt tilstand.
 
 **Egenskaper:**
 
@@ -115,7 +115,7 @@ Avkrysningsboks med stotte for ubestemt tilstand.
 | `value` | `bool` | påkrevd | Avkrysset eller ikke |
 | `onChanged` | `ValueChanged<bool>?` | påkrevd | Kalles ved endring |
 | `label` | `Widget?` | `null` | Etikett ved siden av boksen |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `color` | `DsColor?` | `null` | Fargeskala |
 | `error` | `String?` | `null` | Feilmelding |
 | `indeterminate` | `bool` | `false` | Ubestemt tilstand (strek i stedet for hake) |
@@ -146,7 +146,7 @@ Radioknapp for enkeltvalg i gruppe.
 | `groupValue` | `bool` | påkrevd | Gruppens gjeldende verdi |
 | `onChanged` | `ValueChanged<bool>?` | påkrevd | Kalles ved endring |
 | `label` | `Widget?` | `null` | Etikett |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `color` | `DsColor?` | `null` | Fargeskala |
 | `focusNode` | `FocusNode?` | `null` | Egen fokusnode |
 
@@ -174,7 +174,7 @@ Av/på-bryter.
 | `value` | `bool` | påkrevd | På eller av |
 | `onChanged` | `ValueChanged<bool>?` | påkrevd | Kalles ved endring |
 | `label` | `Widget?` | `null` | Etikett |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `color` | `DsColor?` | `null` | Fargeskala |
 | `disabled` | `bool` | `false` | Deaktivert |
 | `focusNode` | `FocusNode?` | `null` | Egen fokusnode |
@@ -205,7 +205,7 @@ Varselboks med alvorlighetsgrader.
 | `closable` | `bool` | `false` | Vis lukkeknapp |
 | `onClose` | `VoidCallback?` | `null` | Kalles ved lukking |
 | `color` | `DsColor?` | `null` | Fargeskala |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
@@ -215,7 +215,7 @@ DsAlert(
   title: Text('Advarsel'),
   closable: true,
   onClose: () => skjul(),
-  child: Text('Nar du gjor denne handlingen, er det vanskeligere.'),
+  child: Text('Når du gjør denne handlingen, er det vanskeligere.'),
 )
 ```
 
@@ -232,10 +232,10 @@ Kort med valgfrie underseksjoner.
 | `child` | `Widget` | påkrevd | Kortets innhold |
 | `color` | `DsColor?` | `null` | Fargeskala |
 | `elevated` | `bool` | `false` | Skygge i stedet for kantlinje |
-| `onTap` | `VoidCallback?` | `null` | Gjor kortet klikkbart |
+| `onTap` | `VoidCallback?` | `null` | Gjør kortet klikkbart |
 | `focusNode` | `FocusNode?` | `null` | Egen fokusnode |
 
-**Tilhorende komponenter:** `DsCardHeader`, `DsCardBlock`, `DsCardFooter`
+**Tilhørende komponenter:** `DsCardHeader`, `DsCardBlock`, `DsCardFooter`
 
 **Eksempel:**
 
@@ -264,7 +264,7 @@ Etikett for kategorisering.
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | `child` | `Widget` | påkrevd | Etikettens innhold |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `color` | `DsColor?` | `null` | Fargeskala |
 
 **Eksempel:**
@@ -290,7 +290,7 @@ Kompakt element for filtrering eller valg.
 | `child` | `Widget` | påkrevd | Chipens innhold |
 | `selected` | `bool` | `false` | Valgt tilstand |
 | `onSelected` | `ValueChanged<bool>?` | `null` | Kalles ved valg/avvelging |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `color` | `DsColor?` | `null` | Fargeskala |
 
 **Eksempel:**
@@ -315,7 +315,7 @@ Merke for telling eller statusindikasjon.
 |----------|------|----------|-------------|
 | `child` | `Widget` | påkrevd | Merkets innhold (typisk tall) |
 | `color` | `DsColor?` | `null` | Fargeskala |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `placement` | `DsBadgePlacement` | `topRight` | Plassering: topRight, topLeft, bottomRight, bottomLeft |
 
 **Eksempel:**
@@ -337,7 +337,7 @@ Lastindikator.
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `color` | `DsColor?` | `null` | Fargeskala |
 
 **Eksempel:**
@@ -376,15 +376,15 @@ Lenke med Designsystemet-styling.
 |----------|------|----------|-------------|
 | `text` | `String` | påkrevd | Lenketeksten |
 | `onTap` | `VoidCallback?` | påkrevd | Handling ved trykk |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `color` | `DsColor?` | `null` | Fargeskala |
 
 **Eksempel:**
 
 ```dart
 DsLink(
-  text: 'Ga til designsystemet.no',
-  onTap: () => apneLenke('https://designsystemet.no'),
+  text: 'Gå til designsystemet.no',
+  onTap: () => åpneLenke('https://designsystemet.no'),
 )
 ```
 
@@ -394,7 +394,7 @@ DsLink(
 
 ### DsTabs
 
-Fanenavigasjon med tastaturstotte og roving focus.
+Fanenavigasjon med tastaturstøtte og roving focus.
 
 **Egenskaper:**
 
@@ -403,7 +403,7 @@ Fanenavigasjon med tastaturstotte og roving focus.
 | `tabs` | `List<DsTab>` | påkrevd | Liste med faner |
 | `initialIndex` | `int` | `0` | Startfane |
 | `onChanged` | `ValueChanged<int>?` | `null` | Kalles ved fanebytte |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
@@ -466,7 +466,7 @@ Nedtrekksmeny.
 |----------|------|----------|-------------|
 | `trigger` | `Widget` | påkrevd | Widget som åpner menyen |
 | `items` | `List<DsDropdownItem>` | påkrevd | Menyelementer |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
@@ -498,7 +498,7 @@ Velger med nedtrekksliste.
 | `items` | `List<DsSelectItem>` | påkrevd | Valgalternativer |
 | `value` | `dynamic` | `null` | Gjeldende valgt verdi |
 | `onChanged` | `ValueChanged?` | påkrevd | Kalles ved valg |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `error` | `String?` | `null` | Feilmelding |
 
 **Eksempel:**
@@ -509,7 +509,7 @@ DsSelect(
   items: [
     DsSelectItem(value: 'oslo', label: 'Oslo'),
     DsSelectItem(value: 'bergen', label: 'Vestland'),
-    DsSelectItem(value: 'trondheim', label: 'Trondelag'),
+    DsSelectItem(value: 'trondheim', label: 'Trøndelag'),
   ],
   value: valgtFylke,
   onChanged: (verdi) => setState(() => valgtFylke = verdi),
@@ -529,7 +529,7 @@ Sidenavigasjon.
 | `currentPage` | `int` | påkrevd | Gjeldende sidenummer |
 | `totalPages` | `int` | påkrevd | Totalt antall sider |
 | `onPageChanged` | `ValueChanged<int>` | påkrevd | Kalles ved sidebytte |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
@@ -553,7 +553,7 @@ Datatabell.
 |----------|------|----------|-------------|
 | `columns` | `List<DsTableColumn>` | påkrevd | Kolonnedefinisjoner |
 | `rows` | `List<DsTableRow>` | påkrevd | Rader med celler |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
@@ -565,7 +565,7 @@ DsTable(
   ],
   rows: [
     DsTableRow(cells: [Text('Prosjekt A'), DsTag(child: Text('Aktiv'), color: DsColor.success)]),
-    DsTableRow(cells: [Text('Prosjekt B'), DsTag(child: Text('Fullfort'), color: DsColor.info)]),
+    DsTableRow(cells: [Text('Prosjekt B'), DsTag(child: Text('Fullført'), color: DsColor.info)]),
   ],
 )
 ```
@@ -574,22 +574,22 @@ DsTable(
 
 ### DsBreadcrumbs
 
-Brodsmulessti.
+Brødsmulessti.
 
 **Egenskaper:**
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | `items` | `List<DsBreadcrumbItem>` | påkrevd | Stielementer |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
 ```dart
 DsBreadcrumbs(
   items: [
-    DsBreadcrumbItem(label: Text('Hjem'), onTap: () => gaTilHjem()),
-    DsBreadcrumbItem(label: Text('Produkter'), onTap: () => gaTilProdukter()),
+    DsBreadcrumbItem(label: Text('Hjem'), onTap: () => gåTilHjem()),
+    DsBreadcrumbItem(label: Text('Produkter'), onTap: () => gåTilProdukter()),
     DsBreadcrumbItem(label: Text('Detaljer')),
   ],
 )
@@ -609,14 +609,14 @@ Søkefelt.
 | `onSubmitted` | `ValueChanged<String>?` | `null` | Kalles ved innsending |
 | `onChanged` | `ValueChanged<String>?` | `null` | Kalles ved endring |
 | `placeholder` | `String?` | `null` | Plassholdertekst |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
 ```dart
 DsSearch(
   placeholder: 'Søk...',
-  onSubmitted: (sokeord) => utforSok(sokeord),
+  onSubmitted: (søkeord) => utførSøk(søkeord),
 )
 ```
 
@@ -624,20 +624,20 @@ DsSearch(
 
 ### DsTooltip
 
-Verktoyshjelp som vises ved hover eller fokus.
+Verktøyshjelp som vises ved hover eller fokus.
 
 **Egenskaper:**
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | `message` | `String` | påkrevd | Hjelpeteksten |
-| `child` | `Widget` | påkrevd | Widget som utloser verktoyshjelpen |
+| `child` | `Widget` | påkrevd | Widget som utløser verktøyshjelpen |
 
 **Eksempel:**
 
 ```dart
 DsTooltip(
-  message: 'Klikk for a laste ned rapporten',
+  message: 'Klikk for å laste ned rapporten',
   child: DsButton(
     variant: DsButtonVariant.secondary,
     onPressed: () => lastNed(),
@@ -658,7 +658,7 @@ Innholdsboble som vises ved interaksjon.
 |----------|------|----------|-------------|
 | `trigger` | `Widget` | påkrevd | Widget som åpner popoveren |
 | `child` | `Widget` | påkrevd | Popoverens innhold |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
@@ -684,7 +684,7 @@ Avatarbilde eller initialer.
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | `child` | `Widget` | påkrevd | Avatarinnhold (initialer eller bilde) |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `color` | `DsColor?` | `null` | Fargeskala |
 
 **Eksempel:**
@@ -708,7 +708,7 @@ Stablet gruppe av avatarer.
 |----------|------|----------|-------------|
 | `avatars` | `List<DsAvatar>` | påkrevd | Avatarene som vises |
 | `maxVisible` | `int` | `3` | Maks synlige avatarer |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
@@ -729,7 +729,7 @@ DsAvatarStack(
 
 ### DsToggleGroup
 
-Vekslegruppe for a velge mellom alternativer.
+Vekslegruppe for å velge mellom alternativer.
 
 **Egenskaper:**
 
@@ -738,7 +738,7 @@ Vekslegruppe for a velge mellom alternativer.
 | `items` | `List<DsToggleItem>` | påkrevd | Vekslealternativer |
 | `value` | `dynamic` | påkrevd | Gjeldende valgt verdi |
 | `onChanged` | `ValueChanged` | påkrevd | Kalles ved endring |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `color` | `DsColor?` | `null` | Fargeskala |
 
 **Eksempel:**
@@ -768,7 +768,7 @@ Forslagskomponent med autofullføringsforslag.
 | `controller` | `TextEditingController?` | `null` | Tekstkontroller |
 | `suggestions` | `List<String>` | påkrevd | Forslag |
 | `onSelected` | `ValueChanged<String>?` | `null` | Kalles ved valg av forslag |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
@@ -782,7 +782,7 @@ DsSuggestion(
 
 ---
 
-## Skjema og verktoy
+## Skjema og verktøy
 
 ### DsField
 
@@ -796,7 +796,7 @@ Skjemafelt-wrapper som gir etikett, beskrivelse og feilmelding.
 | `label` | `String?` | `null` | Feltetikett |
 | `description` | `String?` | `null` | Hjelpetekst |
 | `error` | `String?` | `null` | Feilmelding |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
@@ -825,7 +825,7 @@ Gruppering av relaterte skjemaelementer med legend.
 |----------|------|----------|-------------|
 | `legend` | `String` | påkrevd | Gruppeoverskrift |
 | `children` | `List<Widget>` | påkrevd | Skjemaelementer |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
@@ -844,14 +844,14 @@ DsFieldset(
 
 ### DsInput
 
-Generisk inndatafelt (lavniva-komponent).
+Generisk inndatafelt (lavnivå-komponent).
 
 **Egenskaper:**
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | `controller` | `TextEditingController?` | `null` | Tekstkontroller |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `error` | `String?` | `null` | Feilmelding |
 | `disabled` | `bool` | `false` | Deaktivert |
 | `onChanged` | `ValueChanged<String>?` | `null` | Kalles ved endring |
@@ -876,14 +876,14 @@ Feilsammendrag for skjemavalidering -- viser alle feil samlet.
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | `errors` | `List<DsErrorEntry>` | påkrevd | Liste med feil |
-| `title` | `String?` | `null` | Tittel pa feilsammendraget |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `title` | `String?` | `null` | Tittel på feilsammendraget |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
 ```dart
 DsErrorSummary(
-  title: 'Rett folgene feil for a ga videre:',
+  title: 'Rett følgende feil for å gå videre:',
   errors: [
     DsErrorEntry(field: 'Navn', message: 'Navn er påkrevd'),
     DsErrorEntry(field: 'E-post', message: 'Ugyldig e-postadresse'),
@@ -903,7 +903,7 @@ Sammenleggbar detaljseksjon.
 |----------|------|----------|-------------|
 | `summary` | `Widget` | påkrevd | Synlig sammendrag/tittel |
 | `child` | `Widget` | påkrevd | Skjult innhold |
-| `initiallyOpen` | `bool` | `false` | Apnet ved forste visning |
+| `initiallyOpen` | `bool` | `false` | Åpnet ved første visning |
 
 **Eksempel:**
 
@@ -927,7 +927,7 @@ Liste med Designsystemet-styling.
 |----------|------|----------|-------------|
 | `items` | `List<Widget>` | påkrevd | Listeelementer |
 | `ordered` | `bool` | `false` | Nummerert liste |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
@@ -935,9 +935,9 @@ Liste med Designsystemet-styling.
 DsList(
   ordered: true,
   items: [
-    Text('Fyll ut soknadsskjema'),
+    Text('Fyll ut søknadsskjema'),
     Text('Last opp dokumentasjon'),
-    Text('Send inn soknaden'),
+    Text('Send inn søknaden'),
   ],
 )
 ```
@@ -953,8 +953,8 @@ Plassholder for innhold som lastes.
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | `width` | `double?` | `null` | Bredde |
-| `height` | `double?` | `null` | Hoyde |
-| `borderRadius` | `double?` | `null` | Hjorneavrunding |
+| `height` | `double?` | `null` | Høyde |
+| `borderRadius` | `double?` | `null` | Hjørneavrunding |
 
 **Eksempel:**
 
@@ -981,7 +981,7 @@ Hopp-til-innhold-lenke for tastaturnavigasjon og tilgjengelighet.
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | `label` | `String` | påkrevd | Lenketekst |
-| `targetId` | `String` | påkrevd | ID til malwidgeten |
+| `targetId` | `String` | påkrevd | ID til målwidgeten |
 
 **Eksempel:**
 
@@ -998,15 +998,15 @@ DsSkipLink(
 
 ### DsHeading
 
-Overskrift med 7 nivaer.
+Overskrift med 7 nivåer.
 
 **Egenskaper:**
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | `text` | `String` | påkrevd | Overskriftsteksten |
-| `level` | `DsHeadingLevel` | `md` | Niva: xxl, xl, lg, md, sm, xs, xxs |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `level` | `DsHeadingLevel` | `md` | Nivå: xxl, xl, lg, md, sm, xs, xxs |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `color` | `DsColor?` | `null` | Fargeskala |
 
 **Eksempel:**
@@ -1019,23 +1019,23 @@ DsHeading(text: 'Velkommen til tjenesten', level: DsHeadingLevel.xl)
 
 ### DsParagraph
 
-Brodtekst med varianter.
+Brødtekst med varianter.
 
 **Egenskaper:**
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| `text` | `String` | påkrevd | Brodteksten |
-| `bodySize` | `DsBodySize` | `md` | Storrelse: xl, lg, md, sm, xs |
+| `text` | `String` | påkrevd | Brødteksten |
+| `bodySize` | `DsBodySize` | `md` | Størrelse: xl, lg, md, sm, xs |
 | `variant` | `DsBodyVariant` | `standard` | Variant: standard, short, long |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `color` | `DsColor?` | `null` | Fargeskala |
 
 **Eksempel:**
 
 ```dart
 DsParagraph(
-  text: 'Dette er en avsnittekst med standard linjehoyde.',
+  text: 'Dette er en avsnittekst med standard linjehøyde.',
   bodySize: DsBodySize.md,
   variant: DsBodyVariant.standard,
 )
@@ -1052,7 +1052,7 @@ Etikett for skjemaelementer.
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | `text` | `String` | påkrevd | Etiketteksten |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `color` | `DsColor?` | `null` | Fargeskala |
 
 **Eksempel:**
@@ -1072,7 +1072,7 @@ Valideringsmelding for feilvisning under skjemaelementer.
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | `text` | `String` | påkrevd | Feilmeldingsteksten |
-| `size` | `DsSize?` | `null` | Storrelsesmodus |
+| `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 

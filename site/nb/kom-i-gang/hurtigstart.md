@@ -39,7 +39,7 @@ class MinApp extends StatelessWidget {
 
 ## Slik fungerer det
 
-1. **`DsTheme`** pakker inn rot-widgeten og gjor tema-data tilgjengelig for alle komponenter nedover i treet.
+1. **`DsTheme`** pakker inn rot-widgeten og gjør tema-data tilgjengelig for alle komponenter nedover i treet.
 2. **`DsThemeData.digdir()`** gir deg standardtemaet fra Digdir (Digitaliseringsdirektoratet).
 3. Komponenter som `DsHeading`, `DsParagraph` og `DsButton` henter automatisk stil fra temaet.
 

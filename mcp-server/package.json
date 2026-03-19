@@ -1,7 +1,7 @@
 {
   "name": "@komponentbibliotek/mcp-server",
   "version": "0.1.0",
-  "description": "MCP server for the Komponentbibliotek-Flutter component library",
+  "description": "MCP-server for komponentbibliotek-flutter — komponent-API, migrering og dokumentasjonssøk",
   "type": "module",
   "main": "dist/index.js",
   "bin": {

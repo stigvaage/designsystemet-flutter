@@ -1,5 +1,5 @@
 name: example
-description: Showcase app for komponentbibliotek_flutter
+description: Eksempelapp for komponentbibliotek_flutter
 
 environment:
   sdk: ^3.8.0
