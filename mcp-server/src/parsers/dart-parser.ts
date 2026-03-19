@@ -126,8 +126,8 @@ export function parseComponent(filePath: string, repoRoot: string): Component {
     path.join("lib", "src", "typography")
   );
   const importPath = isTypography
-    ? "package:komponentbibliotek_flutter/typography.dart"
-    : "package:komponentbibliotek_flutter/components.dart";
+    ? "package:designsystemet_flutter/typography.dart"
+    : "package:designsystemet_flutter/components.dart";
 
   return {
     name: className,

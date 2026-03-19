@@ -1,10 +1,10 @@
-# Komponentbibliotek MCP-server
+# Designsystemet Flutter MCP-server
 
-MCP-server som gjør komponentbiblioteket tilgjengelig for AI-kodeassistenter. Tilbyr oppslag av komponent-API-er, migreringsmapping fra Material til Designsystemet, tema-/tokenreferanse og dokumentasjonssøk.
+MCP-server som gjør designsystemet_flutter tilgjengelig for AI-kodeassistenter. Tilbyr oppslag av komponent-API-er, migreringsmapping fra Material til Designsystemet, tema-/tokenreferanse og dokumentasjonssøk.
 
 ## Installasjon via GitHub Packages
 
-Pakken publiseres til [GitHub Packages](https://github.com/stigvaage/komponentbibliotek-flutter/packages).
+Pakken publiseres til [GitHub Packages](https://github.com/stigvaage/designsystemet-flutter/packages).
 
 Konfigurer npm til å hente `@stigvaage`-pakker fra GitHub Packages ved å legge til i `.npmrc`:
 
@@ -15,7 +15,7 @@ Konfigurer npm til å hente `@stigvaage`-pakker fra GitHub Packages ved å legge
 Installer deretter:
 
 ```bash
-npm install @stigvaage/komponentbibliotek-flutter-mcp
+npm install @stigvaage/designsystemet-flutter-mcp
 ```
 
 ## Koble til Claude Code
@@ -25,11 +25,11 @@ Legg til i prosjektets `.mcp.json`:
 ```json
 {
   "mcpServers": {
-    "komponentbibliotek": {
+    "designsystemet": {
       "command": "npx",
-      "args": ["-y", "@stigvaage/komponentbibliotek-flutter-mcp"],
+      "args": ["-y", "@stigvaage/designsystemet-flutter-mcp"],
       "env": {
-        "REPO_ROOT": "/sti/til/komponentbibliotek.flutter"
+        "REPO_ROOT": "/sti/til/designsystemet-flutter"
       }
     }
   }
@@ -41,7 +41,7 @@ Eller fra en lokal klon:
 ```json
 {
   "mcpServers": {
-    "komponentbibliotek": {
+    "designsystemet": {
       "command": "node",
       "args": ["mcp-server/dist/index.js"],
       "env": {
@@ -59,11 +59,11 @@ Legg til i `.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
-    "komponentbibliotek": {
+    "designsystemet": {
       "command": "npx",
-      "args": ["-y", "@stigvaage/komponentbibliotek-flutter-mcp"],
+      "args": ["-y", "@stigvaage/designsystemet-flutter-mcp"],
       "env": {
-        "REPO_ROOT": "/sti/til/komponentbibliotek.flutter"
+        "REPO_ROOT": "/sti/til/designsystemet-flutter"
       }
     }
   }
@@ -106,6 +106,6 @@ npm run dev
 ## Docker
 
 ```bash
-docker build -t komponentbibliotek-mcp -f mcp-server/Dockerfile .
-docker run -i komponentbibliotek-mcp
+docker build -t designsystemet-flutter-mcp -f mcp-server/Dockerfile .
+docker run -i designsystemet-flutter-mcp
 ```

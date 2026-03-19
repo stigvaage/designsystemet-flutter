@@ -6,14 +6,14 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  komponentbibliotek_flutter: ^0.0.1
+  designsystemet_flutter: ^0.0.1
 ```
 
 ## 2. Import
 
 ```dart
-import 'package:komponentbibliotek_flutter/theme.dart';
-import 'package:komponentbibliotek_flutter/components.dart';
+import 'package:designsystemet_flutter/theme.dart';
+import 'package:designsystemet_flutter/components.dart';
 ```
 
 ## 3. Wrap your app with DsTheme

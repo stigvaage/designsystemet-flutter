@@ -16,7 +16,7 @@ export async function createServer(): Promise<McpServer> {
   const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
 
   const server = new McpServer({
-    name: "komponentbibliotek",
+    name: "designsystemet",
     version: pkg.version,
   });
 
