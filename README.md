@@ -33,7 +33,7 @@ Legg til pakken i din `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  designsystemet_flutter: ^1.0.0
+  designsystemet_flutter: ^0.2.0
 ```
 
 Kjør deretter:
