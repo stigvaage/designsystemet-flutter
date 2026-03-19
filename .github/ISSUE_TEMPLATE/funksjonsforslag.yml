@@ -1,0 +1,38 @@
+name: Funksjonsforslag
+description: Foreslå en ny funksjon eller forbedring
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Takk for at du vil foreslå en forbedring!
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problembeskrivelse
+      description: Beskriv problemet eller behovet som motiverer forslaget.
+      placeholder: Jeg opplever ofte at...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Ønsket løsning
+      description: Beskriv løsningen du ønsker deg.
+      placeholder: Det hadde vært nyttig om...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativer du har vurdert
+      description: Beskriv eventuelle alternative løsninger du har vurdert.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Tilleggsinformasjon
+      description: Legg til skjermbilder, kodeeksempler eller annen relevant informasjon.

@@ -1,0 +1,86 @@
+name: Feilrapport
+description: Rapporter en feil i Flutter-komponentbiblioteket
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Takk for at du tar deg tid til å rapportere en feil!
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Beskrivelse
+      description: En tydelig beskrivelse av feilen.
+      placeholder: Hva gikk galt?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steg for å reprodusere
+      description: Beskriv stegene for å reprodusere feilen.
+      placeholder: |
+        1. Opprett en widget med...
+        2. Kjør appen
+        3. Trykk på...
+        4. Se feil
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Forventet oppførsel
+      description: Hva forventet du skulle skje?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Faktisk oppførsel
+      description: Hva skjedde i stedet?
+    validations:
+      required: true
+
+  - type: input
+    id: flutter-version
+    attributes:
+      label: Flutter-versjon
+      description: "Kjør `flutter --version` og lim inn resultatet."
+      placeholder: "Flutter 3.19.0"
+    validations:
+      required: true
+
+  - type: input
+    id: library-version
+    attributes:
+      label: Bibliotekversjon
+      description: Hvilken versjon av komponentbiblioteket bruker du?
+      placeholder: "0.0.1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Plattform
+      description: Hvilken plattform oppstår feilen på?
+      multiple: true
+      options:
+        - Android
+        - iOS
+        - Web
+        - macOS
+        - Linux
+        - Windows
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Tilleggsinformasjon
+      description: Legg til skjermbilder, logger eller annen relevant informasjon.
