@@ -1,15 +1,15 @@
-# komponentbibliotek_flutter
+# designsystemet_flutter
 
 [![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.32-blue.svg)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-%3E%3D3.8-blue.svg)](https://dart.dev)
 [![Designsystemet](https://img.shields.io/badge/Designsystemet-designsystemet.no-003087.svg)](https://designsystemet.no)
 [![Lisens: MIT](https://img.shields.io/badge/Lisens-MIT-green.svg)](LICENSE)
 [![WCAG 2.1 AA](https://img.shields.io/badge/WCAG_2.1-AA-brightgreen.svg)](https://www.w3.org/WAI/WCAG21/quickref/)
-[![CI](https://github.com/stigvaage/komponentbibliotek-flutter/actions/workflows/ci.yml/badge.svg)](https://github.com/stigvaage/komponentbibliotek-flutter/actions/workflows/ci.yml)
+[![CI](https://github.com/stigvaage/designsystemet-flutter/actions/workflows/ci.yml/badge.svg)](https://github.com/stigvaage/designsystemet-flutter/actions/workflows/ci.yml)
 
-> Flutter implementation of Norway's public design system ([designsystemet.no](https://designsystemet.no)). 40 accessible, token-driven UI components — no Material or Cupertino dependencies.
+> Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra Digitaliseringsdirektoratet. Utviklet av Stig H. Våge.
 
-> **[Les dokumentasjonen](https://stigvaage.github.io/komponentbibliotek-flutter/)** | **[Interaktiv komponentkatalog (Widgetbook)](https://stigvaage.github.io/komponentbibliotek-flutter/widgetbook/)**
+> **[Les dokumentasjonen](https://stigvaage.github.io/designsystemet-flutter/)** | **[Interaktiv komponentkatalog (Widgetbook)](https://stigvaage.github.io/designsystemet-flutter/widgetbook/)**
 
 Flutter-implementasjon av [Designsystemet](https://designsystemet.no) -- det norske offentlige designsystemet utviklet av Digitaliseringsdirektoratet (Digdir). Biblioteket gir norske offentlige virksomheter og andre organisasjoner et ferdig sett med tilgjengelige, tokendrevne UI-komponenter som følger det offisielle designsystemet -- uten avhengigheter til Material eller Cupertino.
 
@@ -33,7 +33,7 @@ Legg til pakken i din `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  komponentbibliotek_flutter: ^1.0.0
+  designsystemet_flutter: ^1.0.0
 ```
 
 Kjør deretter:
@@ -47,7 +47,7 @@ flutter pub get
 Pakk inn applikasjonen din med `DsTheme` og bruk Designsystemet-komponenter direkte:
 
 ```dart
-import 'package:komponentbibliotek_flutter/komponentbibliotek_flutter.dart';
+import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:flutter/widgets.dart';
 
 void main() {
@@ -234,7 +234,7 @@ npx @digdir/designsystemet tokens create --config designsystemet.config.json
 ### Steg 2: Generer Dart-temafil
 
 ```bash
-dart run komponentbibliotek_flutter:generate \
+dart run designsystemet_flutter:generate \
   --tokens-dir ./design-tokens \
   --output lib/generated/
 ```
@@ -279,9 +279,9 @@ Legg til i `.mcp.json` (Claude Code) eller `.cursor/mcp.json` (Cursor):
 ```json
 {
   "mcpServers": {
-    "komponentbibliotek": {
+    "designsystemet": {
       "command": "npx",
-      "args": ["-y", "@stigvaage/komponentbibliotek-flutter-mcp"],
+      "args": ["-y", "@stigvaage/designsystemet-flutter-mcp"],
       "env": {
         "REPO_ROOT": "<sti-til-repo>"
       }
@@ -297,9 +297,9 @@ Legg til i `.vscode/mcp.json`:
 ```json
 {
   "servers": {
-    "komponentbibliotek": {
+    "designsystemet": {
       "command": "npx",
-      "args": ["-y", "@stigvaage/komponentbibliotek-flutter-mcp"],
+      "args": ["-y", "@stigvaage/designsystemet-flutter-mcp"],
       "env": {
         "REPO_ROOT": "<sti-til-repo>"
       }
@@ -327,7 +327,7 @@ Prosjektet er bygget med flere teknologier og verktøy som samarbeider for å le
 
 - **Dart 3.8+ / Flutter 3.32+** -- Selve komponentbiblioteket med 40 UI-komponenter, tokendrevet temasystem, kodegenerator og full testdekning. Bygget uten Material- eller Cupertino-avhengigheter — kun `package:flutter/widgets.dart` og `package:flutter/rendering.dart`.
 - **Widgetbook 3.x** -- Interaktiv komponentkatalog som lar utviklere utforske, teste og justere alle komponenter med ulike egenskaper, temaer og størrelser. Bygges som en Flutter-webapp og publiseres som en del av dokumentasjonssiden.
-- **VitePress 1.6 / Vue 3** -- Dokumentasjonssiden ([stigvaage.github.io/komponentbibliotek-flutter](https://stigvaage.github.io/komponentbibliotek-flutter/)) med 67 norskspråklige sider. Egendefinert tema med Designsystemets fargepalett, komponentfaner (Oversikt/Kode/Tilgjengelighet), innebygd Widgetbook-forhåndsvisning og søk.
+- **VitePress 1.6 / Vue 3** -- Dokumentasjonssiden ([stigvaage.github.io/designsystemet-flutter](https://stigvaage.github.io/designsystemet-flutter/)) med 67 norskspråklige sider. Egendefinert tema med Designsystemets fargepalett, komponentfaner (Oversikt/Kode/Tilgjengelighet), innebygd Widgetbook-forhåndsvisning og søk.
 - **MCP-server (TypeScript / Node.js)** -- Model Context Protocol-server som lar AI-kodeassistenter som Claude Code, Cursor og VS Code Copilot slå opp komponent-API-er, migrere fra Material-widgets, hente temaoppsett og søke i dokumentasjonen. Bygget med `@modelcontextprotocol/sdk`, `zod` og `minisearch`.
 - **GitHub Actions** -- CI/CD-pipeline med automatisk formatsjekk, statisk analyse, testing og publisering til GitHub Pages. Dependabot overvåker avhengigheter for Dart, npm og GitHub Actions.
 - **Designsystemet CLI** -- Integrasjon med `@digdir/designsystemet` for import av egendefinerte temaer via W3C DTCG-format designtokens og kodegenerering av Dart-temafiler.
@@ -338,9 +338,7 @@ Vi ønsker bidrag velkommen! Se [CONTRIBUTING.md](CONTRIBUTING.md) for retningsl
 
 ## Utviklet av
 
-Utviklet av **Stig H. Våge** og **[Claude Code](https://claude.ai/claude-code)**.
-
-Basert på [Designsystemet](https://designsystemet.no) fra [Digitaliseringsdirektoratet](https://www.digdir.no).
+Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra [Digitaliseringsdirektoratet](https://www.digdir.no). Utviklet av **Stig H. Våge**.
 
 ## Lisens
 

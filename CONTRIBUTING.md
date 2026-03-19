@@ -1,6 +1,6 @@
-# Bidra til komponentbibliotek_flutter
+# Bidra til designsystemet_flutter
 
-Takk for at du vil bidra til komponentbibliotek_flutter! Denne guiden forklarer hvordan du kan bidra til prosjektet.
+Takk for at du vil bidra til designsystemet_flutter! Denne guiden forklarer hvordan du kan bidra til prosjektet.
 
 ## Hvordan bidra
 
@@ -20,7 +20,7 @@ Takk for at du vil bidra til komponentbibliotek_flutter! Denne guiden forklarer 
 
 ```bash
 # Klon prosjektet
-git clone https://github.com/stigvaage/komponentbibliotek-flutter.git
+git clone https://github.com/stigvaage/designsystemet-flutter.git
 cd komponentbibliotek.flutter
 
 # Installer avhengigheter
@@ -35,7 +35,7 @@ flutter test
 
 ```text
 lib/
-  komponentbibliotek_flutter.dart   # Hovedeksport (barrel file)
+  designsystemet_flutter.dart       # Hovedeksport (barrel file)
   components.dart                    # Alle komponenter
   theme.dart                         # Tema-infrastruktur
   typography.dart                    # Typografi-komponenter

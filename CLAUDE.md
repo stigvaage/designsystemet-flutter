@@ -1,7 +1,6 @@
-# komponentbibliotek.flutter — Utviklingsretningslinjer
+# designsystemet_flutter — Utviklingsretningslinjer
 
-Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra Digitaliseringsdirektoratet.
-Utviklet av Stig H. Våge og Claude Code.
+Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra Digitaliseringsdirektoratet. Utviklet av Stig H. Våge.
 
 ## Teknologi
 

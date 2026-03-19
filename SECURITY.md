@@ -10,7 +10,7 @@
 
 **Ikke opprett en offentlig issue for sikkerhetssårbarheter.**
 
-Bruk i stedet [GitHub Security Advisories](https://github.com/stigvaage/komponentbibliotek-flutter/security/advisories/new) for å rapportere sårbarheter privat.
+Bruk i stedet [GitHub Security Advisories](https://github.com/stigvaage/designsystemet-flutter/security/advisories/new) for å rapportere sårbarheter privat.
 
 ### Hva du bør inkludere
 
