@@ -135,51 +135,61 @@ class _DsInputState extends State<DsInput> {
     );
 
     // TextField requires Material, MaterialLocalizations, and
-    // Directionality ancestors. Provide them here so DsInput works in any
-    // context — including apps that don't use MaterialApp.
-    final locale =
-        Localizations.maybeLocaleOf(context) ?? const Locale('en');
+    // Directionality ancestors. Only wrap in fallback Localizations when
+    // MaterialLocalizations is NOT already provided by an ancestor (e.g.
+    // MaterialApp). Wrapping unconditionally creates a nested scope that
+    // can interfere with the TextField's platform input connection.
+    final hasMaterialLocalizations = Localizations.of<MaterialLocalizations>(
+            context, MaterialLocalizations) !=
+        null;
 
-    final Widget input = Localizations(
-      locale: locale,
-      delegates: const [
-        DefaultMaterialLocalizations.delegate,
-        DefaultWidgetsLocalizations.delegate,
-      ],
-      child: Material(
-        type: MaterialType.transparency,
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            textSelectionTheme: TextSelectionThemeData(
-              cursorColor: colorScale.baseDefault,
-              selectionColor: colorScale.surfaceActive,
-              selectionHandleColor: colorScale.baseDefault,
-            ),
-          ),
-          child: TextField(
-            controller: _controller,
-            focusNode: _focusNode,
-            style: textStyle,
+    Widget textFieldTree = Material(
+      type: MaterialType.transparency,
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          textSelectionTheme: TextSelectionThemeData(
             cursorColor: colorScale.baseDefault,
-            maxLines: widget.maxLines,
-            readOnly: widget.readOnly,
-            obscureText: widget.obscureText,
-            autofocus: widget.autofocus,
-            onChanged: widget.onChanged,
-            onSubmitted: widget.onSubmitted,
-            onTapOutside: (_) {},
-            keyboardType: widget.keyboardType,
-            maxLength: widget.maxLength,
-            buildCounter: (_, {required currentLength, required isFocused, maxLength}) => null,
-            expands: false,
-            decoration: InputDecoration.collapsed(
-              hintText: widget.placeholder,
-              hintStyle: textStyle.copyWith(color: colorScale.textSubtle),
-            ),
+            selectionColor: colorScale.surfaceActive,
+            selectionHandleColor: colorScale.baseDefault,
+          ),
+        ),
+        child: TextField(
+          controller: _controller,
+          focusNode: _focusNode,
+          style: textStyle,
+          cursorColor: colorScale.baseDefault,
+          maxLines: widget.maxLines,
+          readOnly: widget.readOnly,
+          obscureText: widget.obscureText,
+          autofocus: widget.autofocus,
+          onChanged: widget.onChanged,
+          onSubmitted: widget.onSubmitted,
+          onTapOutside: (_) {},
+          keyboardType: widget.keyboardType,
+          maxLength: widget.maxLength,
+          buildCounter: (_,
+                  {required currentLength, required isFocused, maxLength}) =>
+              null,
+          expands: false,
+          decoration: InputDecoration.collapsed(
+            hintText: widget.placeholder,
+            hintStyle: textStyle.copyWith(color: colorScale.textSubtle),
           ),
         ),
       ),
     );
+
+    if (!hasMaterialLocalizations) {
+      final locale = Localizations.maybeLocaleOf(context) ?? const Locale('en');
+      textFieldTree = Localizations(
+        locale: locale,
+        delegates: const [
+          DefaultMaterialLocalizations.delegate,
+          DefaultWidgetsLocalizations.delegate,
+        ],
+        child: textFieldTree,
+      );
+    }
 
     Widget result = AnimatedContainer(
       duration: duration,
@@ -199,7 +209,7 @@ class _DsInputState extends State<DsInput> {
             ),
           ],
           Expanded(
-            child: Padding(padding: padding, child: input),
+            child: Padding(padding: padding, child: textFieldTree),
           ),
           if (widget.suffix != null) ...[
             Padding(
