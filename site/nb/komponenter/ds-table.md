@@ -24,30 +24,25 @@ Datatabell.
 
 ```dart
 DsTable(
-  columns: [
-    DsTableColumn(header: Text('Navn')),
-    DsTableColumn(header: Text('Status')),
-  ],
+  columns: [Text('Navn'), Text('Status')],
   rows: [
-    DsTableRow(cells: [Text('Prosjekt A'), DsTag(child: Text('Aktiv'), color: DsColor.success)]),
-    DsTableRow(cells: [Text('Prosjekt B'), DsTag(child: Text('Fullført'), color: DsColor.info)]),
+    [Text('Prosjekt A'), DsTag(child: Text('Aktiv'), color: DsColor.success)],
+    [Text('Prosjekt B'), DsTag(child: Text('Fullført'), color: DsColor.info)],
   ],
 )
 ```
 
-### Med størrelse
+### Med sebrastriper og musepeker-utheving
 
 ```dart
 DsTable(
-  size: DsSize.sm,
-  columns: [
-    DsTableColumn(header: Text('ID')),
-    DsTableColumn(header: Text('Beskrivelse')),
-    DsTableColumn(header: Text('Dato')),
-  ],
+  zebra: true,
+  hover: true,
+  columns: [Text('ID'), Text('Beskrivelse'), Text('Dato')],
   rows: [
-    DsTableRow(cells: [Text('001'), Text('Første oppgave'), Text('2026-01-15')]),
-    DsTableRow(cells: [Text('002'), Text('Andre oppgave'), Text('2026-02-20')]),
+    [Text('001'), Text('Første oppgave'), Text('2026-01-15')],
+    [Text('002'), Text('Andre oppgave'), Text('2026-02-20')],
+    [Text('003'), Text('Tredje oppgave'), Text('2026-03-10')],
   ],
 )
 ```
@@ -68,9 +63,13 @@ DsTable(
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| columns | List\<DsTableColumn\> | påkrevd | Kolonnedefinisjonene med overskrifter |
-| rows | List\<DsTableRow\> | påkrevd | Radene med celleinnhold |
-| size | DsSize? | null | Størrelse på tabellen |
+| columns | `List<Widget>` | påkrevd | Kolonneoverskrifter som widgets |
+| rows | `List<List<Widget>>` | påkrevd | Radene med celleinnhold som widgets |
+| size | `DsSize?` | `null` | Størrelse på tabellen |
+| color | `DsColor?` | `null` | Fargetema |
+| zebra | `bool` | `false` | Vekslende bakgrunnsfarge på annenhver rad |
+| hover | `bool` | `false` | Utheving av rad ved musepeker |
+| stickyHeader | `bool` | `false` | Om overskriftsraden skal festes ved rulling (ikke implementert ennå) |
 
 ## Import
 

@@ -34,7 +34,20 @@ Column(
 )
 ```
 
-### Sirkulær plassholder
+### Med variant
+
+```dart
+// Sirkulær plassholder (f.eks. for avatar)
+DsSkeleton(variant: DsSkeletonVariant.circle)
+
+// Tekstlinje (full bredde, 16px høyde)
+DsSkeleton(variant: DsSkeletonVariant.text)
+
+// Rektangulær plassholder (f.eks. for bilde)
+DsSkeleton(variant: DsSkeletonVariant.rectangle, height: 200)
+```
+
+### Egendefinerte mål
 
 ```dart
 DsSkeleton(
@@ -59,9 +72,11 @@ DsSkeleton(
 
 | Egenskap | Type | Standard | Beskrivelse |
 | --- | --- | --- | --- |
-| width | `double?` | `null` | Bredde på plassholderen. |
-| height | `double?` | `null` | Høyde på plassholderen. |
+| variant | `DsSkeletonVariant?` | `null` | Forhåndsinnstilt form: `text` (full bredde, 16px), `circle` (40×40), `rectangle` (100px høyde). |
+| width | `double?` | `null` | Bredde på plassholderen. Overstyrer variantens standardverdi. |
+| height | `double?` | `null` | Høyde på plassholderen. Overstyrer variantens standardverdi. |
 | borderRadius | `double?` | `null` | Hjørneradius på plassholderen. |
+| color | `DsColor?` | `null` | Fargetema. |
 
 ## Import
 

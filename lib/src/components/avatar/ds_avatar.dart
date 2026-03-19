@@ -39,8 +39,18 @@ class DsAvatar extends StatelessWidget {
       DsSize.lg => 16.0,
     };
 
+    Widget initialsWidget() => Text(
+      _initials,
+      style: TextStyle(
+        fontFamily: theme.typography.fontFamily,
+        fontSize: fontSize,
+        fontWeight: FontWeight.w500,
+        color: colorScale.textDefault,
+      ),
+    );
+
     return Semantics(
-      label: name ?? 'Avatar',
+      label: name ?? 'Profilbilde',
       image: true,
       child: Container(
         width: dimension,
@@ -48,18 +58,27 @@ class DsAvatar extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: colorScale.surfaceTinted,
+        ),
+        foregroundDecoration: BoxDecoration(
+          shape: BoxShape.circle,
           border: Border.all(color: colorScale.borderSubtle, width: 1),
         ),
         alignment: Alignment.center,
-        child: Text(
-          _initials,
-          style: TextStyle(
-            fontFamily: theme.typography.fontFamily,
-            fontSize: fontSize,
-            fontWeight: FontWeight.w500,
-            color: colorScale.textDefault,
-          ),
-        ),
+        child: imageUrl != null
+            ? ClipOval(
+                child: Image.network(
+                  imageUrl!,
+                  width: dimension,
+                  height: dimension,
+                  fit: BoxFit.cover,
+                  frameBuilder: (_, child, frame, wasSynchronouslyLoaded) {
+                    if (wasSynchronouslyLoaded || frame != null) return child;
+                    return initialsWidget();
+                  },
+                  errorBuilder: (_, __, ___) => initialsWidget(),
+                ),
+              )
+            : initialsWidget(),
       ),
     );
   }

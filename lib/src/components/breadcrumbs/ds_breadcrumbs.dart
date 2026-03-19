@@ -23,7 +23,7 @@ class DsBreadcrumbs extends StatelessWidget {
     final colorScale = theme.colorScheme.resolve(activeColor);
 
     return Semantics(
-      label: 'Breadcrumb navigation',
+      label: 'Brødsmulenavigasjon',
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

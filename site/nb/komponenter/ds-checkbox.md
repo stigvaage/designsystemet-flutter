@@ -41,6 +41,17 @@ DsCheckbox(
 )
 ```
 
+### Med beskrivelse
+
+```dart
+DsCheckbox(
+  value: godtatt,
+  onChanged: (verdi) => setState(() => godtatt = verdi),
+  label: Text('Jeg godtar vilkårene'),
+  description: Text('Les vilkårene nøye før du godtar.'),
+)
+```
+
 ### Avkrysningsboks med feilmelding
 
 ```dart
@@ -71,6 +82,7 @@ DsCheckbox(
 | value | `bool` | påkrevd | Om boksen er avkrysset. |
 | onChanged | `ValueChanged<bool>?` | påkrevd | Tilbakeringing ved endring. |
 | label | `Widget?` | `null` | Etikett som vises ved siden av boksen. |
+| description | `Widget?` | `null` | Hjelpetekst som vises under etiketten. |
 | size | `DsSize?` | `null` | Størrelse på avkrysningsboksen. |
 | color | `DsColor?` | `null` | Fargetema. |
 | error | `String?` | `null` | Feilmelding som vises under boksen. |

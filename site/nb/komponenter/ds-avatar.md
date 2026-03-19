@@ -24,8 +24,8 @@ Avatarbilde eller initialer som representerer en bruker eller entitet.
 
 ```dart
 DsAvatar(
+  name: 'Ola Nordmann',
   size: DsSize.md,
-  child: Text('ON'),
 )
 ```
 
@@ -33,10 +33,13 @@ DsAvatar(
 
 ```dart
 DsAvatar(
+  name: 'Ola Nordmann',
+  imageUrl: 'https://example.com/profil.jpg',
   size: DsSize.lg,
-  child: Image.network('https://example.com/profil.jpg'),
 )
 ```
+
+Bildet lastes asynkront. Initialer vises som plassholder under lasting og som fallback ved feil.
 
 ## Retningslinjer
 - Bruk initialer med to bokstaver (fornavn + etternavn) som fallback når bilde mangler.
@@ -54,9 +57,10 @@ DsAvatar(
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| child | Widget | påkrevd | Innholdet i avataren (bilde eller tekst) |
-| size | DsSize? | null | Størrelse på avataren |
-| color | DsColor? | null | Bakgrunnsfarge på avataren |
+| name | `String?` | `null` | Navn som brukes til initialer og semantisk etikett |
+| imageUrl | `String?` | `null` | URL til profilbilde. Viser initialer som fallback ved feil eller under lasting. |
+| size | `DsSize?` | `null` | Størrelse på avataren (`sm` = 32, `md` = 40, `lg` = 48) |
+| color | `DsColor?` | `null` | Fargetema for bakgrunn og ramme |
 
 ## Import
 

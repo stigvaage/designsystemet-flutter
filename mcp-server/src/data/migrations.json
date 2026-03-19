@@ -55,38 +55,38 @@
   {
     "materialWidget": "Checkbox",
     "dsComponent": "DsCheckbox",
-    "notes": "DsCheckbox includes its own label. No need for a separate CheckboxListTile.",
+    "notes": "DsCheckbox includes its own label and optional description. No need for a separate CheckboxListTile.",
     "propertyMappings": [
-      { "materialProp": "value", "dsProp": "checked", "transform": "Renamed from value to checked" },
+      { "materialProp": "value", "dsProp": "value", "transform": null },
       { "materialProp": "onChanged", "dsProp": "onChanged", "transform": null },
       { "materialProp": "tristate", "dsProp": "indeterminate", "transform": "Use indeterminate prop for tristate behavior" }
     ],
     "beforeCode": "Checkbox(\n  value: _accepted,\n  onChanged: (val) => setState(() => _accepted = val!),\n)",
-    "afterCode": "DsCheckbox(\n  checked: _accepted,\n  label: 'I accept the terms',\n  onChanged: (val) => setState(() => _accepted = val),\n)"
+    "afterCode": "DsCheckbox(\n  value: _accepted,\n  label: Text('I accept the terms'),\n  description: Text('Please read the terms before accepting.'),\n  onChanged: (val) => setState(() => _accepted = val),\n)"
   },
   {
     "materialWidget": "Radio",
     "dsComponent": "DsRadio",
-    "notes": "DsRadio includes its own label. Group multiple DsRadio widgets in a DsFieldset.",
+    "notes": "DsRadio includes its own label and optional description. Group multiple DsRadio widgets in a DsFieldset.",
     "propertyMappings": [
       { "materialProp": "value", "dsProp": "value", "transform": null },
       { "materialProp": "groupValue", "dsProp": "groupValue", "transform": null },
       { "materialProp": "onChanged", "dsProp": "onChanged", "transform": null }
     ],
     "beforeCode": "Radio<String>(\n  value: 'option1',\n  groupValue: _selected,\n  onChanged: (val) => setState(() => _selected = val!),\n)",
-    "afterCode": "DsRadio<String>(\n  value: 'option1',\n  groupValue: _selected,\n  label: 'Option 1',\n  onChanged: (val) => setState(() => _selected = val!),\n)"
+    "afterCode": "DsRadio(\n  value: _selected == 'option1',\n  label: Text('Option 1'),\n  description: Text('Description for option 1'),\n  onChanged: (_) => setState(() => _selected = 'option1'),\n)"
   },
   {
     "materialWidget": "Switch",
     "dsComponent": "DsSwitch",
-    "notes": "DsSwitch includes its own label. Follows Designsystemet sizing and color tokens.",
+    "notes": "DsSwitch includes its own label and optional description. Follows Designsystemet sizing and color tokens.",
     "propertyMappings": [
-      { "materialProp": "value", "dsProp": "checked", "transform": "Renamed from value to checked" },
+      { "materialProp": "value", "dsProp": "value", "transform": null },
       { "materialProp": "onChanged", "dsProp": "onChanged", "transform": null },
       { "materialProp": "activeColor", "dsProp": "color", "transform": "Use DsColor token instead of raw Color" }
     ],
     "beforeCode": "Switch(\n  value: _darkMode,\n  onChanged: (val) => setState(() => _darkMode = val),\n)",
-    "afterCode": "DsSwitch(\n  checked: _darkMode,\n  label: 'Dark mode',\n  onChanged: (val) => setState(() => _darkMode = val),\n)"
+    "afterCode": "DsSwitch(\n  value: _darkMode,\n  label: Text('Dark mode'),\n  description: Text('Enable dark color scheme'),\n  onChanged: (val) => setState(() => _darkMode = val),\n)"
   },
   {
     "materialWidget": "AlertDialog",
@@ -169,15 +169,15 @@
   {
     "materialWidget": "Badge",
     "dsComponent": "DsBadge",
-    "notes": "DsBadge supports count, color variants, and positioning relative to a child.",
+    "notes": "DsBadge supports count, color, variant (base/tinted), maxCount, and positioning relative to a child.",
     "propertyMappings": [
-      { "materialProp": "label", "dsProp": "count", "transform": "Use count (int) for numeric badges, or label for text" },
+      { "materialProp": "label", "dsProp": "count", "transform": "Use count (int) for numeric badges" },
       { "materialProp": "child", "dsProp": "child", "transform": null },
-      { "materialProp": "backgroundColor", "dsProp": "color", "transform": "Use DsBadgeColor enum instead of raw Color" },
-      { "materialProp": "isLabelVisible", "dsProp": "visible", "transform": "Renamed from isLabelVisible to visible" }
+      { "materialProp": "backgroundColor", "dsProp": "color", "transform": "Use DsColor token instead of raw Color" },
+      { "materialProp": "isLabelVisible", "dsProp": "count", "transform": "Set count to null to hide the badge" }
     ],
     "beforeCode": "Badge(\n  label: Text('3'),\n  backgroundColor: Colors.red,\n  child: Icon(Icons.notifications),\n)",
-    "afterCode": "DsBadge(\n  count: 3,\n  color: DsBadgeColor.danger,\n  child: Icon(Icons.notifications),\n)"
+    "afterCode": "DsBadge(\n  count: 3,\n  color: DsColor.danger,\n  variant: DsBadgeVariant.base,\n  child: Icon(Icons.notifications),\n)"
   },
   {
     "materialWidget": "Divider",
@@ -233,16 +233,13 @@
   {
     "materialWidget": "DataTable",
     "dsComponent": "DsTable",
-    "notes": "DsTable provides a structured data table with Designsystemet styling, sorting, and responsive behavior.",
+    "notes": "DsTable uses List<Widget> for columns and List<List<Widget>> for rows. Supports zebra striping and hover highlighting.",
     "propertyMappings": [
-      { "materialProp": "columns", "dsProp": "columns", "transform": "Use DsTableColumn instead of DataColumn" },
-      { "materialProp": "rows", "dsProp": "rows", "transform": "Use DsTableRow instead of DataRow" },
-      { "materialProp": "sortColumnIndex", "dsProp": "sortColumn", "transform": "Use column key string instead of index" },
-      { "materialProp": "sortAscending", "dsProp": "sortAscending", "transform": null },
-      { "materialProp": "onSelectAll", "dsProp": "onSelectAll", "transform": null }
+      { "materialProp": "columns", "dsProp": "columns", "transform": "Use List<Widget> instead of DataColumn list" },
+      { "materialProp": "rows", "dsProp": "rows", "transform": "Use List<List<Widget>> instead of DataRow list" }
     ],
     "beforeCode": "DataTable(\n  columns: [\n    DataColumn(label: Text('Name')),\n    DataColumn(label: Text('Age')),\n  ],\n  rows: [\n    DataRow(cells: [\n      DataCell(Text('Alice')),\n      DataCell(Text('30')),\n    ]),\n  ],\n)",
-    "afterCode": "DsTable(\n  columns: [\n    DsTableColumn(key: 'name', label: 'Name'),\n    DsTableColumn(key: 'age', label: 'Age'),\n  ],\n  rows: [\n    DsTableRow(cells: {\n      'name': Text('Alice'),\n      'age': Text('30'),\n    }),\n  ],\n)"
+    "afterCode": "DsTable(\n  columns: [Text('Name'), Text('Age')],\n  rows: [\n    [Text('Alice'), Text('30')],\n  ],\n  zebra: true,\n  hover: true,\n)"
   },
   {
     "materialWidget": "SearchBar",

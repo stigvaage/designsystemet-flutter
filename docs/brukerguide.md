@@ -758,18 +758,13 @@ Datatabell:
 
 ```dart
 DsTable(
-  columns: [
-    DsTableColumn(header: Text('Navn')),
-    DsTableColumn(header: Text('E-post')),
-    DsTableColumn(header: Text('Rolle')),
-  ],
-  rows: brukere.map((bruker) => DsTableRow(
-    cells: [
-      Text(bruker.navn),
-      Text(bruker.epost),
-      Text(bruker.rolle),
-    ],
-  )).toList(),
+  columns: [Text('Navn'), Text('E-post'), Text('Rolle')],
+  rows: brukere.map((bruker) => [
+    Text(bruker.navn),
+    Text(bruker.epost),
+    Text(bruker.rolle),
+  ]).toList(),
+  zebra: true,
 )
 ```
 
@@ -834,10 +829,10 @@ DsDropdown(
 
 // Select
 DsSelect(
-  label: 'Fylke',
-  items: fylker.map((f) => DsSelectItem(value: f.id, label: f.navn)).toList(),
-  value: valgtFylke,
-  onChanged: (verdi) => setState(() => valgtFylke = verdi),
+  items: fylker.map((f) => f.navn).toList(),
+  selectedIndex: valgtIndeks,
+  placeholder: 'Velg fylke',
+  onChanged: (indeks) => setState(() => valgtIndeks = indeks),
 )
 ```
 

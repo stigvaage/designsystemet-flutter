@@ -24,18 +24,31 @@ Merke for telling eller statusindikasjon.
 
 ```dart
 DsBadge(
+  count: 5,
   color: DsColor.danger,
-  child: Text('5'),
+  child: Icon(Icons.notifications),
 )
 ```
 
-### Med plassering
+### Med plassering og maksverdi
 
 ```dart
 DsBadge(
-  color: DsColor.info,
+  count: 150,
+  maxCount: 99,
   placement: DsBadgePlacement.topLeft,
-  child: Text('Ny'),
+  child: Icon(Icons.mail),
+)
+```
+
+### Tonet variant
+
+```dart
+DsBadge(
+  count: 3,
+  variant: DsBadgeVariant.tinted,
+  color: DsColor.info,
+  child: Icon(Icons.notifications),
 )
 ```
 
@@ -55,9 +68,13 @@ DsBadge(
 
 | Egenskap | Type | Standard | Beskrivelse |
 | --- | --- | --- | --- |
-| child | `Widget` | påkrevd | Innholdet i merket. |
-| color | `DsColor?` | `null` | Fargetema. |
+| child | `Widget` | påkrevd | Foreldreelementet merket plasseres over. |
+| count | `int?` | `null` | Tallet som vises i merket. Merket skjules når `null`. |
+| maxCount | `int` | `99` | Maksverdi før «N+»-format brukes (f.eks. «99+»). |
+| variant | `DsBadgeVariant` | `base` | Visuell variant: `base` (solid bakgrunn) eller `tinted` (tonet bakgrunn). |
+| color | `DsColor?` | `null` | Fargetema. Standard er `danger`. |
 | size | `DsSize?` | `null` | Størrelse på merket. |
+| overlap | `bool` | `false` | Om merket overlapper kanten av foreldreelementet. |
 | placement | `DsBadgePlacement` | `topRight` | Plassering av merket relativt til foreldreelementet. |
 
 ## Import

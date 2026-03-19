@@ -79,8 +79,11 @@ Column(
 | groupValue | `bool` | påkrevd | Den valgte verdien i gruppen. |
 | onChanged | `ValueChanged<bool>?` | påkrevd | Tilbakeringing ved endring. |
 | label | `Widget?` | `null` | Etikett som vises ved siden av knappen. |
+| description | `Widget?` | `null` | Hjelpetekst som vises under etiketten. |
 | size | `DsSize?` | `null` | Størrelse på radioknappen. |
 | color | `DsColor?` | `null` | Fargetema. |
+| error | `String?` | `null` | Feilmelding. |
+| readOnly | `bool` | `false` | Om knappen er skrivebeskyttet. |
 | focusNode | `FocusNode?` | `null` | Valgfri fokusnode for fokushåndtering. |
 
 ## Import

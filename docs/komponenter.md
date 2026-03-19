@@ -494,25 +494,24 @@ Velger med nedtrekksliste.
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| `label` | `String?` | `null` | Etikett |
-| `items` | `List<DsSelectItem>` | påkrevd | Valgalternativer |
-| `value` | `dynamic` | `null` | Gjeldende valgt verdi |
-| `onChanged` | `ValueChanged?` | påkrevd | Kalles ved valg |
+| `items` | `List<String>` | påkrevd | Valgalternativer |
+| `selectedIndex` | `int?` | `null` | Indeks for valgt alternativ |
+| `onChanged` | `ValueChanged<int>?` | `null` | Kalles med indeks ved valg |
+| `placeholder` | `String?` | `null` | Plassholdertekst |
 | `size` | `DsSize?` | `null` | Størrelsesmodus |
+| `color` | `DsColor?` | `null` | Fargetema |
 | `error` | `String?` | `null` | Feilmelding |
+| `disabled` | `bool` | `false` | Deaktivert |
+| `readOnly` | `bool` | `false` | Skrivebeskyttet |
 
 **Eksempel:**
 
 ```dart
 DsSelect(
-  label: 'Velg fylke',
-  items: [
-    DsSelectItem(value: 'oslo', label: 'Oslo'),
-    DsSelectItem(value: 'bergen', label: 'Vestland'),
-    DsSelectItem(value: 'trondheim', label: 'Trøndelag'),
-  ],
-  value: valgtFylke,
-  onChanged: (verdi) => setState(() => valgtFylke = verdi),
+  items: ['Oslo', 'Vestland', 'Trøndelag'],
+  selectedIndex: valgtIndeks,
+  placeholder: 'Velg fylke',
+  onChanged: (indeks) => setState(() => valgtIndeks = indeks),
 )
 ```
 
@@ -551,22 +550,24 @@ Datatabell.
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| `columns` | `List<DsTableColumn>` | påkrevd | Kolonnedefinisjoner |
-| `rows` | `List<DsTableRow>` | påkrevd | Rader med celler |
+| `columns` | `List<Widget>` | påkrevd | Kolonneoverskrifter |
+| `rows` | `List<List<Widget>>` | påkrevd | Rader med cellewidgets |
 | `size` | `DsSize?` | `null` | Størrelsesmodus |
+| `color` | `DsColor?` | `null` | Fargetema |
+| `zebra` | `bool` | `false` | Vekslende bakgrunnsfarge |
+| `hover` | `bool` | `false` | Utheving ved musepeker |
+| `stickyHeader` | `bool` | `false` | Fest overskrift (ikke implementert ennå) |
 
 **Eksempel:**
 
 ```dart
 DsTable(
-  columns: [
-    DsTableColumn(header: Text('Navn')),
-    DsTableColumn(header: Text('Status')),
-  ],
+  columns: [Text('Navn'), Text('Status')],
   rows: [
-    DsTableRow(cells: [Text('Prosjekt A'), DsTag(child: Text('Aktiv'), color: DsColor.success)]),
-    DsTableRow(cells: [Text('Prosjekt B'), DsTag(child: Text('Fullført'), color: DsColor.info)]),
+    [Text('Prosjekt A'), DsTag(child: Text('Aktiv'), color: DsColor.success)],
+    [Text('Prosjekt B'), DsTag(child: Text('Fullført'), color: DsColor.info)],
   ],
+  zebra: true,
 )
 ```
 

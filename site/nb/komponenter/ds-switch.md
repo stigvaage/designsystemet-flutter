@@ -31,13 +31,24 @@ DsSwitch(
 )
 ```
 
-### Deaktivert bryter
+### Med beskrivelse
+
+```dart
+DsSwitch(
+  value: aktiv,
+  onChanged: (verdi) => setState(() => aktiv = verdi),
+  label: Text('Aktiver varsler'),
+  description: Text('Du vil motta varsler på e-post og i appen.'),
+)
+```
+
+### Skrivebeskyttet bryter
 
 ```dart
 DsSwitch(
   value: true,
   onChanged: null,
-  disabled: true,
+  readOnly: true,
   label: Text('Innstilling låst av administrator'),
 )
 ```
@@ -61,9 +72,10 @@ DsSwitch(
 | value | `bool` | påkrevd | Om bryteren er på. |
 | onChanged | `ValueChanged<bool>?` | påkrevd | Tilbakeringing ved endring. |
 | label | `Widget?` | `null` | Etikett som vises ved siden av bryteren. |
+| description | `Widget?` | `null` | Hjelpetekst som vises under etiketten. |
 | size | `DsSize?` | `null` | Størrelse på bryteren. |
 | color | `DsColor?` | `null` | Fargetema. |
-| disabled | `bool` | `false` | Om bryteren er deaktivert. |
+| readOnly | `bool` | `false` | Om bryteren er skrivebeskyttet. |
 | focusNode | `FocusNode?` | `null` | Valgfri fokusnode for fokushåndtering. |
 
 ## Import

@@ -24,14 +24,10 @@ Velger med nedtrekksliste.
 
 ```dart
 DsSelect(
-  label: 'Velg fylke',
-  items: [
-    DsSelectItem(value: 'oslo', label: 'Oslo'),
-    DsSelectItem(value: 'bergen', label: 'Vestland'),
-    DsSelectItem(value: 'trondheim', label: 'Trøndelag'),
-  ],
-  value: valgtFylke,
-  onChanged: (verdi) => setState(() => valgtFylke = verdi),
+  items: ['Oslo', 'Vestland', 'Trøndelag'],
+  selectedIndex: valgtIndeks,
+  placeholder: 'Velg fylke',
+  onChanged: (indeks) => setState(() => valgtIndeks = indeks),
 )
 ```
 
@@ -39,15 +35,11 @@ DsSelect(
 
 ```dart
 DsSelect(
-  label: 'Velg rolle',
-  items: [
-    DsSelectItem(value: 'admin', label: 'Administrator'),
-    DsSelectItem(value: 'bruker', label: 'Bruker'),
-    DsSelectItem(value: 'gjest', label: 'Gjest'),
-  ],
-  value: null,
+  items: ['Administrator', 'Bruker', 'Gjest'],
+  selectedIndex: null,
+  placeholder: 'Velg rolle',
   error: 'Du må velge en rolle.',
-  onChanged: (verdi) => setState(() => valgtRolle = verdi),
+  onChanged: (indeks) => setState(() => valgtRolle = indeks),
 )
 ```
 
@@ -67,12 +59,15 @@ DsSelect(
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| label | String? | null | Ledetekst for velgeren |
-| items | List\<DsSelectItem\> | påkrevd | Valgalternativene i listen |
-| value | dynamic | null | Den valgte verdien |
-| onChanged | ValueChanged? | påkrevd | Kalles når valgt verdi endres |
-| size | DsSize? | null | Størrelse på velgeren |
-| error | String? | null | Feilmelding som vises under velgeren |
+| items | `List<String>` | påkrevd | Valgalternativene i listen |
+| selectedIndex | `int?` | `null` | Indeks for valgt alternativ |
+| onChanged | `ValueChanged<int>?` | `null` | Kalles med indeks når valgt verdi endres |
+| placeholder | `String?` | `null` | Plassholdertekst når ingen verdi er valgt |
+| size | `DsSize?` | `null` | Størrelse på velgeren |
+| color | `DsColor?` | `null` | Fargetema |
+| error | `String?` | `null` | Feilmelding som vises under velgeren |
+| disabled | `bool` | `false` | Om velgeren er deaktivert (dimmet) |
+| readOnly | `bool` | `false` | Om velgeren er skrivebeskyttet (synlig men ikke redigerbar) |
 
 ## Import
 

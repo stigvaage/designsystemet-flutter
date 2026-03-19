@@ -8,14 +8,16 @@ import '../../utils/ds_enums.dart';
 class DsSkeleton extends StatefulWidget {
   const DsSkeleton({
     super.key,
+    this.variant,
     this.width,
-    this.height = 20,
+    this.height,
     this.borderRadius,
     this.color,
   });
 
+  final DsSkeletonVariant? variant;
   final double? width;
-  final double height;
+  final double? height;
   final double? borderRadius;
   final DsColor? color;
 
@@ -57,7 +59,34 @@ class _DsSkeletonState extends State<DsSkeleton>
     final theme = DsTheme.of(context);
     final activeColor = widget.color ?? DsColorScope.of(context);
     final colorScale = theme.colorScheme.resolve(activeColor);
-    final radius = widget.borderRadius ?? theme.borderRadius.sm;
+    final defaultRadius = theme.borderRadius.sm;
+
+    final (
+      effectiveWidth,
+      effectiveHeight,
+      effectiveRadius,
+    ) = switch (widget.variant) {
+      DsSkeletonVariant.text => (
+        widget.width ?? double.infinity,
+        widget.height ?? 16.0,
+        widget.borderRadius ?? defaultRadius,
+      ),
+      DsSkeletonVariant.circle => (
+        widget.width ?? 40.0,
+        widget.width ?? 40.0,
+        (widget.width ?? 40.0) / 2,
+      ),
+      DsSkeletonVariant.rectangle => (
+        widget.width,
+        widget.height ?? 100.0,
+        widget.borderRadius ?? 0.0,
+      ),
+      null => (
+        widget.width,
+        widget.height ?? 20.0,
+        widget.borderRadius ?? defaultRadius,
+      ),
+    };
 
     return AnimatedBuilder(
       animation: _controller,
@@ -65,13 +94,13 @@ class _DsSkeletonState extends State<DsSkeleton>
         final opacity =
             0.3 + 0.3 * (0.5 + 0.5 * (_controller.value * 3.14159 * 2).sin());
         return Container(
-          width: widget.width,
-          height: widget.height,
+          width: effectiveWidth,
+          height: effectiveHeight,
           decoration: BoxDecoration(
             color: colorScale.surfaceDefault.withValues(
               alpha: opacity.clamp(0.0, 1.0),
             ),
-            borderRadius: BorderRadius.circular(radius),
+            borderRadius: BorderRadius.circular(effectiveRadius),
           ),
         );
       },
