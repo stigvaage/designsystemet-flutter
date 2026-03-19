@@ -264,16 +264,24 @@ Alle komponenter i biblioteket er bygget med universell utforming som grunnprins
 
 Biblioteket inkluderer en MCP-server (Model Context Protocol) som lar AI-kodeassistenter som Claude Code, Cursor og VS Code Copilot slå opp komponenter, migrere fra Material-widgets og søke i dokumentasjonen.
 
-### Installer i Claude Code
+### Installer via GitHub Packages
 
-Legg til i prosjektets `.mcp.json`:
+Konfigurer npm til å hente `@stigvaage`-pakker fra GitHub Packages (legg til i `.npmrc`):
+
+```
+@stigvaage:registry=https://npm.pkg.github.com
+```
+
+### Koble til Claude Code / Cursor
+
+Legg til i `.mcp.json` (Claude Code) eller `.cursor/mcp.json` (Cursor):
 
 ```json
 {
   "mcpServers": {
     "komponentbibliotek": {
-      "command": "node",
-      "args": ["<sti-til-repo>/mcp-server/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "@stigvaage/komponentbibliotek-flutter-mcp"],
       "env": {
         "REPO_ROOT": "<sti-til-repo>"
       }
@@ -282,7 +290,7 @@ Legg til i prosjektets `.mcp.json`:
 }
 ```
 
-### Installer i VS Code (Copilot)
+### Koble til VS Code (Copilot)
 
 Legg til i `.vscode/mcp.json`:
 
@@ -290,40 +298,14 @@ Legg til i `.vscode/mcp.json`:
 {
   "servers": {
     "komponentbibliotek": {
-      "command": "node",
-      "args": ["<sti-til-repo>/mcp-server/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "@stigvaage/komponentbibliotek-flutter-mcp"],
       "env": {
         "REPO_ROOT": "<sti-til-repo>"
       }
     }
   }
 }
-```
-
-### Installer i Cursor
-
-Legg til i `.cursor/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "komponentbibliotek": {
-      "command": "node",
-      "args": ["<sti-til-repo>/mcp-server/dist/index.js"],
-      "env": {
-        "REPO_ROOT": "<sti-til-repo>"
-      }
-    }
-  }
-}
-```
-
-### Bygg MCP-serveren
-
-```bash
-cd mcp-server
-npm install
-npm run build
 ```
 
 ### Tilgjengelige verktøy

@@ -1,18 +1,42 @@
 {
-  "name": "@komponentbibliotek/mcp-server",
+  "name": "@stigvaage/komponentbibliotek-flutter-mcp",
   "version": "0.1.0",
   "description": "MCP-server for komponentbibliotek-flutter — komponent-API, migrering og dokumentasjonssøk",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "komponentbibliotek-mcp": "dist/index.js"
+    "komponentbibliotek-flutter-mcp": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc && cp -r src/data dist/",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "build-data": "tsx scripts/build-data.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "designsystemet",
+    "flutter",
+    "ai",
+    "claude-code",
+    "cursor"
+  ],
+  "author": "Stig H. Våge",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stigvaage/komponentbibliotek-flutter.git",
+    "directory": "mcp-server"
+  },
+  "homepage": "https://stigvaage.github.io/komponentbibliotek-flutter/",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   },
   "engines": {
     "node": ">=18"
