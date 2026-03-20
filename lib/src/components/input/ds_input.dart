@@ -222,33 +222,41 @@ class _DsInputState extends State<DsInput> {
       );
     }
 
-    Widget result = AnimatedContainer(
-      duration: duration,
-      decoration: BoxDecoration(
-        color: widget.readOnly
-            ? colorScale.surfaceDefault
-            : colorScale.backgroundDefault,
-        borderRadius: radius,
-        border: Border.fromBorderSide(borderSide),
-      ),
-      child: Row(
-        children: [
-          if (widget.prefix != null) ...[
-            Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: widget.prefix!,
+    Widget result = GestureDetector(
+      onTap: () {
+        if (!widget.disabled && !widget.readOnly) {
+          _focusNode.requestFocus();
+        }
+      },
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: duration,
+        decoration: BoxDecoration(
+          color: widget.readOnly
+              ? colorScale.surfaceDefault
+              : colorScale.backgroundDefault,
+          borderRadius: radius,
+          border: Border.fromBorderSide(borderSide),
+        ),
+        child: Row(
+          children: [
+            if (widget.prefix != null) ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: widget.prefix!,
+              ),
+            ],
+            Expanded(
+              child: Padding(padding: padding, child: textFieldTree),
             ),
+            if (widget.suffix != null) ...[
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: widget.suffix!,
+              ),
+            ],
           ],
-          Expanded(
-            child: Padding(padding: padding, child: textFieldTree),
-          ),
-          if (widget.suffix != null) ...[
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: widget.suffix!,
-            ),
-          ],
-        ],
+        ),
       ),
     );
 
