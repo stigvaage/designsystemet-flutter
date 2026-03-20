@@ -1,5 +1,16 @@
 # Endringslogg
 
+## 0.2.1
+
+- **Fiks:** Trykk hvor som helst i tekstfelt/textarea-rammen gir fokus og viser tastatur
+- **Fiks:** Korrekt pakkeversjonsreferanse i dokumentasjon (`^0.2.0`, ikke `^1.0.0`)
+- **Fiks:** Oppdatert minimumskrav i dokumentasjon (Flutter 3.32+, Dart 3.8+)
+- **Ny:** 89 nye tester (177 totalt) for 18 komponenter som manglet testdekning
+- **Ny:** Open Graph- og Twitter Card-metadata for deling i sosiale medier
+- **Ny:** Interaktive Widgetbook-forhåndsvisninger med ekte tilstandshåndtering
+- **Ny:** Innebygd Widgetbook-iframe i komponentdokumentasjonen
+- **Ny:** Norske oversettelser for alle gjenværende VitePress-grensesnittelementer
+
 ## 0.2.0
 
 - **Rebrand:** Pakken er omdøpt fra `komponentbibliotek_flutter` til `designsystemet_flutter`
