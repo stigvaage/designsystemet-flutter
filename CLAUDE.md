@@ -75,3 +75,22 @@ Alle komponenter skal oppfylle **WCAG 2.1 AA**: riktig semantikk, tastaturnaviga
 ## MCP-server
 
 Prosjektet inkluderer en MCP-server i `mcp-server/` som eksponerer komponent-API-er, migreringsmappinger, tokens og dokumentasjon for AI-kodeassistenter. Se `.mcp.json` for konfigurasjon.
+
+## Bug Fixing Rules
+
+When fixing bugs, verify that changes don't break existing functionality. Run the full test suite (`dart test`) after each fix. Watch for cascading regressions — especially when modifying:
+- Shared token values or theme data
+- Base widget classes that other components extend
+- Public API surface (breaking changes affect downstream consumers)
+
+Before making a fix, analyze:
+1. What other components depend on what we're changing?
+2. Could this fix break any Widgetbook stories or golden tests?
+3. List potential cascading effects on downstream packages
+
+## Dependencies
+
+Always verify package compatibility before adding dependencies. Run `flutter clean` after dependency changes. This is a library package — minimize dependencies to avoid conflicts for consumers. Check for:
+- Dart SDK version constraints (must support declared minimum)
+- Flutter SDK version constraints
+- Transitive dependency conflicts with common packages
