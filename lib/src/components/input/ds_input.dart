@@ -222,13 +222,16 @@ class _DsInputState extends State<DsInput> {
       );
     }
 
-    Widget result = GestureDetector(
-      onTap: () {
-        if (!widget.disabled && !widget.readOnly) {
+    // Listener (not GestureDetector) lets taps propagate unblocked to
+    // the TextField — no gesture-arena conflict, keyboard opens on first
+    // tap. Only calls requestFocus for taps on padding/prefix/suffix
+    // (where TextField wouldn't receive the tap itself).
+    Widget result = Listener(
+      onPointerUp: (_) {
+        if (!widget.disabled && !widget.readOnly && !_focusNode.hasFocus) {
           _focusNode.requestFocus();
         }
       },
-      behavior: HitTestBehavior.translucent,
       child: AnimatedContainer(
         duration: duration,
         decoration: BoxDecoration(
