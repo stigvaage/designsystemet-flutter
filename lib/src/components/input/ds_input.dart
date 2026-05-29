@@ -228,7 +228,7 @@ class _DsInputState extends State<DsInput> {
           _focusNode.requestFocus();
         }
       },
-      behavior: HitTestBehavior.opaque,
+      behavior: HitTestBehavior.translucent,
       child: AnimatedContainer(
         duration: duration,
         decoration: BoxDecoration(
