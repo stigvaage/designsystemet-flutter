@@ -5,12 +5,26 @@ import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
 /// A small label tag with a tinted background and subtle border.
+///
+/// The [variant] mirrors the React `data-variant` attribute:
+/// [DsSelectionVariant.default_] renders a tinted fill with a subtle border,
+/// while [DsSelectionVariant.outline] renders a transparent background with a
+/// default border.
 class DsTag extends StatelessWidget {
-  const DsTag({super.key, required this.child, this.size, this.color});
+  const DsTag({
+    super.key,
+    required this.child,
+    this.size,
+    this.color,
+    this.variant = DsSelectionVariant.default_,
+  });
 
   final Widget child;
   final DsSize? size;
   final DsColor? color;
+
+  /// The visual variant of the tag. Defaults to [DsSelectionVariant.default_].
+  final DsSelectionVariant variant;
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +46,22 @@ class DsTag extends StatelessWidget {
       DsSize.lg => 16.0,
     };
 
+    final backgroundColor = switch (variant) {
+      DsSelectionVariant.default_ => colorScale.surfaceTinted,
+      DsSelectionVariant.outline => const Color(0x00000000),
+    };
+
+    final borderColor = switch (variant) {
+      DsSelectionVariant.default_ => colorScale.borderSubtle,
+      DsSelectionVariant.outline => colorScale.borderDefault,
+    };
+
     return Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: colorScale.surfaceTinted,
+        color: backgroundColor,
         borderRadius: radius,
-        border: Border.all(color: colorScale.borderSubtle, width: 1),
+        border: Border.all(color: borderColor, width: 1),
       ),
       child: DefaultTextStyle(
         style: theme.typography.bodyXs.copyWith(

@@ -1,6 +1,7 @@
 import 'dart:ui' show Color;
-import 'package:flutter_test/flutter_test.dart';
+
 import 'package:designsystemet_flutter/theme.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const scale = DsColorScale(

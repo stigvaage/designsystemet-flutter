@@ -1,8 +1,8 @@
-import 'package:flutter/widgets.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:designsystemet_flutter/theme.dart';
 import 'package:designsystemet_flutter/typography.dart';
-import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   Widget wrapWithTheme(Widget child) {
@@ -52,9 +52,9 @@ void main() {
     testWidgets('uses correct color from scope', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(
-          DsColorScope(
+          const DsColorScope(
             color: DsColor.neutral,
-            child: const DsParagraph(text: 'Neutral'),
+            child: DsParagraph(text: 'Neutral'),
           ),
         ),
       );

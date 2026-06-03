@@ -5,15 +5,26 @@ import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 
-/// A circular avatar that displays initials derived from [name], or an
-/// image loaded from [imageUrl] with an initials fallback.
+/// An avatar that displays initials derived from [name], or an image loaded
+/// from [imageUrl] with an initials fallback.
+///
+/// The [variant] controls the shape: [DsAvatarVariant.circle] renders a
+/// circular avatar, while [DsAvatarVariant.square] renders a rounded square.
 class DsAvatar extends StatelessWidget {
-  const DsAvatar({super.key, this.name, this.imageUrl, this.size, this.color});
+  const DsAvatar({
+    super.key,
+    this.name,
+    this.imageUrl,
+    this.size,
+    this.color,
+    this.variant = DsAvatarVariant.circle,
+  });
 
   final String? name;
   final String? imageUrl;
   final DsSize? size;
   final DsColor? color;
+  final DsAvatarVariant variant;
 
   String get _initials {
     if (name == null || name!.isEmpty) return '?';
@@ -40,6 +51,11 @@ class DsAvatar extends StatelessWidget {
       DsSize.md => 14.0,
       DsSize.lg => 16.0,
     };
+    final isSquare = variant == DsAvatarVariant.square;
+    final shape = isSquare ? BoxShape.rectangle : BoxShape.circle;
+    final borderRadius = isSquare
+        ? BorderRadius.circular(theme.borderRadius.defaultRadius)
+        : null;
 
     Widget initialsWidget() => Text(
       _initials,
@@ -58,16 +74,19 @@ class DsAvatar extends StatelessWidget {
         width: dimension,
         height: dimension,
         decoration: BoxDecoration(
-          shape: BoxShape.circle,
+          shape: shape,
+          borderRadius: borderRadius,
           color: colorScale.surfaceTinted,
         ),
         foregroundDecoration: BoxDecoration(
-          shape: BoxShape.circle,
+          shape: shape,
+          borderRadius: borderRadius,
           border: Border.all(color: colorScale.borderSubtle, width: 1),
         ),
         alignment: Alignment.center,
         child: imageUrl != null
-            ? ClipOval(
+            ? ClipRRect(
+                borderRadius: borderRadius ?? BorderRadius.circular(dimension),
                 child: Image.network(
                   imageUrl!,
                   width: dimension,
@@ -77,7 +96,7 @@ class DsAvatar extends StatelessWidget {
                     if (wasSynchronouslyLoaded || frame != null) return child;
                     return initialsWidget();
                   },
-                  errorBuilder: (_, __, ___) => initialsWidget(),
+                  errorBuilder: (_, _, _) => initialsWidget(),
                 ),
               )
             : initialsWidget(),

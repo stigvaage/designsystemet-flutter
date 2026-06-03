@@ -1,7 +1,8 @@
 import 'dart:io';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:designsystemet_flutter/src/generator/dtcg_parser.dart';
+
 import 'package:designsystemet_flutter/src/generator/dart_emitter.dart';
+import 'package:designsystemet_flutter/src/generator/dtcg_parser.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('DtcgParser', () {
@@ -14,7 +15,7 @@ void main() {
     });
 
     test('parses fixture tokens directory', () {
-      final fixtureDir = 'test/generator/fixtures/design-tokens';
+      const fixtureDir = 'test/generator/fixtures/design-tokens';
       if (!Directory(fixtureDir).existsSync()) {
         // Create fixture for testing
         _createFixture(fixtureDir);
@@ -31,7 +32,7 @@ void main() {
 
   group('DartEmitter', () {
     test('generates valid Dart code structure', () {
-      final theme = ParsedTheme(
+      const theme = ParsedTheme(
         name: 'my-theme',
         lightColors: {
           'accent': ParsedColorScale({

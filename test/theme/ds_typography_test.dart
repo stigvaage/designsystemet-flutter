@@ -1,6 +1,6 @@
+import 'package:designsystemet_flutter/theme.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:designsystemet_flutter/theme.dart';
 
 void main() {
   group('DsTypography', () {

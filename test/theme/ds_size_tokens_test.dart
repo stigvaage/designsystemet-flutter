@@ -1,5 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:designsystemet_flutter/theme.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('DsSizeTokens', () {

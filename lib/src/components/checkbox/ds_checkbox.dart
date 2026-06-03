@@ -23,6 +23,7 @@ class DsCheckbox extends StatefulWidget {
     this.indeterminate = false,
     this.readOnly = false,
     this.focusNode,
+    this.variant = DsSelectionVariant.default_,
   });
 
   final bool value;
@@ -35,6 +36,11 @@ class DsCheckbox extends StatefulWidget {
   final bool indeterminate;
   final bool readOnly;
   final FocusNode? focusNode;
+
+  /// The visual variant. [DsSelectionVariant.outline] wraps the control in a
+  /// bordered container that highlights when checked. Defaults to
+  /// [DsSelectionVariant.default_].
+  final DsSelectionVariant variant;
 
   @override
   State<DsCheckbox> createState() => _DsCheckboxState();
@@ -105,6 +111,49 @@ class _DsCheckboxState extends State<DsCheckbox> {
       ),
     );
 
+    Widget control = Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: widget.description != null
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
+      children: [
+        box,
+        if (widget.label != null || widget.description != null) ...[
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.label != null) widget.label!,
+              if (widget.description != null)
+                DefaultTextStyle(
+                  style: theme.typography.bodySm.copyWith(
+                    color: colorScale.textSubtle,
+                  ),
+                  child: widget.description!,
+                ),
+            ],
+          ),
+        ],
+      ],
+    );
+
+    if (widget.variant == DsSelectionVariant.outline) {
+      control = Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(theme.borderRadius.defaultRadius),
+          border: Border.all(
+            color: widget.value
+                ? colorScale.baseDefault
+                : colorScale.borderSubtle,
+            width: 1,
+          ),
+        ),
+        child: control,
+      );
+    }
+
     final Widget result = ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
       child: Focus(
@@ -126,35 +175,14 @@ class _DsCheckboxState extends State<DsCheckbox> {
               ? SystemMouseCursors.basic
               : SystemMouseCursors.click,
           child: GestureDetector(
+            // Opaque so a tap anywhere in the control area (including the
+            // label and the gap between box and label) toggles the checkbox,
+            // not only a tap directly on the box.
+            behavior: HitTestBehavior.opaque,
             onTap: widget.readOnly
                 ? null
                 : () => widget.onChanged?.call(!widget.value),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: widget.description != null
-                  ? CrossAxisAlignment.start
-                  : CrossAxisAlignment.center,
-              children: [
-                box,
-                if (widget.label != null || widget.description != null) ...[
-                  const SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (widget.label != null) widget.label!,
-                      if (widget.description != null)
-                        DefaultTextStyle(
-                          style: theme.typography.bodySm.copyWith(
-                            color: colorScale.textSubtle,
-                          ),
-                          child: widget.description!,
-                        ),
-                    ],
-                  ),
-                ],
-              ],
-            ),
+            child: control,
           ),
         ),
       ),

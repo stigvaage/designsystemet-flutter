@@ -1,7 +1,7 @@
-import 'package:flutter/widgets.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 Widget wrapWithTheme(Widget child) {
   return DsTheme(
@@ -39,6 +39,22 @@ void main() {
       final decoration = container.decoration as BoxDecoration;
       expect(decoration.border, isNull);
       expect(decoration.boxShadow, isNotNull);
+    });
+
+    testWidgets('tinted variant uses surfaceTinted fill', (tester) async {
+      final colorScale = DsThemeDigdir.light().colorScheme.resolve(
+        DsColor.accent,
+      );
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsCard(variant: DsCardVariant.tinted, child: Text('Card')),
+        ),
+      );
+      final container = tester.widget<AnimatedContainer>(
+        find.byType(AnimatedContainer),
+      );
+      final decoration = container.decoration as BoxDecoration;
+      expect(decoration.color, colorScale.surfaceTinted);
     });
 
     testWidgets('interactive card has button semantics when onTap set', (

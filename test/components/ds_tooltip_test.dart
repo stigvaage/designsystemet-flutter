@@ -1,8 +1,9 @@
 import 'dart:ui' show PointerDeviceKind;
-import 'package:flutter/widgets.dart';
-import 'package:flutter_test/flutter_test.dart';
+
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 Widget wrapWithOverlay(Widget child) {
   return DsTheme(

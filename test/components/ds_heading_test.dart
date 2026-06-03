@@ -1,8 +1,8 @@
-import 'package:flutter/widgets.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:designsystemet_flutter/theme.dart';
 import 'package:designsystemet_flutter/typography.dart';
-import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   Widget wrapWithTheme(Widget child, {DsThemeData? theme}) {
@@ -38,9 +38,9 @@ void main() {
     testWidgets('inherits color from DsColorScope', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(
-          DsColorScope(
+          const DsColorScope(
             color: DsColor.danger,
-            child: const DsHeading(text: 'Danger'),
+            child: DsHeading(text: 'Danger'),
           ),
         ),
       );
@@ -52,9 +52,9 @@ void main() {
     testWidgets('local color overrides scope', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(
-          DsColorScope(
+          const DsColorScope(
             color: DsColor.danger,
-            child: const DsHeading(text: 'Success', color: DsColor.success),
+            child: DsHeading(text: 'Success', color: DsColor.success),
           ),
         ),
       );

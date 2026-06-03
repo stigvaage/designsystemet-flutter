@@ -1,8 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import '../../theme/ds_color_scale.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
+import '../../theme/ds_theme_data.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_focus.dart';
 
@@ -21,6 +23,7 @@ class DsRadio extends StatefulWidget {
     this.error,
     this.readOnly = false,
     this.focusNode,
+    this.variant = DsSelectionVariant.default_,
   });
 
   final bool value;
@@ -32,6 +35,11 @@ class DsRadio extends StatefulWidget {
   final String? error;
   final bool readOnly;
   final FocusNode? focusNode;
+
+  /// Visual variant. [DsSelectionVariant.outline] wraps the control in a
+  /// bordered container that highlights when selected (matches the React
+  /// radio `data-variant="outline"`).
+  final DsSelectionVariant variant;
 
   @override
   State<DsRadio> createState() => _DsRadioState();
@@ -106,6 +114,33 @@ class _DsRadioState extends State<DsRadio> {
       ),
     );
 
+    final control = Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: widget.description != null
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
+      children: [
+        circle,
+        if (widget.label != null || widget.description != null) ...[
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.label != null) widget.label!,
+              if (widget.description != null)
+                DefaultTextStyle(
+                  style: theme.typography.bodySm.copyWith(
+                    color: colorScale.textSubtle,
+                  ),
+                  child: widget.description!,
+                ),
+            ],
+          ),
+        ],
+      ],
+    );
+
     return Semantics(
       selected: widget.value,
       enabled: !widget.readOnly,
@@ -130,39 +165,41 @@ class _DsRadioState extends State<DsRadio> {
                 ? SystemMouseCursors.basic
                 : SystemMouseCursors.click,
             child: GestureDetector(
+              // Opaque so a tap anywhere in the control area (including the
+              // label and the gap) selects the radio, not only the circle.
+              behavior: HitTestBehavior.opaque,
               onTap: widget.readOnly
                   ? null
                   : () => widget.onChanged?.call(!widget.value),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: widget.description != null
-                    ? CrossAxisAlignment.start
-                    : CrossAxisAlignment.center,
-                children: [
-                  circle,
-                  if (widget.label != null || widget.description != null) ...[
-                    const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (widget.label != null) widget.label!,
-                        if (widget.description != null)
-                          DefaultTextStyle(
-                            style: theme.typography.bodySm.copyWith(
-                              color: colorScale.textSubtle,
-                            ),
-                            child: widget.description!,
-                          ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
+              child: _wrapVariant(theme, colorScale, control),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  /// Wraps [control] in the [DsSelectionVariant.outline] bordered container
+  /// (border highlights when [value] is `true`); returns [control] unchanged
+  /// for [DsSelectionVariant.default_].
+  Widget _wrapVariant(
+    DsThemeData theme,
+    DsColorScale colorScale,
+    Widget control,
+  ) {
+    if (widget.variant != DsSelectionVariant.outline) {
+      return control;
+    }
+    final borderColor = widget.value
+        ? colorScale.baseDefault
+        : colorScale.borderSubtle;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: borderColor, width: 1),
+        borderRadius: BorderRadius.circular(theme.borderRadius.defaultRadius),
+      ),
+      child: control,
     );
   }
 }

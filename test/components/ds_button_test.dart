@@ -1,8 +1,8 @@
-import 'package:flutter/widgets.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:designsystemet_flutter/theme.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:designsystemet_flutter/src/components/button/ds_button.dart';
+import 'package:designsystemet_flutter/theme.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   Widget wrapWithTheme(Widget child) {

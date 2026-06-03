@@ -1,6 +1,7 @@
 import 'dart:ui' show Brightness;
-import 'package:flutter_test/flutter_test.dart';
+
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('DsThemeData', () {

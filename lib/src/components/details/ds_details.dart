@@ -15,12 +15,20 @@ class DsDetails extends StatefulWidget {
     required this.child,
     this.initiallyExpanded = false,
     this.color,
+    this.variant = DsDetailsVariant.default_,
   });
 
   final Widget summary;
   final Widget child;
   final bool initiallyExpanded;
   final DsColor? color;
+
+  /// The visual variant of the details widget.
+  ///
+  /// [DsDetailsVariant.default_] renders only a border with a transparent
+  /// fill, while [DsDetailsVariant.tinted] fills the container with the
+  /// tinted surface color.
+  final DsDetailsVariant variant;
 
   @override
   State<DsDetails> createState() => _DsDetailsState();
@@ -78,6 +86,10 @@ class _DsDetailsState extends State<DsDetails>
       expanded: _isExpanded,
       child: Container(
         decoration: BoxDecoration(
+          color: switch (widget.variant) {
+            DsDetailsVariant.default_ => null,
+            DsDetailsVariant.tinted => colorScale.surfaceTinted,
+          },
           border: Border.all(color: colorScale.borderSubtle, width: 1),
           borderRadius: BorderRadius.circular(theme.borderRadius.defaultRadius),
         ),

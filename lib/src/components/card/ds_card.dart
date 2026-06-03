@@ -18,6 +18,7 @@ class DsCard extends StatefulWidget {
     this.elevated = false,
     this.onTap,
     this.focusNode,
+    this.variant = DsCardVariant.default_,
   });
 
   final Widget child;
@@ -25,6 +26,12 @@ class DsCard extends StatefulWidget {
   final bool elevated;
   final VoidCallback? onTap;
   final FocusNode? focusNode;
+
+  /// The visual fill variant of the card.
+  ///
+  /// [DsCardVariant.default_] uses the default surface fill, while
+  /// [DsCardVariant.tinted] uses a tinted surface fill.
+  final DsCardVariant variant;
 
   @override
   State<DsCard> createState() => _DsCardState();
@@ -43,7 +50,10 @@ class _DsCardState extends State<DsCard> {
     final duration = DsAnimation.resolveDuration(context, DsAnimation.fast);
     final isClickable = widget.onTap != null;
 
-    Color bgColor = colorScale.surfaceDefault;
+    Color bgColor = switch (widget.variant) {
+      DsCardVariant.default_ => colorScale.surfaceDefault,
+      DsCardVariant.tinted => colorScale.surfaceTinted,
+    };
     if (isClickable && _isHovered) {
       bgColor = colorScale.surfaceHover;
     }

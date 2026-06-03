@@ -1,8 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import '../../theme/ds_color_scale.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
+import '../../theme/ds_theme_data.dart';
 import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_focus.dart';
@@ -11,6 +13,10 @@ import '../../utils/ds_focus.dart';
 ///
 /// Supports optional label and description, keyboard activation (Space),
 /// and a read-only mode.
+///
+/// The [variant] controls the visual style: [DsSelectionVariant.default_]
+/// renders the bare control, while [DsSelectionVariant.outline] wraps the
+/// whole control in a selectable bordered box.
 class DsSwitch extends StatefulWidget {
   const DsSwitch({
     super.key,
@@ -22,6 +28,7 @@ class DsSwitch extends StatefulWidget {
     this.color,
     this.readOnly = false,
     this.focusNode,
+    this.variant = DsSelectionVariant.default_,
   });
 
   final bool value;
@@ -32,6 +39,13 @@ class DsSwitch extends StatefulWidget {
   final DsColor? color;
   final bool readOnly;
   final FocusNode? focusNode;
+
+  /// The visual style of the switch.
+  ///
+  /// [DsSelectionVariant.outline] wraps the control in a bordered box that
+  /// highlights its border with [DsColorScale.baseDefault] when [value] is
+  /// `true`. Mirrors the React `data-variant="outline"` selection style.
+  final DsSelectionVariant variant;
 
   @override
   State<DsSwitch> createState() => _DsSwitchState();
@@ -132,6 +146,9 @@ class _DsSwitchState extends State<DsSwitch> {
         },
         onFocusChange: (f) => setState(() => _isFocused = f),
         child: GestureDetector(
+          // Opaque so a tap anywhere in the control area (including the label)
+          // toggles the switch, not only a tap on the track.
+          behavior: HitTestBehavior.opaque,
           onTap: widget.readOnly
               ? null
               : () => widget.onChanged?.call(!widget.value),
@@ -165,6 +182,28 @@ class _DsSwitchState extends State<DsSwitch> {
       ),
     );
 
+    if (widget.variant == DsSelectionVariant.outline) {
+      result = _wrapInOutline(result, theme, colorScale);
+    }
+
     return result;
+  }
+
+  Widget _wrapInOutline(
+    Widget child,
+    DsThemeData theme,
+    DsColorScale colorScale,
+  ) {
+    final borderColor = widget.value
+        ? colorScale.baseDefault
+        : colorScale.borderSubtle;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(theme.borderRadius.defaultRadius),
+        border: Border.all(color: borderColor, width: 1),
+      ),
+      child: child,
+    );
   }
 }

@@ -1,6 +1,8 @@
 /// All Designsystemet Flutter component widgets.
 library;
 
+export 'package:lucide_icons_flutter/lucide_icons.dart' show LucideIcons;
+
 export 'src/components/alert/ds_alert.dart';
 export 'src/components/avatar/ds_avatar.dart';
 export 'src/components/avatar_stack/ds_avatar_stack.dart';
@@ -42,5 +44,3 @@ export 'src/components/toggle_group/ds_toggle_group.dart';
 export 'src/components/tooltip/ds_tooltip.dart';
 export 'src/utils/ds_enums.dart';
 export 'src/utils/ds_icons.dart';
-
-export 'package:lucide_icons_flutter/lucide_icons.dart' show LucideIcons;

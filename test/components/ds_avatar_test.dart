@@ -1,7 +1,7 @@
-import 'package:flutter/widgets.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 Widget wrapWithTheme(Widget child) {
   return DsTheme(
@@ -31,6 +31,38 @@ void main() {
       await tester.pumpWidget(wrapWithTheme(const DsAvatar(name: 'Test')));
       final semantics = tester.getSemantics(find.byType(DsAvatar));
       expect(semantics.flagsCollection.isImage, isTrue);
+    });
+
+    testWidgets('circle variant uses a circular shape', (tester) async {
+      await tester.pumpWidget(wrapWithTheme(const DsAvatar(name: 'Stig')));
+      final container = tester.widget<Container>(
+        find.descendant(
+          of: find.byType(DsAvatar),
+          matching: find.byType(Container),
+        ),
+      );
+      final decoration = container.decoration! as BoxDecoration;
+      expect(decoration.shape, BoxShape.circle);
+      expect(decoration.borderRadius, isNull);
+    });
+
+    testWidgets('square variant uses a rounded rectangle shape', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsAvatar(name: 'Stig', variant: DsAvatarVariant.square),
+        ),
+      );
+      final container = tester.widget<Container>(
+        find.descendant(
+          of: find.byType(DsAvatar),
+          matching: find.byType(Container),
+        ),
+      );
+      final decoration = container.decoration! as BoxDecoration;
+      expect(decoration.shape, BoxShape.rectangle);
+      expect(decoration.borderRadius, isNotNull);
     });
 
     testWidgets('semantic label is name or "Profilbilde" fallback', (

@@ -10,6 +10,10 @@ import '../../utils/ds_enums.dart';
 /// A segmented toggle control where one item is selected at a time.
 ///
 /// Supports arrow-key navigation between segments.
+///
+/// The [variant] controls the emphasis of the selected segment:
+/// [DsToggleGroupVariant.primary] fills it with the base color, while
+/// [DsToggleGroupVariant.secondary] uses a lower-emphasis surface fill.
 class DsToggleGroup extends StatefulWidget {
   const DsToggleGroup({
     super.key,
@@ -18,6 +22,7 @@ class DsToggleGroup extends StatefulWidget {
     required this.onChanged,
     this.size,
     this.color,
+    this.variant = DsToggleGroupVariant.primary,
   });
 
   final List<String> items;
@@ -25,6 +30,9 @@ class DsToggleGroup extends StatefulWidget {
   final ValueChanged<int> onChanged;
   final DsSize? size;
   final DsColor? color;
+
+  /// The visual emphasis of the selected segment.
+  final DsToggleGroupVariant variant;
 
   @override
   State<DsToggleGroup> createState() => _DsToggleGroupState();
@@ -79,6 +87,14 @@ class _DsToggleGroupState extends State<DsToggleGroup> {
       DsSize.md => 14.0,
       DsSize.lg => 16.0,
     };
+    final selectedFill = switch (widget.variant) {
+      DsToggleGroupVariant.primary => colorScale.baseDefault,
+      DsToggleGroupVariant.secondary => colorScale.surfaceActive,
+    };
+    final selectedText = switch (widget.variant) {
+      DsToggleGroupVariant.primary => colorScale.baseContrastDefault,
+      DsToggleGroupVariant.secondary => colorScale.textDefault,
+    };
 
     return Container(
       decoration: BoxDecoration(
@@ -101,7 +117,7 @@ class _DsToggleGroupState extends State<DsToggleGroup> {
                   height: height,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
-                    color: isSelected ? colorScale.baseDefault : null,
+                    color: isSelected ? selectedFill : null,
                     borderRadius: i == 0
                         ? BorderRadius.horizontal(
                             left: Radius.circular(
@@ -125,9 +141,7 @@ class _DsToggleGroupState extends State<DsToggleGroup> {
                       fontWeight: isSelected
                           ? FontWeight.w500
                           : FontWeight.w400,
-                      color: isSelected
-                          ? colorScale.baseContrastDefault
-                          : colorScale.textDefault,
+                      color: isSelected ? selectedText : colorScale.textDefault,
                     ),
                   ),
                 ),
