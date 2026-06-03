@@ -87,3 +87,19 @@ enum DsBadgeVariant { base, tinted }
 
 // DsSkeletonVariant
 enum DsSkeletonVariant { text, circle, rectangle }
+
+// DsCardVariant — React Card `data-variant`: 'default' | 'tinted'
+enum DsCardVariant { default_, tinted }
+
+// DsDetailsVariant — React Details `data-variant`: 'default' | 'tinted'
+enum DsDetailsVariant { default_, tinted }
+
+// DsToggleGroupVariant — React ToggleGroup `variant`: 'primary' | 'secondary'
+enum DsToggleGroupVariant { primary, secondary }
+
+// DsSelectionVariant — delt `data-variant` for Tag/Switch/Checkbox/Radio.
+// React eksponerer 'outline' (udefinert = standard/fylt).
+enum DsSelectionVariant { default_, outline }
+
+// DsAvatarVariant — React Avatar `data-variant`: 'circle' | 'square'
+enum DsAvatarVariant { circle, square }
