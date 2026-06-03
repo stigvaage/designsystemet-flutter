@@ -23,4 +23,20 @@ Mønstre viser hvordan du kombinerer komponenter for å løse vanlige oppgaver i
     <h3>Dato og klokkeslett</h3>
     <p>Håndter dato- og klokkeslettinndata med DsTextfield i norsk format (dd.mm.åååå).</p>
   </a>
+  <a href="./knappplassering" class="section-card">
+    <h3>Knappeplassering</h3>
+    <p>Plasser og ranger handlingsknapper konsekvent med DsButton — primær først, én primærhandling.</p>
+  </a>
+  <a href="./samtykkebanner" class="section-card">
+    <h3>Samtykkebanner</h3>
+    <p>Be om samtykke til datainnsamling med balanserte valg — «Godta» og «Avslå» med lik vekt.</p>
+  </a>
+  <a href="./eksterne-lenker" class="section-card">
+    <h3>Eksterne lenker</h3>
+    <p>Marker lenker som fører ut av tjenesten tydelig, og gi skjermlesere beskjed.</p>
+  </a>
+  <a href="./representasjon" class="section-card">
+    <h3>Representasjon</h3>
+    <p>Lag inkluderende innhold, nøytrale avatarer og eksempeldata som speiler mangfoldet.</p>
+  </a>
 </div>
