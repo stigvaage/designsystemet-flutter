@@ -1,6 +1,6 @@
-import 'package:flutter/widgets.dart';
-import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
+import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/widgets.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 class DsThemeAddon extends WidgetbookAddon<DsThemeData> {

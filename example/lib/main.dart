@@ -1,6 +1,6 @@
-import 'package:flutter/widgets.dart';
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/widgets.dart';
 
 void main() {
   runApp(const ExampleApp());
@@ -17,7 +17,7 @@ class _ExampleAppState extends State<ExampleApp> {
   var _isDark = false;
   var _checkboxValue = false;
   // ignore: unused_field
-  var _switchValue = false;
+  final _switchValue = false;
   var _selectedTab = 0;
   var _selectedToggle = 0;
   var _currentPage = 1;
@@ -203,15 +203,15 @@ class _ExampleAppState extends State<ExampleApp> {
                 // Tags and Chips
                 const DsHeading(text: 'Tags & Chips', level: DsHeadingLevel.md),
                 const SizedBox(height: 8),
-                Wrap(
+                const Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    const DsTag(child: Text('Default')),
-                    DsTag(color: DsColor.success, child: const Text('Success')),
-                    DsTag(color: DsColor.danger, child: const Text('Danger')),
-                    DsChip(selected: true, child: const Text('Selected Chip')),
-                    DsChip(removable: true, child: const Text('Removable')),
+                    DsTag(child: Text('Default')),
+                    DsTag(color: DsColor.success, child: Text('Success')),
+                    DsTag(color: DsColor.danger, child: Text('Danger')),
+                    DsChip(selected: true, child: Text('Selected Chip')),
+                    DsChip(removable: true, child: Text('Removable')),
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -260,7 +260,7 @@ class _ExampleAppState extends State<ExampleApp> {
                 // Divider
                 const DsDivider(),
                 const SizedBox(height: 8),
-                DsParagraph(
+                const DsParagraph(
                   text: 'designsystemet_flutter v0.2.0',
                   bodySize: DsBodySize.xs,
                   color: DsColor.neutral,

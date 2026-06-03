@@ -1,5 +1,5 @@
-import 'package:flutter/widgets.dart';
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
+import 'package:flutter/widgets.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 final suggestionComponent = WidgetbookComponent(
@@ -7,9 +7,9 @@ final suggestionComponent = WidgetbookComponent(
   useCases: [
     WidgetbookUseCase(
       name: 'Standard',
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(16),
-        child: const DsSuggestion(
+      builder: (context) => const Padding(
+        padding: EdgeInsets.all(16),
+        child: DsSuggestion(
           items: ['Oslo', 'Bergen', 'Trondheim', 'Stavanger', 'Tromsø'],
         ),
       ),
