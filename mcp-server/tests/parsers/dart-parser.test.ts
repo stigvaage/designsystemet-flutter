@@ -87,4 +87,19 @@ describe("parseComponent", () => {
       expect(closable!.defaultValue).toBe("false");
     });
   });
+
+  describe("dartdoc descriptions", () => {
+    const checkboxPath = path.join(
+      repoRoot,
+      "lib/src/components/checkbox/ds_checkbox.dart"
+    );
+    const component = parseComponent(checkboxPath, repoRoot);
+
+    it("populates a field description from its dartdoc", () => {
+      const variant = component.properties.find((p) => p.name === "variant");
+      expect(variant).toBeDefined();
+      expect(variant!.description).toBeTruthy();
+      expect(variant!.description!.toLowerCase()).toContain("variant");
+    });
+  });
 });

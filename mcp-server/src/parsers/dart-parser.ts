@@ -81,6 +81,35 @@ function parseFieldTypes(source: string): Map<string, string> {
 }
 
 /**
+ * Extract the dartdoc comment that immediately precedes each `final Type name;`
+ * field declaration. Returns a map from field name to its (joined) doc text.
+ */
+function parseFieldDocs(source: string): Map<string, string> {
+  const lines = source.split("\n");
+  const docs = new Map<string, string>();
+  const fieldRe = /^\s*final\s+[\w.<>?, ]+\s+(\w+)\s*;/;
+
+  for (let i = 0; i < lines.length; i++) {
+    const m = fieldRe.exec(lines[i]);
+    if (!m) continue;
+
+    const doc: string[] = [];
+    for (let j = i - 1; j >= 0; j--) {
+      const trimmed = lines[j].trim();
+      if (trimmed.startsWith("///")) {
+        doc.unshift(trimmed.replace(/^\/\/\/\s?/, ""));
+      } else {
+        break; // dartdoc must be contiguous and directly above the field
+      }
+    }
+
+    if (doc.length) docs.set(m[1], doc.join(" ").trim());
+  }
+
+  return docs;
+}
+
+/**
  * Extract the primary public widget class name from a Dart source file.
  * Looks for `class DsXxx extends StatelessWidget` or `StatefulWidget`.
  */
@@ -107,7 +136,10 @@ export function parseComponent(filePath: string, repoRoot: string): Component {
   // Pass 2: field types
   const fieldTypes = parseFieldTypes(source);
 
-  // Pass 3: correlate
+  // Pass 3: dartdoc descriptions
+  const fieldDocs = parseFieldDocs(source);
+
+  // Pass 4: correlate
   const properties: Property[] = ctorParams.map((param) => {
     const type = fieldTypes.get(param.name) ?? "dynamic";
     return {
@@ -116,7 +148,7 @@ export function parseComponent(filePath: string, repoRoot: string): Component {
       required: param.required,
       defaultValue: param.defaultValue,
       isNullable: type.endsWith("?"),
-      description: null,
+      description: fieldDocs.get(param.name) ?? null,
     };
   });
 
