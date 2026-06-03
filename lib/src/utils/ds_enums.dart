@@ -103,3 +103,23 @@ enum DsSelectionVariant { default_, outline }
 
 // DsAvatarVariant — React Avatar `data-variant`: 'circle' | 'square'
 enum DsAvatarVariant { circle, square }
+
+// DsPlacement — anchoring side for overlays (Popover/Tooltip/Dialog).
+// Mirrors the floating-ui `Placement` used by React `placement`.
+enum DsPlacement {
+  top,
+  topStart,
+  topEnd,
+  right,
+  rightStart,
+  rightEnd,
+  bottom,
+  bottomStart,
+  bottomEnd,
+  left,
+  leftStart,
+  leftEnd,
+}
+
+// DsPopoverVariant — React Popover `data-variant`: 'default' | 'tinted'
+enum DsPopoverVariant { default_, tinted }
