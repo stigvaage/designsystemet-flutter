@@ -86,5 +86,120 @@ void main() {
       final semantics = tester.getSemantics(find.byType(DsChip));
       expect(semantics.flagsCollection.isButton, isTrue);
     });
+
+    testWidgets('DsChip.button calls onTap when tapped', (tester) async {
+      var tapped = false;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip.button(
+            onTap: () => tapped = true,
+            child: const Text('Action'),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(DsChip));
+      expect(tapped, isTrue);
+    });
+
+    testWidgets('DsChip.removable calls onRemove when icon tapped', (
+      tester,
+    ) async {
+      var removed = false;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip.removable(
+            onRemove: () => removed = true,
+            child: const Text('Tag'),
+          ),
+        ),
+      );
+      await tester.tap(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == 'Fjern',
+        ),
+      );
+      expect(removed, isTrue);
+    });
+
+    testWidgets('DsChip.checkbox toggles selected via onChanged', (
+      tester,
+    ) async {
+      bool? newValue;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip.checkbox(
+            selected: false,
+            onChanged: (value) => newValue = value,
+            child: const Text('Bokmål'),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(DsChip));
+      expect(newValue, isTrue);
+
+      newValue = null;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip.checkbox(
+            selected: true,
+            onChanged: (value) => newValue = value,
+            child: const Text('Bokmål'),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(DsChip));
+      expect(newValue, isFalse);
+    });
+
+    testWidgets('DsChip.checkbox exposes checked semantics', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip.checkbox(
+            selected: true,
+            onChanged: (_) {},
+            child: const Text('Bokmål'),
+          ),
+        ),
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.checked == true,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('DsChip.radio selects via onChanged', (tester) async {
+      var selectedCount = 0;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip.radio(
+            selected: false,
+            onChanged: () => selectedCount++,
+            child: const Text('Nynorsk'),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(DsChip));
+      expect(selectedCount, 1);
+    });
+
+    testWidgets('DsChip.radio exposes selected semantics', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip.radio(
+            selected: true,
+            onChanged: () {},
+            child: const Text('Nynorsk'),
+          ),
+        ),
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.selected == true,
+        ),
+        findsOneWidget,
+      );
+    });
   });
 }

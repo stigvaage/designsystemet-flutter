@@ -8,37 +8,133 @@ Widget wrapWithOverlay(Widget child) {
     data: DsThemeDigdir.light(),
     child: Directionality(
       textDirection: TextDirection.ltr,
-      child: Overlay(initialEntries: [OverlayEntry(builder: (_) => child)]),
+      child: MediaQuery(
+        data: const MediaQueryData(),
+        child: Overlay(
+          initialEntries: [
+            OverlayEntry(
+              // Place the trigger small and top-left so the dropdown opens
+              // on-screen below it (a full-screen trigger pushes it off-screen).
+              builder: (_) => Align(
+                alignment: Alignment.topLeft,
+                child: SizedBox(width: 250, child: child),
+              ),
+            ),
+          ],
+        ),
+      ),
     ),
   );
 }
+
+const _fruit = [
+  DsSelectOption<String>(value: 'apple', label: 'Apple'),
+  DsSelectOption<String>(value: 'banana', label: 'Banana'),
+];
 
 void main() {
   group('DsSelect', () {
     testWidgets('renders placeholder when no selection', (tester) async {
       await tester.pumpWidget(
         wrapWithOverlay(
-          const DsSelect(
-            items: ['Apple', 'Banana'],
-            placeholder: 'Choose fruit',
-          ),
+          const DsSelect<String>(options: _fruit, placeholder: 'Choose fruit'),
         ),
       );
       expect(find.text('Choose fruit'), findsOneWidget);
     });
 
-    testWidgets('renders selected item text', (tester) async {
+    testWidgets('renders selected option label', (tester) async {
       await tester.pumpWidget(
         wrapWithOverlay(
-          const DsSelect(items: ['Apple', 'Banana'], selectedIndex: 1),
+          const DsSelect<String>(options: _fruit, value: 'banana'),
         ),
       );
       expect(find.text('Banana'), findsOneWidget);
     });
 
+    testWidgets('opens and selecting an option calls onChanged with value', (
+      tester,
+    ) async {
+      String? selected;
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          DsSelect<String>(
+            options: _fruit,
+            placeholder: 'Choose',
+            onChanged: (value) => selected = value,
+          ),
+        ),
+      );
+
+      // Open the dropdown.
+      await tester.tap(find.text('Choose'));
+      await tester.pumpAndSettle();
+
+      // Both options are now visible in the overlay.
+      expect(find.text('Apple'), findsOneWidget);
+      expect(find.text('Banana'), findsOneWidget);
+
+      // Select one.
+      await tester.tap(find.text('Banana'));
+      await tester.pumpAndSettle();
+
+      expect(selected, 'banana');
+    });
+
+    testWidgets('renders group heading above grouped options', (tester) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsSelect<String>(
+            options: [],
+            placeholder: 'Choose city',
+            groups: [
+              DsSelectOptgroup<String>(
+                label: 'Norway',
+                options: [
+                  DsSelectOption<String>(value: 'oslo', label: 'Oslo'),
+                  DsSelectOption<String>(value: 'bergen', label: 'Bergen'),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Choose city'));
+      await tester.pumpAndSettle();
+
+      // Group heading and its options are rendered.
+      expect(find.text('Norway'), findsOneWidget);
+      expect(find.text('Oslo'), findsOneWidget);
+      expect(find.text('Bergen'), findsOneWidget);
+    });
+
+    testWidgets('selected option has selected semantics', (tester) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsSelect<String>(options: _fruit, value: 'apple'),
+        ),
+      );
+
+      await tester.tap(find.text('Apple').first);
+      await tester.pumpAndSettle();
+
+      final selectedSemantics = tester.widget<Semantics>(
+        find.byWidgetPredicate(
+          (w) =>
+              w is Semantics &&
+              w.properties.label == 'Apple' &&
+              w.properties.selected == true,
+        ),
+      );
+      expect(selectedSemantics.properties.selected, isTrue);
+    });
+
     testWidgets('disabled renders at reduced opacity', (tester) async {
       await tester.pumpWidget(
-        wrapWithOverlay(const DsSelect(items: ['Apple'], disabled: true)),
+        wrapWithOverlay(
+          const DsSelect<String>(options: _fruit, disabled: true),
+        ),
       );
       final opacity = tester.widget<Opacity>(find.byType(Opacity));
       final theme = DsThemeDigdir.light();
@@ -48,20 +144,29 @@ void main() {
     testWidgets('disabled does not open dropdown', (tester) async {
       await tester.pumpWidget(
         wrapWithOverlay(
-          const DsSelect(
-            items: ['Apple', 'Banana'],
+          const DsSelect<String>(
+            options: _fruit,
             disabled: true,
             placeholder: 'Choose',
           ),
         ),
       );
-      // DsDropdown is not rendered when disabled
-      expect(find.byType(DsDropdown), findsNothing);
+      await tester.tap(find.text('Choose'));
+      await tester.pumpAndSettle();
+      // No option list appears because the control cannot open.
+      expect(find.text('Apple'), findsNothing);
     });
 
     testWidgets('has button semantics with "Velg" label', (tester) async {
       await tester.pumpWidget(
-        wrapWithOverlay(const DsSelect(items: ['A', 'B'])),
+        wrapWithOverlay(
+          const DsSelect<String>(
+            options: [
+              DsSelectOption<String>(value: 'a', label: 'A'),
+              DsSelectOption<String>(value: 'b', label: 'B'),
+            ],
+          ),
+        ),
       );
       final semanticsWidget = tester.widget<Semantics>(
         find.byWidgetPredicate(
@@ -73,10 +178,14 @@ void main() {
 
     testWidgets('error state renders with DsSelect', (tester) async {
       await tester.pumpWidget(
-        wrapWithOverlay(const DsSelect(items: ['A'], error: 'Required')),
+        wrapWithOverlay(
+          const DsSelect<String>(
+            options: [DsSelectOption<String>(value: 'a', label: 'A')],
+            error: 'Required',
+          ),
+        ),
       );
-      // DsSelect with error still renders
-      expect(find.byType(DsSelect), findsOneWidget);
+      expect(find.byType(DsSelect<String>), findsOneWidget);
     });
   });
 }

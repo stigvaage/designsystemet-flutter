@@ -1,20 +1,60 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../theme/ds_color_scale.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
+import '../../theme/ds_theme_data.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_icons.dart';
-import '../dropdown/ds_dropdown.dart';
 
-/// A select control that opens a [DsDropdown] to choose from a list of
-/// string items. Supports placeholder text, error state, disabled, and
-/// read-only modes.
-class DsSelect extends StatelessWidget {
+/// A single selectable option within a [DsSelect].
+///
+/// Mirrors the React `Select.Option` element: a [value] of type [T] and a
+/// human-readable [label] shown in the trigger and the dropdown list.
+class DsSelectOption<T> {
+  const DsSelectOption({required this.value, required this.label});
+
+  /// The value passed to [DsSelect.onChanged] when this option is chosen.
+  final T value;
+
+  /// The text rendered for this option.
+  final String label;
+}
+
+/// A labelled group of [DsSelectOption]s within a [DsSelect].
+///
+/// Mirrors the React `Select.Optgroup` element. The [label] is rendered as a
+/// non-interactive heading above its [options] in the dropdown list.
+class DsSelectOptgroup<T> {
+  const DsSelectOptgroup({required this.label, required this.options});
+
+  /// The heading shown above this group's options.
+  final String label;
+
+  /// The options belonging to this group.
+  final List<DsSelectOption<T>> options;
+}
+
+/// A select control that opens an overlay dropdown to choose a single value of
+/// type [T] from a list of [options] and optionally grouped [groups].
+///
+/// Mirrors the React `Select` component (a native `<select>` composed of
+/// `Select.Option` and `Select.Optgroup`). The trigger displays the [label] of
+/// the currently selected option, or [placeholder] when nothing is selected.
+/// Grouped options are rendered under a subtle group heading. Selecting an
+/// option closes the dropdown and calls [onChanged] with its value.
+///
+/// Supports [placeholder] text, an [error] state, and [disabled] / [readOnly]
+/// modes. Visual styling is driven entirely by [DsTheme] and the resolved
+/// [color] / [size] scopes.
+class DsSelect<T> extends StatefulWidget {
   const DsSelect({
     super.key,
-    required this.items,
-    this.selectedIndex,
+    required this.options,
+    this.groups,
+    this.value,
     this.onChanged,
     this.placeholder,
     this.size,
@@ -24,24 +64,113 @@ class DsSelect extends StatelessWidget {
     this.readOnly = false,
   });
 
-  final List<String> items;
-  final int? selectedIndex;
-  final ValueChanged<int>? onChanged;
+  /// The ungrouped options, rendered before any [groups].
+  final List<DsSelectOption<T>> options;
+
+  /// Optional grouped options, each rendered under its own heading.
+  final List<DsSelectOptgroup<T>>? groups;
+
+  /// The currently selected value. When null, [placeholder] is shown.
+  final T? value;
+
+  /// Called with the chosen value when an option is selected.
+  final ValueChanged<T?>? onChanged;
+
+  /// Text shown in the trigger when no value is selected.
   final String? placeholder;
+
   final DsSize? size;
   final DsColor? color;
+
+  /// When non-null, the trigger is rendered with the danger border colour.
   final String? error;
+
+  /// When true, the control is dimmed and cannot be opened.
   final bool disabled;
+
+  /// When true, the control cannot be opened but is not dimmed.
   final bool readOnly;
+
+  @override
+  State<DsSelect<T>> createState() => _DsSelectState<T>();
+}
+
+class _DsSelectState<T> extends State<DsSelect<T>> {
+  final _layerLink = LayerLink();
+  OverlayEntry? _entry;
+  DsThemeData? _capturedTheme;
+  DsColor? _capturedColor;
+  double _fieldWidth = 0;
+
+  bool get _isOpen => _entry != null;
+
+  /// All options, flattened across [DsSelect.options] and group options.
+  List<DsSelectOption<T>> get _allOptions => [
+    ...widget.options,
+    for (final g in widget.groups ?? <DsSelectOptgroup<T>>[]) ...g.options,
+  ];
+
+  DsSelectOption<T>? get _selectedOption {
+    if (widget.value == null) return null;
+    for (final o in _allOptions) {
+      if (o.value == widget.value) return o;
+    }
+    return null;
+  }
+
+  void _toggle() => _isOpen ? _close() : _open();
+
+  void _open() {
+    if (_isOpen || widget.disabled || widget.readOnly) return;
+    _capturedTheme = DsTheme.of(context);
+    _capturedColor = widget.color ?? DsColorScope.of(context);
+    final box = context.findRenderObject() as RenderBox?;
+    _fieldWidth = box?.size.width ?? 0;
+    _entry = OverlayEntry(builder: _buildOverlay);
+    Overlay.of(context).insert(_entry!);
+    setState(() {});
+  }
+
+  void _close() {
+    if (!_isOpen) return;
+    _entry?.remove();
+    _entry = null;
+    setState(() {});
+  }
+
+  void _select(DsSelectOption<T> option) {
+    widget.onChanged?.call(option.value);
+    _close();
+  }
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.escape &&
+        _isOpen) {
+      _close();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  @override
+  void dispose() {
+    // Remove the overlay directly — do NOT call _close()/setState() here,
+    // since setState during dispose throws.
+    _entry?.remove();
+    _entry = null;
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = DsTheme.of(context);
-    final activeColor = color ?? DsColorScope.of(context);
+    final activeColor = widget.color ?? DsColorScope.of(context);
     final colorScale = theme.colorScheme.resolve(activeColor);
     final dangerScale = theme.colorScheme.danger;
-    final sizeMode = size ?? DsSizeScope.of(context);
-    final hasError = error != null;
+    final sizeMode = widget.size ?? DsSizeScope.of(context);
+    final hasError = widget.error != null;
+    final selected = _selectedOption;
 
     final padding = switch (sizeMode) {
       DsSize.sm => const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -54,9 +183,7 @@ class DsSelect extends StatelessWidget {
       DsSize.lg => 18.0,
     };
 
-    final displayText = selectedIndex != null && selectedIndex! < items.length
-        ? items[selectedIndex!]
-        : placeholder ?? '';
+    final displayText = selected?.label ?? widget.placeholder ?? '';
 
     final trigger = Container(
       padding: padding,
@@ -78,7 +205,7 @@ class DsSelect extends StatelessWidget {
               style: TextStyle(
                 fontFamily: theme.typography.fontFamily,
                 fontSize: fontSize,
-                color: selectedIndex != null
+                color: selected != null
                     ? colorScale.textDefault
                     : colorScale.textSubtle,
               ),
@@ -89,15 +216,17 @@ class DsSelect extends StatelessWidget {
       ),
     );
 
-    if (disabled || readOnly) {
+    final semanticValue = displayText.isNotEmpty ? displayText : null;
+
+    if (widget.disabled || widget.readOnly) {
       return Semantics(
         button: true,
         label: 'Velg',
-        value: displayText.isNotEmpty ? displayText : null,
-        enabled: !disabled,
-        readOnly: readOnly,
+        value: semanticValue,
+        enabled: !widget.disabled,
+        readOnly: widget.readOnly,
         child: Opacity(
-          opacity: disabled ? theme.disabledOpacity : 1.0,
+          opacity: widget.disabled ? theme.disabledOpacity : 1.0,
           child: trigger,
         ),
       );
@@ -106,13 +235,126 @@ class DsSelect extends StatelessWidget {
     return Semantics(
       button: true,
       label: 'Velg',
-      value: displayText.isNotEmpty ? displayText : null,
+      value: semanticValue,
+      expanded: _isOpen,
       child: Focus(
-        child: DsDropdown(
-          trigger: trigger,
-          items: items.map((label) => DsDropdownItem(label: label)).toList(),
-          onSelected: onChanged,
-          color: color,
+        onKeyEvent: _handleKeyEvent,
+        child: CompositedTransformTarget(
+          link: _layerLink,
+          child: GestureDetector(onTap: _toggle, child: trigger),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOverlay(BuildContext context) {
+    final theme = _capturedTheme!;
+    final activeColor = widget.color ?? _capturedColor!;
+    final colorScale = theme.colorScheme.resolve(activeColor);
+
+    return DsTheme(
+      data: theme,
+      child: DsColorScope(
+        color: activeColor,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: _close,
+              ),
+            ),
+            CompositedTransformFollower(
+              link: _layerLink,
+              targetAnchor: Alignment.bottomLeft,
+              followerAnchor: Alignment.topLeft,
+              offset: const Offset(0, 4),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: SizedBox(
+                  width: _fieldWidth > 0 ? _fieldWidth : null,
+                  child: Container(
+                    constraints: const BoxConstraints(
+                      minWidth: 160,
+                      maxHeight: 280,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScale.backgroundDefault,
+                      borderRadius: BorderRadius.circular(
+                        theme.borderRadius.defaultRadius,
+                      ),
+                      border: Border.all(
+                        color: colorScale.borderSubtle,
+                        width: 1,
+                      ),
+                      boxShadow: theme.shadows.md,
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (final option in widget.options)
+                            _optionRow(option, theme, colorScale),
+                          for (final group
+                              in widget.groups ?? <DsSelectOptgroup<T>>[])
+                            ..._groupRows(group, theme, colorScale),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _groupRows(
+    DsSelectOptgroup<T> group,
+    DsThemeData theme,
+    DsColorScale colorScale,
+  ) {
+    return [
+      Padding(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+        child: Text(
+          group.label,
+          style: theme.typography.bodySm.copyWith(
+            color: colorScale.textSubtle,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      for (final option in group.options) _optionRow(option, theme, colorScale),
+    ];
+  }
+
+  Widget _optionRow(
+    DsSelectOption<T> option,
+    DsThemeData theme,
+    DsColorScale colorScale,
+  ) {
+    final selected = widget.value != null && option.value == widget.value;
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: option.label,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => _select(option),
+        child: Container(
+          color: selected ? colorScale.surfaceDefault : null,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Text(
+            option.label,
+            style: theme.typography.bodySm.copyWith(
+              color: colorScale.textDefault,
+              fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+            ),
+          ),
         ),
       ),
     );
