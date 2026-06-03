@@ -15,7 +15,9 @@ abstract final class DsIcons {
   static const IconData circleX = LucideIcons.circleX;
   static const IconData x = LucideIcons.x;
   static const IconData chevronDown = LucideIcons.chevronDown;
+  static const IconData chevronUp = LucideIcons.chevronUp;
   static const IconData chevronRight = LucideIcons.chevronRight;
+  static const IconData chevronsUpDown = LucideIcons.chevronsUpDown;
   static const IconData search = LucideIcons.search;
 
   // ── Common UI (convenience for consumers) ──────────────────────────────

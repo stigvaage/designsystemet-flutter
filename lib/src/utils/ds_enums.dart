@@ -123,3 +123,6 @@ enum DsPlacement {
 
 // DsPopoverVariant — React Popover `data-variant`: 'default' | 'tinted'
 enum DsPopoverVariant { default_, tinted }
+
+// DsSortDirection — sortable table column state (React `aria-sort`).
+enum DsSortDirection { none, ascending, descending, other }
