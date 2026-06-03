@@ -48,5 +48,54 @@ void main() {
       // Clean up gesture
       await gesture.removePointer();
     });
+
+    testWidgets('exposes the message via Semantics.tooltip', (tester) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(const DsTooltip(message: 'Hjelp', child: Text('T'))),
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.tooltip == 'Hjelp',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('shows tooltip on keyboard focus (not only hover)', (
+      tester,
+    ) async {
+      final node = FocusNode();
+      addTearDown(node.dispose);
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          DsTooltip(
+            message: 'Tip',
+            child: Focus(focusNode: node, child: const Text('Target')),
+          ),
+        ),
+      );
+      expect(find.text('Tip'), findsNothing);
+      node.requestFocus();
+      await tester.pump(); // apply focus + fire onFocusChange (inserts overlay)
+      await tester.pump(); // build the inserted overlay entry
+      expect(find.text('Tip'), findsOneWidget);
+    });
+
+    testWidgets('shows tooltip with a non-default placement', (tester) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsTooltip(
+            message: 'Tip',
+            placement: DsPlacement.bottom,
+            child: Text('Target'),
+          ),
+        ),
+      );
+      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await gesture.addPointer(location: tester.getCenter(find.text('Target')));
+      await tester.pump();
+      expect(find.text('Tip'), findsOneWidget);
+      await gesture.removePointer();
+    });
   });
 }

@@ -5,6 +5,7 @@ import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../theme/ds_theme_data.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_overlay_anchors.dart';
 
 /// An overlay popover anchored to a [trigger] widget.
 ///
@@ -114,7 +115,16 @@ class _DsPopoverState extends State<DsPopover> {
     if (_entry != null) return;
     _capturedTheme = DsTheme.of(context);
     _capturedColor = DsColorScope.of(context);
-    _resolvedPlacement = _resolvePlacement();
+    final box = context.findRenderObject() as RenderBox?;
+    final rect = (box != null && box.hasSize)
+        ? box.localToGlobal(Offset.zero) & box.size
+        : null;
+    _resolvedPlacement = dsResolvePlacement(
+      placement: widget.placement,
+      autoPlacement: widget.autoPlacement,
+      anchorRect: rect,
+      screen: MediaQuery.maybeOf(context)?.size,
+    );
     _entry = OverlayEntry(builder: _buildOverlay);
     Overlay.of(context).insert(_entry!);
   }
@@ -124,129 +134,11 @@ class _DsPopoverState extends State<DsPopover> {
     _entry = null;
   }
 
-  bool _isVertical(DsPlacement p) =>
-      p.name.startsWith('top') || p.name.startsWith('bottom');
-  bool _isTopSide(DsPlacement p) => p.name.startsWith('top');
-  bool _isLeftSide(DsPlacement p) => p.name.startsWith('left');
-
-  DsPlacement _flipVertical(DsPlacement p) => switch (p) {
-    DsPlacement.top => DsPlacement.bottom,
-    DsPlacement.topStart => DsPlacement.bottomStart,
-    DsPlacement.topEnd => DsPlacement.bottomEnd,
-    DsPlacement.bottom => DsPlacement.top,
-    DsPlacement.bottomStart => DsPlacement.topStart,
-    DsPlacement.bottomEnd => DsPlacement.topEnd,
-    _ => p,
-  };
-
-  DsPlacement _flipHorizontal(DsPlacement p) => switch (p) {
-    DsPlacement.left => DsPlacement.right,
-    DsPlacement.leftStart => DsPlacement.rightStart,
-    DsPlacement.leftEnd => DsPlacement.rightEnd,
-    DsPlacement.right => DsPlacement.left,
-    DsPlacement.rightStart => DsPlacement.leftStart,
-    DsPlacement.rightEnd => DsPlacement.leftEnd,
-    _ => p,
-  };
-
-  /// Flips [DsPopover.placement] to the opposite side when that side has more
-  /// room in the viewport (main axis only). No-op when [autoPlacement] is off
-  /// or measurements are unavailable.
-  DsPlacement _resolvePlacement() {
-    if (!widget.autoPlacement) return widget.placement;
-    final box = context.findRenderObject() as RenderBox?;
-    final media = MediaQuery.maybeOf(context);
-    if (box == null || !box.hasSize || media == null) return widget.placement;
-    final pos = box.localToGlobal(Offset.zero);
-    final size = box.size;
-    final screen = media.size;
-    final p = widget.placement;
-    if (_isVertical(p)) {
-      final above = pos.dy;
-      final below = screen.height - (pos.dy + size.height);
-      if (_isTopSide(p) ? below > above : above > below) {
-        return _flipVertical(p);
-      }
-      return p;
-    }
-    final left = pos.dx;
-    final right = screen.width - (pos.dx + size.width);
-    if (_isLeftSide(p) ? right > left : left > right) return _flipHorizontal(p);
-    return p;
-  }
-
-  /// (targetAnchor, followerAnchor, offset) for the resolved [placement].
-  (Alignment, Alignment, Offset) _anchorsFor(DsPlacement p) {
-    const g = 4.0;
-    return switch (p) {
-      DsPlacement.top => (
-        Alignment.topCenter,
-        Alignment.bottomCenter,
-        const Offset(0, -g),
-      ),
-      DsPlacement.topStart => (
-        Alignment.topLeft,
-        Alignment.bottomLeft,
-        const Offset(0, -g),
-      ),
-      DsPlacement.topEnd => (
-        Alignment.topRight,
-        Alignment.bottomRight,
-        const Offset(0, -g),
-      ),
-      DsPlacement.bottom => (
-        Alignment.bottomCenter,
-        Alignment.topCenter,
-        const Offset(0, g),
-      ),
-      DsPlacement.bottomStart => (
-        Alignment.bottomLeft,
-        Alignment.topLeft,
-        const Offset(0, g),
-      ),
-      DsPlacement.bottomEnd => (
-        Alignment.bottomRight,
-        Alignment.topRight,
-        const Offset(0, g),
-      ),
-      DsPlacement.left => (
-        Alignment.centerLeft,
-        Alignment.centerRight,
-        const Offset(-g, 0),
-      ),
-      DsPlacement.leftStart => (
-        Alignment.topLeft,
-        Alignment.topRight,
-        const Offset(-g, 0),
-      ),
-      DsPlacement.leftEnd => (
-        Alignment.bottomLeft,
-        Alignment.bottomRight,
-        const Offset(-g, 0),
-      ),
-      DsPlacement.right => (
-        Alignment.centerRight,
-        Alignment.centerLeft,
-        const Offset(g, 0),
-      ),
-      DsPlacement.rightStart => (
-        Alignment.topRight,
-        Alignment.topLeft,
-        const Offset(g, 0),
-      ),
-      DsPlacement.rightEnd => (
-        Alignment.bottomRight,
-        Alignment.bottomLeft,
-        const Offset(g, 0),
-      ),
-    };
-  }
-
   Widget _buildOverlay(BuildContext context) {
     final theme = _capturedTheme!;
     final activeColor = widget.color ?? _capturedColor!;
     final colorScale = theme.colorScheme.resolve(activeColor);
-    final (targetAnchor, followerAnchor, offset) = _anchorsFor(
+    final (targetAnchor, followerAnchor, offset) = dsPlacementAnchors(
       _resolvedPlacement,
     );
     final fill = widget.variant == DsPopoverVariant.tinted
