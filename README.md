@@ -33,7 +33,7 @@ Legg til pakken i din `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  designsystemet_flutter: ^0.2.0
+  designsystemet_flutter: ^0.2.1
 ```
 
 Kjør deretter:
@@ -97,6 +97,12 @@ DsTheme(
   child: const MinApp(),
 )
 ```
+
+> [!NOTE]
+> Standardtemaet `DsThemeDigdir` bruker Helse Vest sin mørkeblå **`#003087`** som
+> `accent`-basefarge. Hele den 16-stegs accent-skalaen (background → surface →
+> border → text → base/contrast) er avledet fra denne og oppfyller WCAG 2.1 AA.
+> Vil du bruke en annen merkevarefarge, se [Egendefinert tema](#egendefinert-tema).
 
 ### Material-integrasjon (valgfritt)
 
