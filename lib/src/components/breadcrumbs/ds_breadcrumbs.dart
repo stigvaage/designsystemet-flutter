@@ -14,11 +14,16 @@ class DsBreadcrumbs extends StatelessWidget {
     required this.items,
     this.onItemTap,
     this.color,
+    this.ariaLabel = 'Brødsmulenavigasjon',
   });
 
   final List<String> items;
   final ValueChanged<int>? onItemTap;
   final DsColor? color;
+
+  /// Accessible label for the navigation landmark (React Breadcrumbs
+  /// `aria-label`). Defaults to `'Brødsmulenavigasjon'`.
+  final String ariaLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +32,7 @@ class DsBreadcrumbs extends StatelessWidget {
     final colorScale = theme.colorScheme.resolve(activeColor);
 
     return Semantics(
-      label: 'Brødsmulenavigasjon',
+      label: ariaLabel,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -68,10 +73,17 @@ class DsBreadcrumbs extends StatelessWidget {
                 ),
               )
             else
-              Text(
-                items[i],
-                style: theme.typography.bodySm.copyWith(
-                  color: colorScale.textSubtle,
+              // The last item is the current page (aria-current="page").
+              Semantics(
+                label: items[i],
+                hint: 'Gjeldende side',
+                child: ExcludeSemantics(
+                  child: Text(
+                    items[i],
+                    style: theme.typography.bodySm.copyWith(
+                      color: colorScale.textSubtle,
+                    ),
+                  ),
                 ),
               ),
           ],

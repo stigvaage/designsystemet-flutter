@@ -11,10 +11,20 @@ import '../../utils/ds_enums.dart';
 /// Paints a rotating arc using [CustomPaint] and respects the platform
 /// reduce-motion setting.
 class DsSpinner extends StatefulWidget {
-  const DsSpinner({super.key, this.size, this.color});
+  const DsSpinner({
+    super.key,
+    this.size,
+    this.color,
+    this.ariaLabel = 'Laster inn',
+  });
 
   final DsSize? size;
   final DsColor? color;
+
+  /// Accessible label announced by screen readers. The React Spinner requires
+  /// `aria-label`; here it defaults to `'Laster inn'` and can be overridden,
+  /// e.g. `ariaLabel: 'Laster brukere …'`.
+  final String ariaLabel;
 
   @override
   State<DsSpinner> createState() => _DsSpinnerState();
@@ -63,7 +73,7 @@ class _DsSpinnerState extends State<DsSpinner>
     };
 
     return Semantics(
-      label: 'Laster inn',
+      label: widget.ariaLabel,
       liveRegion: true,
       child: SizedBox(
         width: dimension,

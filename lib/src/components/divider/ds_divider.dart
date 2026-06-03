@@ -22,9 +22,12 @@ class DsDivider extends StatelessWidget {
     final activeColor = color ?? DsColorScope.of(context);
     final colorScale = theme.colorScheme.resolve(activeColor);
 
-    if (vertical) {
-      return Container(width: thickness, color: colorScale.borderSubtle);
-    }
-    return Container(height: thickness, color: colorScale.borderSubtle);
+    // Dividers are decorative; the React divider sets aria-hidden="true",
+    // so we exclude it from the semantics tree.
+    return ExcludeSemantics(
+      child: vertical
+          ? Container(width: thickness, color: colorScale.borderSubtle)
+          : Container(height: thickness, color: colorScale.borderSubtle),
+    );
   }
 }

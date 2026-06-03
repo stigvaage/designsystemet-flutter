@@ -41,5 +41,18 @@ void main() {
       );
       expect(container.color, expectedColor);
     });
+
+    testWidgets('is excluded from the semantics tree (decorative)', (
+      tester,
+    ) async {
+      await tester.pumpWidget(wrapWithTheme(const DsDivider()));
+      expect(
+        find.descendant(
+          of: find.byType(DsDivider),
+          matching: find.byType(ExcludeSemantics),
+        ),
+        findsOneWidget,
+      );
+    });
   });
 }

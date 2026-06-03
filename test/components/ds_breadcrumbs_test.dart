@@ -66,5 +66,38 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets('custom ariaLabel is used as the landmark label', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsBreadcrumbs(items: ['A', 'B'], ariaLabel: 'Du er her:'),
+        ),
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == 'Du er her:',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('last item exposes aria-current via "Gjeldende side" hint', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsBreadcrumbs(items: ['Home', 'Current'])),
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) =>
+              w is Semantics &&
+              w.properties.label == 'Current' &&
+              w.properties.hint == 'Gjeldende side',
+        ),
+        findsOneWidget,
+      );
+    });
   });
 }
