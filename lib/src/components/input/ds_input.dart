@@ -106,6 +106,31 @@ class _DsInputState extends State<DsInput> {
 
   void _onFocusChange() {
     setState(() => _isFocused = _focusNode.hasFocus);
+    if (_focusNode.hasFocus) _ensureVisibleAboveKeyboard();
+  }
+
+  /// Scrolls the focused field above the soft keyboard so the user can see
+  /// what they are typing. No-op when the field is not inside a [Scrollable]
+  /// (keyboard avoidance is then left to Scaffold.resizeToAvoidBottomInset).
+  ///
+  /// Runs one extra frame after focus so it targets the post-keyboard
+  /// (shrunken) viewport instead of racing EditableText's own caret reveal;
+  /// it converges to the same end state, so the two do not oscillate.
+  void _ensureVisibleAboveKeyboard() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_focusNode.hasFocus) return;
+      if (Scrollable.maybeOf(context) == null) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_focusNode.hasFocus || !context.mounted) return;
+        Scrollable.ensureVisible(
+          context,
+          alignment: 0.1, // small margin above the keyboard
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+          alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+        );
+      });
+    });
   }
 
   @override
@@ -202,7 +227,19 @@ class _DsInputState extends State<DsInput> {
               (_, {required currentLength, required isFocused, maxLength}) =>
                   null,
           expands: false,
-          decoration: InputDecoration.collapsed(
+          // contentPadding lives INSIDE the TextField (not an outer Padding)
+          // so the field's own hit-test area covers the whole control — a tap
+          // anywhere opens the keyboard on the FIRST tap. isCollapsed keeps the
+          // tight vertical metrics of the previous InputDecoration.collapsed.
+          decoration: InputDecoration(
+            isCollapsed: true,
+            filled: false,
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            disabledBorder: InputBorder.none,
+            errorBorder: InputBorder.none,
+            contentPadding: padding,
             hintText: widget.placeholder,
             hintStyle: textStyle.copyWith(color: colorScale.textSubtle),
           ),
@@ -222,53 +259,66 @@ class _DsInputState extends State<DsInput> {
       );
     }
 
-    Widget result = GestureDetector(
-      onTap: () {
-        if (!widget.disabled && !widget.readOnly) {
-          _focusNode.requestFocus();
-        }
-      },
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: duration,
-        decoration: BoxDecoration(
-          color: widget.readOnly
-              ? colorScale.surfaceDefault
-              : colorScale.backgroundDefault,
-          borderRadius: radius,
-          border: Border.fromBorderSide(borderSide),
-        ),
-        child: Row(
-          children: [
-            if (widget.prefix != null) ...[
-              Padding(
+    final canFocusByTap = !widget.disabled && !widget.readOnly;
+
+    // No tap handler wraps the whole field: the TextField now hit-tests its
+    // entire area (contentPadding above), so it wins the gesture and opens the
+    // keyboard on the FIRST tap. A competing ancestor GestureDetector/Listener
+    // would steal that first tap — the double-tap-to-open-keyboard bug.
+    Widget result = AnimatedContainer(
+      duration: duration,
+      decoration: BoxDecoration(
+        color: widget.readOnly
+            ? colorScale.surfaceDefault
+            : colorScale.backgroundDefault,
+        borderRadius: radius,
+        border: Border.fromBorderSide(borderSide),
+      ),
+      child: Row(
+        children: [
+          if (widget.prefix != null) ...[
+            // Translucent (not opaque): a tap on the prefix gutter focuses the
+            // field, but an interactive prefix child still handles its own tap.
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: canFocusByTap ? _focusNode.requestFocus : null,
+              child: Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: widget.prefix!,
               ),
-            ],
-            Expanded(
-              child: Padding(padding: padding, child: textFieldTree),
             ),
-            if (widget.suffix != null) ...[
-              Padding(
+          ],
+          Expanded(child: textFieldTree),
+          if (widget.suffix != null) ...[
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: canFocusByTap ? _focusNode.requestFocus : null,
+              child: Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: widget.suffix!,
               ),
-            ],
+            ),
           ],
-        ),
+        ],
       ),
     );
 
-    if (_isFocused && !widget.disabled && !widget.readOnly) {
-      result = DecoratedBox(
-        decoration: DsFocus.focusRingWithRadius(colorScale, radius),
-        child: Padding(
-          padding: const EdgeInsets.all(DsFocus.ringWidth),
-          child: result,
-        ),
-      );
-    }
+    // The focus-ring wrapper is ALWAYS in the tree (its space is always
+    // reserved); only its decoration toggles. Inserting/removing the
+    // DecoratedBox+Padding on focus would change the widget type under the
+    // MouseRegion, tearing down and recreating the TextField element — which
+    // kills the in-flight first-tap keyboard open (the double-tap bug). Keeping
+    // the structure constant also removes the 3px layout jump on focus.
+    final showFocusRing = _isFocused && !widget.disabled && !widget.readOnly;
+    result = DecoratedBox(
+      decoration: showFocusRing
+          ? DsFocus.focusRingWithRadius(colorScale, radius)
+          : const BoxDecoration(),
+      child: Padding(
+        padding: const EdgeInsets.all(DsFocus.ringWidth),
+        child: result,
+      ),
+    );
 
     if (widget.disabled) {
       result = IgnorePointer(
