@@ -6,7 +6,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  designsystemet_flutter: ^0.2.1
+  designsystemet_flutter: ^0.3.0
 ```
 
 ## 2. Import
