@@ -144,9 +144,9 @@ class _DsCheckboxState extends State<DsCheckbox> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(theme.borderRadius.defaultRadius),
           border: Border.all(
-            color: widget.value
-                ? colorScale.baseDefault
-                : colorScale.borderSubtle,
+            // Use isChecked (value OR indeterminate) so the indeterminate
+            // state also highlights the outline border.
+            color: isChecked ? colorScale.baseDefault : colorScale.borderSubtle,
             width: 1,
           ),
         ),

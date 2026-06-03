@@ -115,5 +115,47 @@ void main() {
           .any((c) => c.padding == const EdgeInsets.all(12));
       expect(hasOutlineWrapper, isFalse);
     });
+
+    testWidgets('outline variant selects when tapping the padding zone', (
+      tester,
+    ) async {
+      bool? changedTo;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(
+            value: false,
+            onChanged: (v) => changedTo = v,
+            variant: DsSelectionVariant.outline,
+            label: const Text('Outline'),
+          ),
+        ),
+      );
+      final rect = tester.getRect(find.byType(DsRadio));
+      await tester.tapAt(rect.topLeft + const Offset(4, 4));
+      expect(changedTo, isTrue);
+    });
+
+    testWidgets('outline checked uses baseDefault border color', (
+      tester,
+    ) async {
+      final scale = DsThemeDigdir.light().colorScheme.resolve(DsColor.accent);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(
+            value: true,
+            onChanged: (_) {},
+            variant: DsSelectionVariant.outline,
+            label: const Text('On'),
+          ),
+        ),
+      );
+      final outline = tester
+          .widgetList<Container>(find.byType(Container))
+          .firstWhere((c) => c.padding == const EdgeInsets.all(12));
+      expect(
+        ((outline.decoration as BoxDecoration).border! as Border).top.color,
+        scale.baseDefault,
+      );
+    });
   });
 }

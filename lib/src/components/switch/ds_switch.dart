@@ -130,7 +130,34 @@ class _DsSwitchState extends State<DsSwitch> {
 
     final hasLabelContent = widget.label != null || widget.description != null;
 
-    Widget result = Semantics(
+    final Widget inner = hasLabelContent
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: widget.description != null
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
+            children: [
+              track,
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (widget.label != null) widget.label!,
+                  if (widget.description != null)
+                    DefaultTextStyle(
+                      style: theme.typography.bodySm.copyWith(
+                        color: colorScale.textSubtle,
+                      ),
+                      child: widget.description!,
+                    ),
+                ],
+              ),
+            ],
+          )
+        : track;
+
+    return Semantics(
       toggled: widget.value,
       enabled: !widget.readOnly,
       child: Focus(
@@ -146,47 +173,20 @@ class _DsSwitchState extends State<DsSwitch> {
         },
         onFocusChange: (f) => setState(() => _isFocused = f),
         child: GestureDetector(
-          // Opaque so a tap anywhere in the control area (including the label)
-          // toggles the switch, not only a tap on the track.
+          // Opaque so a tap anywhere in the control area (including the label
+          // and the outline padding/border zone) toggles the switch.
           behavior: HitTestBehavior.opaque,
           onTap: widget.readOnly
               ? null
               : () => widget.onChanged?.call(!widget.value),
-          child: hasLabelContent
-              ? Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: widget.description != null
-                      ? CrossAxisAlignment.start
-                      : CrossAxisAlignment.center,
-                  children: [
-                    track,
-                    const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (widget.label != null) widget.label!,
-                        if (widget.description != null)
-                          DefaultTextStyle(
-                            style: theme.typography.bodySm.copyWith(
-                              color: colorScale.textSubtle,
-                            ),
-                            child: widget.description!,
-                          ),
-                      ],
-                    ),
-                  ],
-                )
-              : track,
+          // The outline wrapper is the GestureDetector's CHILD so its
+          // padding/border zone is inside the hit-test area (no dead tap-zone).
+          child: widget.variant == DsSelectionVariant.outline
+              ? _wrapInOutline(inner, theme, colorScale)
+              : inner,
         ),
       ),
     );
-
-    if (widget.variant == DsSelectionVariant.outline) {
-      result = _wrapInOutline(result, theme, colorScale);
-    }
-
-    return result;
   }
 
   Widget _wrapInOutline(

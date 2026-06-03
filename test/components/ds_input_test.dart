@@ -77,6 +77,25 @@ void main() {
       expect(focus.hasFocus, isTrue);
     });
 
+    testWidgets('tapping the suffix focuses the field', (tester) async {
+      final focus = FocusNode();
+      addTearDown(focus.dispose);
+      await tester.pumpWidget(
+        _host(
+          DsInput(
+            focusNode: focus,
+            size: DsSize.md,
+            suffix: const Icon(Icons.clear),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.clear));
+      await tester.pumpAndSettle();
+
+      expect(focus.hasFocus, isTrue);
+    });
+
     testWidgets('disabled field does not focus or open the keyboard', (
       tester,
     ) async {

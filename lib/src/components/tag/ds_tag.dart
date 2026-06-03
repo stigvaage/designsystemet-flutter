@@ -48,6 +48,8 @@ class DsTag extends StatelessWidget {
 
     final backgroundColor = switch (variant) {
       DsSelectionVariant.default_ => colorScale.surfaceTinted,
+      // transparent: border-only (uses Color(0x00000000) since this file
+      // imports only widgets.dart, which has no Colors.transparent).
       DsSelectionVariant.outline => const Color(0x00000000),
     };
 

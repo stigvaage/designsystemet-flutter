@@ -89,5 +89,37 @@ void main() {
         expect(decoration?.color, scale.surfaceActive);
       },
     );
+
+    testWidgets('unselected segments have no fill in both variants', (
+      tester,
+    ) async {
+      for (final variant in DsToggleGroupVariant.values) {
+        await tester.pumpWidget(
+          wrapWithTheme(
+            DsToggleGroup(
+              items: const ['One', 'Two'],
+              selectedIndex: 0,
+              onChanged: (_) {},
+              variant: variant,
+            ),
+          ),
+        );
+        // The segment containing 'Two' is unselected → no background fill.
+        final twoSegment = tester.widget<AnimatedContainer>(
+          find
+              .ancestor(
+                of: find.text('Two'),
+                matching: find.byType(AnimatedContainer),
+              )
+              .first,
+        );
+        final decoration = twoSegment.decoration as BoxDecoration?;
+        expect(
+          decoration?.color,
+          isNull,
+          reason: 'unselected fill should be null for $variant',
+        );
+      }
+    });
   });
 }

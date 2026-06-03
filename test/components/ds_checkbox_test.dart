@@ -99,5 +99,40 @@ void main() {
           });
       expect(hasCheckedBorder, isTrue);
     });
+
+    testWidgets('outline variant toggles when tapping the padding zone', (
+      tester,
+    ) async {
+      bool? newValue;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (v) => newValue = v,
+            variant: DsSelectionVariant.outline,
+            label: const Text('Outline'),
+          ),
+        ),
+      );
+      final rect = tester.getRect(find.byType(DsCheckbox));
+      await tester.tapAt(rect.topLeft + const Offset(4, 4));
+      expect(newValue, isTrue);
+    });
+
+    testWidgets('does not call onChanged when readOnly', (tester) async {
+      var called = false;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (_) => called = true,
+            readOnly: true,
+            label: const Text('RO'),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(DsCheckbox));
+      expect(called, isFalse);
+    });
   });
 }

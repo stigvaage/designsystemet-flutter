@@ -117,17 +117,22 @@ class _DsInputState extends State<DsInput> {
   /// (shrunken) viewport instead of racing EditableText's own caret reveal;
   /// it converges to the same end state, so the two do not oscillate.
   void _ensureVisibleAboveKeyboard() {
+    if (widget.readOnly) return; // read-only fields don't open the keyboard
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_focusNode.hasFocus) return;
       if (Scrollable.maybeOf(context) == null) return;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || !_focusNode.hasFocus || !context.mounted) return;
+        // keepVisibleAtStart only scrolls when the field is NOT already
+        // visible, so fields already on screen are left in place.
         Scrollable.ensureVisible(
           context,
-          alignment: 0.1, // small margin above the keyboard
-          duration: const Duration(milliseconds: 150),
+          duration: DsAnimation.resolveDuration(
+            context,
+            const Duration(milliseconds: 150),
+          ),
           curve: Curves.easeOut,
-          alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+          alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtStart,
         );
       });
     });

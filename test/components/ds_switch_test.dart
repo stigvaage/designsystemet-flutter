@@ -75,5 +75,69 @@ void main() {
       final decoration = container.decoration as BoxDecoration?;
       expect(decoration?.border, isNotNull);
     });
+
+    testWidgets('outline variant toggles when tapping the padding/border zone', (
+      tester,
+    ) async {
+      bool? newValue;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsSwitch(
+            value: false,
+            onChanged: (v) => newValue = v,
+            variant: DsSelectionVariant.outline,
+            label: const Text('Outline'),
+          ),
+        ),
+      );
+      // Tap inside the 12px outline padding near the corner (outside the track).
+      final rect = tester.getRect(find.byType(DsSwitch));
+      await tester.tapAt(rect.topLeft + const Offset(4, 4));
+      expect(newValue, isTrue);
+    });
+
+    testWidgets('outline border: borderSubtle when off, baseDefault when on', (
+      tester,
+    ) async {
+      final scale = DsThemeDigdir.light().colorScheme.resolve(DsColor.accent);
+      Color outlineBorderColor() {
+        final c = tester
+            .widgetList<Container>(find.byType(Container))
+            .firstWhere((c) => c.padding == const EdgeInsets.all(12));
+        return ((c.decoration as BoxDecoration).border! as Border).top.color;
+      }
+
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsSwitch(
+            value: false,
+            onChanged: (_) {},
+            variant: DsSelectionVariant.outline,
+          ),
+        ),
+      );
+      expect(outlineBorderColor(), scale.borderSubtle);
+
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsSwitch(
+            value: true,
+            onChanged: (_) {},
+            variant: DsSelectionVariant.outline,
+          ),
+        ),
+      );
+      expect(outlineBorderColor(), scale.baseDefault);
+    });
+
+    testWidgets('default variant has no outline container', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(DsSwitch(value: false, onChanged: (_) {})),
+      );
+      final hasOutline = tester
+          .widgetList<Container>(find.byType(Container))
+          .any((c) => c.padding == const EdgeInsets.all(12));
+      expect(hasOutline, isFalse);
+    });
   });
 }
