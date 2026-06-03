@@ -22,6 +22,22 @@ void main() {
       expect(newValue, isTrue);
     });
 
+    testWidgets('tapping the label TEXT toggles the switch', (tester) async {
+      bool? newValue;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsSwitch(
+            value: false,
+            onChanged: (v) => newValue = v,
+            label: const Text('Mørk modus'),
+          ),
+        ),
+      );
+      // Tapping the associated label text (not the track) must toggle it.
+      await tester.tap(find.text('Mørk modus'));
+      expect(newValue, isTrue);
+    });
+
     testWidgets('does not call onChanged when readOnly', (tester) async {
       var called = false;
       await tester.pumpWidget(

@@ -27,6 +27,22 @@ void main() {
       expect(newValue, isTrue);
     });
 
+    testWidgets('tapping the label TEXT toggles the checkbox', (tester) async {
+      bool? newValue;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (v) => newValue = v,
+            label: const Text('Godta vilkår'),
+          ),
+        ),
+      );
+      // Tapping the associated label text (not the box) must toggle it.
+      await tester.tap(find.text('Godta vilkår'));
+      expect(newValue, isTrue);
+    });
+
     testWidgets('outline variant renders bordered container with borderSubtle '
         'when unchecked', (tester) async {
       final theme = DsThemeDigdir.light();

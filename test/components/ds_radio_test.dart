@@ -43,6 +43,22 @@ void main() {
       expect(changedTo, isTrue);
     });
 
+    testWidgets('tapping the label TEXT selects the radio', (tester) async {
+      bool? changedTo;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(
+            value: false,
+            onChanged: (v) => changedTo = v,
+            label: const Text('Velg dette'),
+          ),
+        ),
+      );
+      // Tapping the associated label text (not the circle) must select it.
+      await tester.tap(find.text('Velg dette'));
+      expect(changedTo, isTrue);
+    });
+
     testWidgets('does not call onChanged when readOnly', (tester) async {
       var called = false;
       await tester.pumpWidget(
