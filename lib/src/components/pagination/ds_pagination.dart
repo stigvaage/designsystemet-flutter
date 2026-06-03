@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/widgets.dart';
 
 import '../../theme/ds_color_scope.dart';
@@ -14,6 +16,7 @@ class DsPagination extends StatelessWidget {
     required this.onPageChanged,
     this.size,
     this.color,
+    this.showPages = 7,
   });
 
   final int currentPage;
@@ -21,6 +24,37 @@ class DsPagination extends StatelessWidget {
   final ValueChanged<int> onPageChanged;
   final DsSize? size;
   final DsColor? color;
+
+  /// Maximum number of page buttons to show before collapsing the middle of
+  /// the range into an ellipsis ("…"). Mirrors the React `showPages` (default
+  /// 7). Ranges with `totalPages <= showPages` render every page.
+  final int showPages;
+
+  /// Computes the visible page steps for [currentPage]/[totalPages], inserting
+  /// `0` markers where an ellipsis should appear. Ported verbatim from the
+  /// official Designsystemet `getSteps` algorithm (packages/web pagination).
+  @visibleForTesting
+  static List<int> computeSteps(
+    int currentPage,
+    int totalPages, {
+    int show = 7,
+  }) {
+    final offset = (show - 1) / 2;
+    final start = math.max(
+      math.min(currentPage - offset.floor(), totalPages - show + 1),
+      1,
+    );
+    final end = math.min(
+      math.max(currentPage + offset.ceil(), show),
+      totalPages,
+    );
+    final pages = <int>[for (var i = start; i <= end; i++) i];
+    if (show > 4 && start > 1) pages.replaceRange(0, 2, const [1, 0]);
+    if (show > 3 && end < totalPages) {
+      pages.replaceRange(pages.length - 2, pages.length, [0, totalPages]);
+    }
+    return pages;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +104,25 @@ class DsPagination extends StatelessWidget {
       );
     }
 
+    Widget ellipsis() {
+      return Semantics(
+        label: 'flere sider',
+        child: SizedBox(
+          width: buttonSize,
+          height: buttonSize,
+          child: Center(
+            child: Text(
+              '…',
+              style: TextStyle(
+                fontSize: fontSize,
+                color: colorScale.textSubtle,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     final hasPrev = currentPage > 1;
     final hasNext = currentPage < totalPages;
 
@@ -100,8 +153,13 @@ class DsPagination extends StatelessWidget {
             ),
           ),
         ),
-        // Pages
-        for (var i = 1; i <= totalPages; i++) pageButton(i),
+        // Pages (windowed with ellipsis for large ranges)
+        for (final page in computeSteps(
+          currentPage,
+          totalPages,
+          show: showPages,
+        ))
+          if (page == 0) ellipsis() else pageButton(page),
         // Next
         Semantics(
           button: true,

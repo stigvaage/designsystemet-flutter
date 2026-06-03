@@ -112,5 +112,34 @@ void main() {
       final nextOpacity = opacityWidgets.last;
       expect(nextOpacity.opacity, theme.disabledOpacity);
     });
+
+    testWidgets('renders ellipsis (…) for large page ranges', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsPagination(currentPage: 5, totalPages: 20, onPageChanged: (_) {}),
+        ),
+      );
+      // computeSteps(5, 20) => [1, 0, 4, 5, 6, 0, 20] → two ellipses.
+      expect(find.text('…'), findsNWidgets(2));
+      expect(find.text('20'), findsOneWidget);
+      // The collapsed middle pages are not rendered.
+      expect(find.text('10'), findsNothing);
+    });
+  });
+
+  group('DsPagination.computeSteps (official getSteps port)', () {
+    test('renders every page when totalPages <= showPages', () {
+      expect(DsPagination.computeSteps(1, 5), [1, 2, 3, 4, 5]);
+      expect(DsPagination.computeSteps(4, 7), [1, 2, 3, 4, 5, 6, 7]);
+    });
+    test('collapses the tail near the start (0 = ellipsis)', () {
+      expect(DsPagination.computeSteps(1, 10), [1, 2, 3, 4, 5, 0, 10]);
+    });
+    test('collapses the head near the end', () {
+      expect(DsPagination.computeSteps(10, 10), [1, 0, 6, 7, 8, 9, 10]);
+    });
+    test('double ellipsis when current is centered', () {
+      expect(DsPagination.computeSteps(5, 10), [1, 0, 4, 5, 6, 0, 10]);
+    });
   });
 }
