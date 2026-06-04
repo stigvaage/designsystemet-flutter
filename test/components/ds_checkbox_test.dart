@@ -134,5 +134,48 @@ void main() {
       await tester.tap(find.byType(DsCheckbox));
       expect(called, isFalse);
     });
+
+    testWidgets('indeterminate reports mixed tri-state semantics', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (_) {},
+            indeterminate: true,
+            label: const Text('Mixed'),
+          ),
+        ),
+      );
+
+      final hasMixedSemantics = tester
+          .widgetList<Semantics>(find.byType(Semantics))
+          .any(
+            (s) => s.properties.mixed == true && s.properties.checked != true,
+          );
+      expect(hasMixedSemantics, isTrue);
+    });
+
+    testWidgets('non-indeterminate does not report mixed semantics', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: true,
+            onChanged: (_) {},
+            label: const Text('Checked'),
+          ),
+        ),
+      );
+
+      final hasCheckedSemantics = tester
+          .widgetList<Semantics>(find.byType(Semantics))
+          .any(
+            (s) => s.properties.checked == true && s.properties.mixed != true,
+          );
+      expect(hasCheckedSemantics, isTrue);
+    });
   });
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import '../../theme/ds_color_scale.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_focus.dart';
 import '../../utils/ds_icons.dart';
 
 /// Internal semantic role for a [DsChip], mirroring the React chip parts
@@ -12,7 +14,10 @@ enum _DsChipRole { button, removable, checkbox, radio }
 
 /// A pill-shaped chip with optional selection state and remove button.
 ///
-/// Supports keyboard activation (Enter/Space to tap, Delete to remove).
+/// Supports keyboard activation (Enter/Space to tap, Delete to remove). The
+/// chip shows a visible focus ring while focused. For a [DsChip.removable]
+/// chip the remove icon is a separately focusable button that activates with
+/// Enter/Space, in addition to Delete pressing on the chip itself.
 ///
 /// The default constructor renders a generic chip. For behaviour that mirrors
 /// the React chip parts, use the named constructors:
@@ -21,7 +26,7 @@ enum _DsChipRole { button, removable, checkbox, radio }
 /// * [DsChip.removable] — a chip with a remove icon (`Chip.Removable`).
 /// * [DsChip.checkbox] — a toggleable, multi-select chip (`Chip.Checkbox`).
 /// * [DsChip.radio] — a single-select chip (`Chip.Radio`).
-class DsChip extends StatelessWidget {
+class DsChip extends StatefulWidget {
   const DsChip({
     super.key,
     required this.child,
@@ -104,11 +109,19 @@ class DsChip extends StatelessWidget {
   final _DsChipRole _role;
 
   @override
+  State<DsChip> createState() => _DsChipState();
+}
+
+class _DsChipState extends State<DsChip> {
+  bool _isFocused = false;
+  bool _isRemoveFocused = false;
+
+  @override
   Widget build(BuildContext context) {
     final theme = DsTheme.of(context);
-    final activeColor = color ?? DsColorScope.of(context);
+    final activeColor = widget.color ?? DsColorScope.of(context);
     final colorScale = theme.colorScheme.resolve(activeColor);
-    final sizeMode = size ?? DsSizeScope.of(context);
+    final sizeMode = widget.size ?? DsSizeScope.of(context);
     final radius = BorderRadius.circular(theme.borderRadius.full);
 
     final padding = switch (sizeMode) {
@@ -121,10 +134,11 @@ class DsChip extends StatelessWidget {
     // pairing (a tinted active state), while button/removable keep the
     // filled [baseDefault] selected styling.
     final isToggle =
-        _role == _DsChipRole.checkbox || _role == _DsChipRole.radio;
+        widget._role == _DsChipRole.checkbox ||
+        widget._role == _DsChipRole.radio;
     final Color bgColor;
     final Color fgColor;
-    if (selected) {
+    if (widget.selected) {
       bgColor = isToggle ? colorScale.surfaceActive : colorScale.baseDefault;
       fgColor = isToggle
           ? colorScale.textDefault
@@ -133,72 +147,156 @@ class DsChip extends StatelessWidget {
       bgColor = colorScale.surfaceTinted;
       fgColor = colorScale.textDefault;
     }
-    final Color borderColor = selected
+    final Color borderColor = widget.selected
         ? (isToggle ? colorScale.borderDefault : colorScale.baseDefault)
         : colorScale.borderSubtle;
 
+    Widget chip = Container(
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: radius,
+        border: Border.all(color: borderColor, width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: padding,
+            child: DefaultTextStyle(
+              style: theme.typography.bodyMd.copyWith(color: fgColor),
+              child: widget.child,
+            ),
+          ),
+          if (widget.removable)
+            _buildRemoveButton(colorScale, fgColor, padding.right),
+        ],
+      ),
+    );
+
+    // Always reserve focus ring space to prevent layout shift, matching the
+    // pattern used by DsButton/DsCheckbox.
+    final focusDecoration = _isFocused
+        ? DsFocus.focusRingWithRadius(colorScale, radius)
+        : BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              radius.topLeft.x + DsFocus.ringWidth,
+            ),
+            border: Border.all(
+              color: const Color(0x00000000),
+              width: DsFocus.ringWidth,
+            ),
+          );
+
+    chip = DecoratedBox(
+      decoration: focusDecoration,
+      child: Padding(
+        padding: const EdgeInsets.all(DsFocus.ringWidth),
+        child: chip,
+      ),
+    );
+
     return Semantics(
-      button: onTap != null && !isToggle,
-      checked: _role == _DsChipRole.checkbox ? selected : null,
-      selected: _role == _DsChipRole.checkbox ? null : selected,
+      // Only the button role is announced as a button. The toggle roles
+      // (checkbox/radio) carry their own role-specific state below.
+      button: widget.onTap != null && widget._role == _DsChipRole.button,
+      // A selected button-role chip is a toggled (pressed) button — exposing
+      // [selected] here as well would contradict the button role, so [selected]
+      // is reserved for the radio role.
+      toggled: widget._role == _DsChipRole.button && widget.selected
+          ? true
+          : null,
+      checked: widget._role == _DsChipRole.checkbox ? widget.selected : null,
+      selected: widget._role == _DsChipRole.radio ? widget.selected : null,
       child: Focus(
         onKeyEvent: (node, event) {
           if (event is KeyDownEvent) {
             if ((event.logicalKey == LogicalKeyboardKey.enter ||
                     event.logicalKey == LogicalKeyboardKey.space) &&
-                onTap != null) {
-              onTap!();
+                widget.onTap != null) {
+              widget.onTap!();
               return KeyEventResult.handled;
             }
             if (event.logicalKey == LogicalKeyboardKey.delete &&
-                removable &&
-                onRemove != null) {
-              onRemove!();
+                widget.removable &&
+                widget.onRemove != null) {
+              widget.onRemove!();
               return KeyEventResult.handled;
             }
           }
           return KeyEventResult.ignored;
         },
+        onFocusChange: (f) => setState(() => _isFocused = f),
         child: MouseRegion(
-          cursor: onTap != null
+          cursor: widget.onTap != null
               ? SystemMouseCursors.click
               : SystemMouseCursors.basic,
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: onTap,
-            child: Container(
-              decoration: BoxDecoration(
-                color: bgColor,
-                borderRadius: radius,
-                border: Border.all(color: borderColor, width: 1),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: padding,
-                    child: DefaultTextStyle(
-                      style: theme.typography.bodyMd.copyWith(color: fgColor),
-                      child: child,
-                    ),
-                  ),
-                  if (removable) ...[
-                    Semantics(
-                      button: true,
-                      label: 'Fjern',
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: onRemove,
-                        child: Padding(
-                          padding: EdgeInsets.only(right: padding.right),
-                          child: Icon(DsIcons.x, size: 14, color: fgColor),
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+            onTap: widget.onTap,
+            child: chip,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Builds the remove icon as a real focusable button.
+  ///
+  /// It exposes button semantics, activates with Enter/Space (and via a tap),
+  /// and shows its own focus ring while focused. Delete on the whole chip
+  /// remains an alternative removal path handled by the chip's [Focus].
+  Widget _buildRemoveButton(
+    DsColorScale colorScale,
+    Color fgColor,
+    double trailingPadding,
+  ) {
+    Widget icon = Padding(
+      padding: EdgeInsets.only(right: trailingPadding),
+      child: Icon(DsIcons.x, size: 14, color: fgColor),
+    );
+
+    // Reserve a small focus ring around the remove icon so focusing it does
+    // not shift the chip layout.
+    final removeRadius = BorderRadius.circular(DsFocus.ringWidth);
+    final removeFocusDecoration = _isRemoveFocused
+        ? DsFocus.focusRingWithRadius(colorScale, removeRadius)
+        : BoxDecoration(
+            borderRadius: BorderRadius.circular(DsFocus.ringWidth * 2),
+            border: Border.all(
+              color: const Color(0x00000000),
+              width: DsFocus.ringWidth,
             ),
+          );
+
+    icon = DecoratedBox(
+      decoration: removeFocusDecoration,
+      child: Padding(
+        padding: const EdgeInsets.all(DsFocus.ringWidth),
+        child: icon,
+      ),
+    );
+
+    return Semantics(
+      button: true,
+      label: 'Fjern',
+      child: Focus(
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent &&
+              (event.logicalKey == LogicalKeyboardKey.enter ||
+                  event.logicalKey == LogicalKeyboardKey.space) &&
+              widget.onRemove != null) {
+            widget.onRemove!();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        onFocusChange: (f) => setState(() => _isRemoveFocused = f),
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: widget.onRemove,
+            child: icon,
           ),
         ),
       ),

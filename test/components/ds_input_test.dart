@@ -112,4 +112,96 @@ void main() {
       expect(tester.testTextInput.hasAnyClients, isFalse);
     });
   });
+
+  group('DsInput controller swap', () {
+    // Regression: didUpdateWidget used to reconcile only focusNode changes, so
+    // swapping the controller (external <-> internal) lost the typed text or
+    // changed the visible value abruptly.
+    testWidgets('null -> external preserves the internally typed text', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(const DsInput(size: DsSize.md)));
+
+      // Type into the field while it manages its own (internal) controller.
+      await tester.enterText(find.byType(EditableText), 'hei');
+      await tester.pump();
+      expect(find.text('hei'), findsOneWidget);
+
+      // Parent now hands us an EMPTY external controller. The previously typed
+      // value must carry over instead of being wiped.
+      final external = TextEditingController();
+      addTearDown(external.dispose);
+      await tester.pumpWidget(
+        _host(DsInput(controller: external, size: DsSize.md)),
+      );
+      await tester.pump();
+
+      expect(external.text, 'hei');
+      expect(find.text('hei'), findsOneWidget);
+    });
+
+    testWidgets('null -> non-empty external does not clobber parent value', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(const DsInput(size: DsSize.md)));
+
+      await tester.enterText(find.byType(EditableText), 'internal');
+      await tester.pump();
+
+      // The incoming external controller already carries the parent's value;
+      // it must win over the internal text.
+      final external = TextEditingController(text: 'fromParent');
+      addTearDown(external.dispose);
+      await tester.pumpWidget(
+        _host(DsInput(controller: external, size: DsSize.md)),
+      );
+      await tester.pump();
+
+      expect(external.text, 'fromParent');
+      expect(find.text('fromParent'), findsOneWidget);
+    });
+
+    testWidgets('external -> null keeps the externally set value visible', (
+      tester,
+    ) async {
+      final external = TextEditingController(text: 'kept');
+      addTearDown(external.dispose);
+      await tester.pumpWidget(
+        _host(DsInput(controller: external, size: DsSize.md)),
+      );
+      expect(find.text('kept'), findsOneWidget);
+
+      // Parent removes the controller; the field falls back to its own
+      // controller but must keep showing the value the user last saw.
+      await tester.pumpWidget(_host(const DsInput(size: DsSize.md)));
+      await tester.pump();
+
+      expect(find.text('kept'), findsOneWidget);
+    });
+
+    testWidgets(
+      'swapping between two external controllers shows the new value',
+      (tester) async {
+        final first = TextEditingController(text: 'first');
+        final second = TextEditingController(text: 'second');
+        addTearDown(first.dispose);
+        addTearDown(second.dispose);
+
+        await tester.pumpWidget(
+          _host(DsInput(controller: first, size: DsSize.md)),
+        );
+        expect(find.text('first'), findsOneWidget);
+
+        await tester.pumpWidget(
+          _host(DsInput(controller: second, size: DsSize.md)),
+        );
+        await tester.pump();
+
+        // The new external controller's value is shown verbatim; the old one is
+        // left untouched (parent still owns it).
+        expect(find.text('second'), findsOneWidget);
+        expect(first.text, 'first');
+      },
+    );
+  });
 }

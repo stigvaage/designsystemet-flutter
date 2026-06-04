@@ -189,7 +189,11 @@ class _DsCheckboxState extends State<DsCheckbox> {
     );
 
     return Semantics(
-      checked: widget.value,
+      // Tri-state semantics: an indeterminate checkbox is announced as
+      // "mixed", not "unchecked". When mixed, leave [checked] null so
+      // assistive technologies do not also report a checked/unchecked state.
+      mixed: widget.indeterminate,
+      checked: widget.indeterminate ? null : widget.value,
       enabled: !widget.readOnly,
       child: result,
     );

@@ -6,6 +6,7 @@ import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_focus.dart';
 
 /// A segmented toggle control where one item is selected at a time.
 ///
@@ -44,15 +45,45 @@ class _DsToggleGroupState extends State<DsToggleGroup> {
   @override
   void initState() {
     super.initState();
-    _focusNodes = List.generate(widget.items.length, (_) => FocusNode());
+    _buildFocusNodes(widget.items.length);
+  }
+
+  @override
+  void didUpdateWidget(DsToggleGroup oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Regenerate the focus nodes whenever the number of segments changes so
+    // that indexing stays in range (avoids a RangeError when items grow) and
+    // no nodes are leaked (when items shrink).
+    if (widget.items.length != oldWidget.items.length) {
+      _disposeFocusNodes();
+      _buildFocusNodes(widget.items.length);
+    }
   }
 
   @override
   void dispose() {
+    _disposeFocusNodes();
+    super.dispose();
+  }
+
+  void _buildFocusNodes(int count) {
+    _focusNodes = List.generate(count, (_) {
+      final node = FocusNode();
+      // Repaint so the focus ring follows the currently focused segment.
+      node.addListener(_handleFocusChange);
+      return node;
+    });
+  }
+
+  void _disposeFocusNodes() {
     for (final node in _focusNodes) {
+      node.removeListener(_handleFocusChange);
       node.dispose();
     }
-    super.dispose();
+  }
+
+  void _handleFocusChange() {
+    if (mounted) setState(() {});
   }
 
   void _handleKey(KeyEvent event, int index) {
@@ -105,43 +136,54 @@ class _DsToggleGroupState extends State<DsToggleGroup> {
         mainAxisSize: MainAxisSize.min,
         children: List.generate(widget.items.length, (i) {
           final isSelected = i == widget.selectedIndex;
+          final isFocused = _focusNodes[i].hasFocus;
+          final segmentRadius = i == 0
+              ? BorderRadius.horizontal(
+                  left: Radius.circular(theme.borderRadius.defaultRadius - 1),
+                )
+              : i == widget.items.length - 1
+              ? BorderRadius.horizontal(
+                  right: Radius.circular(theme.borderRadius.defaultRadius - 1),
+                )
+              : BorderRadius.zero;
           return Semantics(
+            button: true,
             selected: isSelected,
             child: KeyboardListener(
               focusNode: _focusNodes[i],
               onKeyEvent: (e) => _handleKey(e, i),
               child: GestureDetector(
-                onTap: () => widget.onChanged(i),
-                child: AnimatedContainer(
-                  duration: duration,
-                  height: height,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: isSelected ? selectedFill : null,
-                    borderRadius: i == 0
-                        ? BorderRadius.horizontal(
-                            left: Radius.circular(
-                              theme.borderRadius.defaultRadius - 1,
-                            ),
-                          )
-                        : i == widget.items.length - 1
-                        ? BorderRadius.horizontal(
-                            right: Radius.circular(
-                              theme.borderRadius.defaultRadius - 1,
-                            ),
-                          )
-                        : null,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    widget.items[i],
-                    style: TextStyle(
-                      fontFamily: theme.typography.fontFamily,
-                      fontSize: fontSize,
-                      fontWeight: isSelected
-                          ? FontWeight.w500
-                          : FontWeight.w400,
-                      color: isSelected ? selectedText : colorScale.textDefault,
+                onTap: () {
+                  // Request focus so subsequent arrow-key navigation works
+                  // even when the segment was activated by mouse/touch.
+                  _focusNodes[i].requestFocus();
+                  widget.onChanged(i);
+                },
+                child: DecoratedBox(
+                  decoration: isFocused
+                      ? DsFocus.focusRingWithRadius(colorScale, segmentRadius)
+                      : const BoxDecoration(),
+                  child: AnimatedContainer(
+                    duration: duration,
+                    height: height,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: isSelected ? selectedFill : null,
+                      borderRadius: segmentRadius,
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      widget.items[i],
+                      style: TextStyle(
+                        fontFamily: theme.typography.fontFamily,
+                        fontSize: fontSize,
+                        fontWeight: isSelected
+                            ? FontWeight.w500
+                            : FontWeight.w400,
+                        color: isSelected
+                            ? selectedText
+                            : colorScale.textDefault,
+                      ),
                     ),
                   ),
                 ),

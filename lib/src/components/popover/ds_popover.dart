@@ -87,10 +87,17 @@ class _DsPopoverState extends State<DsPopover> {
   void didUpdateWidget(DsPopover oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (_controlled) {
+      // Defer show/hide to a post-frame callback so we never insert into the
+      // overlay or read this element's render object mid-update, when it may
+      // not be laid out yet. Mirrors the deferred initState path.
       if (widget.open! && _entry == null) {
-        _show();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _isOpen && _entry == null) _show();
+        });
       } else if (!widget.open! && _entry != null) {
-        _hide();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && !_isOpen && _entry != null) _hide();
+        });
       }
     }
   }

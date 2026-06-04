@@ -1,11 +1,14 @@
 import 'dart:math' as math;
 
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../theme/ds_color_scale.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_focus.dart';
 
 /// A page navigation control with numbered page buttons and prev/next arrows.
 class DsPagination extends StatelessWidget {
@@ -73,34 +76,49 @@ class DsPagination extends StatelessWidget {
       DsSize.lg => 16.0,
     };
 
+    final pageRadius = BorderRadius.circular(theme.borderRadius.sm);
+
     Widget pageButton(int page) {
       final isActive = page == currentPage;
-      return GestureDetector(
-        onTap: isActive ? null : () => onPageChanged(page),
-        child: Semantics(
-          button: true,
-          selected: isActive,
-          label: 'Side $page',
-          child: Container(
-            width: buttonSize,
-            height: buttonSize,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: isActive ? colorScale.baseDefault : null,
-              borderRadius: BorderRadius.circular(theme.borderRadius.sm),
-            ),
-            child: Text(
-              '$page',
-              style: TextStyle(
-                fontSize: fontSize,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                color: isActive
-                    ? colorScale.baseContrastDefault
-                    : colorScale.textDefault,
-              ),
+      final content = Semantics(
+        // The active page is rendered as a non-interactive current-page
+        // indicator (no [onTap]), so it is announced as selected but not as a
+        // button. The other pages remain reachable buttons.
+        button: !isActive,
+        selected: isActive,
+        label: 'Side $page',
+        child: Container(
+          width: buttonSize,
+          height: buttonSize,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: isActive ? colorScale.baseDefault : null,
+            borderRadius: pageRadius,
+          ),
+          child: Text(
+            '$page',
+            style: TextStyle(
+              fontSize: fontSize,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+              color: isActive
+                  ? colorScale.baseContrastDefault
+                  : colorScale.textDefault,
             ),
           ),
         ),
+      );
+
+      // The active page is not interactive; render it without a focus wrapper
+      // so it is skipped during keyboard navigation.
+      if (isActive) {
+        return content;
+      }
+
+      return _PaginationItem(
+        colorScale: colorScale,
+        borderRadius: pageRadius,
+        onActivate: () => onPageChanged(page),
+        child: content,
       );
     }
 
@@ -136,9 +154,8 @@ class DsPagination extends StatelessWidget {
           label: 'Forrige side',
           child: Opacity(
             opacity: hasPrev ? 1.0 : theme.disabledOpacity,
-            child: GestureDetector(
-              onTap: hasPrev ? () => onPageChanged(currentPage - 1) : null,
-              child: Container(
+            child: () {
+              final arrow = Container(
                 width: buttonSize,
                 height: buttonSize,
                 alignment: Alignment.center,
@@ -149,8 +166,18 @@ class DsPagination extends StatelessWidget {
                     color: colorScale.textDefault,
                   ),
                 ),
-              ),
-            ),
+              );
+              // Disabled (first page): non-interactive and not focusable.
+              if (!hasPrev) {
+                return arrow;
+              }
+              return _PaginationItem(
+                colorScale: colorScale,
+                borderRadius: pageRadius,
+                onActivate: () => onPageChanged(currentPage - 1),
+                child: arrow,
+              );
+            }(),
           ),
         ),
         // Pages (windowed with ellipsis for large ranges)
@@ -167,9 +194,8 @@ class DsPagination extends StatelessWidget {
           label: 'Neste side',
           child: Opacity(
             opacity: hasNext ? 1.0 : theme.disabledOpacity,
-            child: GestureDetector(
-              onTap: hasNext ? () => onPageChanged(currentPage + 1) : null,
-              child: Container(
+            child: () {
+              final arrow = Container(
                 width: buttonSize,
                 height: buttonSize,
                 alignment: Alignment.center,
@@ -180,11 +206,91 @@ class DsPagination extends StatelessWidget {
                     color: colorScale.textDefault,
                   ),
                 ),
-              ),
-            ),
+              );
+              // Disabled (last page): non-interactive and not focusable.
+              if (!hasNext) {
+                return arrow;
+              }
+              return _PaginationItem(
+                colorScale: colorScale,
+                borderRadius: pageRadius,
+                onActivate: () => onPageChanged(currentPage + 1),
+                child: arrow,
+              );
+            }(),
           ),
         ),
       ],
+    );
+  }
+}
+
+/// A keyboard-focusable, activatable wrapper around a single interactive
+/// pagination control (a page number or the prev/next arrow).
+///
+/// Provides keyboard activation (Enter/Space) via [Focus.onKeyEvent] and a
+/// visible focus ring. Tap activation is preserved through a [GestureDetector].
+/// Space for focus-ring padding is always reserved to prevent layout shift when
+/// focus moves between items.
+class _PaginationItem extends StatefulWidget {
+  const _PaginationItem({
+    required this.colorScale,
+    required this.borderRadius,
+    required this.onActivate,
+    required this.child,
+  });
+
+  final DsColorScale colorScale;
+  final BorderRadius borderRadius;
+  final VoidCallback onActivate;
+  final Widget child;
+
+  @override
+  State<_PaginationItem> createState() => _PaginationItemState();
+}
+
+class _PaginationItemState extends State<_PaginationItem> {
+  bool _isFocused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    // Always reserve focus ring space to prevent layout shift.
+    final focusDecoration = _isFocused
+        ? DsFocus.focusRingWithRadius(widget.colorScale, widget.borderRadius)
+        : BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              widget.borderRadius.topLeft.x + DsFocus.ringWidth,
+            ),
+            border: Border.all(
+              color: const Color(0x00000000),
+              width: DsFocus.ringWidth,
+            ),
+          );
+
+    return Focus(
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.enter ||
+                event.logicalKey == LogicalKeyboardKey.space)) {
+          widget.onActivate();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      onFocusChange: (f) => setState(() => _isFocused = f),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: widget.onActivate,
+          child: DecoratedBox(
+            decoration: focusDecoration,
+            child: Padding(
+              padding: const EdgeInsets.all(DsFocus.ringWidth),
+              child: widget.child,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

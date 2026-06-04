@@ -78,11 +78,20 @@ class DsSuggestion<T> extends StatefulWidget {
 
 class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
   final _layerLink = LayerLink();
+  // Identifies the field's render box so the outside-tap barrier can exclude
+  // taps that land inside the field (moving the caret must not close the list).
+  final _fieldKey = GlobalKey();
   late final TextEditingController _controller;
   late final FocusNode _focusNode;
   OverlayEntry? _entry;
   int _highlight = -1;
   List<T> _internalSelection = [];
+  // The most recent list handed to _commit. In controlled mode the parent may
+  // not have flushed widget.selected back yet between rapid keystrokes, so
+  // reading _selection.last per backspace can re-target a stale value. This
+  // mirrors the last committed list so successive backspaces remove distinct
+  // chips even before the controlled prop updates.
+  List<T>? _lastCommitted;
   final List<DsSuggestionOption<T>> _created = [];
   DsThemeData? _capturedTheme;
   DsColor? _capturedColor;
@@ -103,6 +112,54 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
 
   void _handleFocusChange() {
     if (_focusNode.hasFocus) _open();
+  }
+
+  @override
+  void didUpdateWidget(DsSuggestion<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // When the parent pushes a new controlled selection, it supersedes any
+    // optimistic _lastCommitted we were tracking for backspace removal.
+    if (widget.selected != null &&
+        !_listEquals(widget.selected!, oldWidget.selected)) {
+      _lastCommitted = null;
+    }
+  }
+
+  bool _listEquals(List<T> a, List<T>? b) {
+    if (b == null || a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
+
+  /// The list a backspace should remove from. Prefers the optimistic
+  /// [_lastCommitted] when it is still in sync with the current [_selection]
+  /// length so rapid backspaces (before a controlled prop flushes) target
+  /// distinct chips instead of re-reading a stale last value.
+  List<T> get _backspaceBase {
+    final committed = _lastCommitted;
+    if (committed != null && committed.length <= _selection.length) {
+      return committed;
+    }
+    return _selection;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // If the overlay is open when an inherited dependency (e.g. a theme or
+    // color-scope swap) changes, re-capture it so the list does not render
+    // with a stale, frozen theme. _open() only captures once on open.
+    if (_entry != null) {
+      _capturedTheme = DsTheme.of(context);
+      _capturedColor = DsColorScope.of(context);
+      // didChangeDependencies can run during the build phase; defer the
+      // overlay rebuild to avoid markNeedsBuild-during-build.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _entry?.markNeedsBuild();
+      });
+    }
   }
 
   List<DsSuggestionOption<T>> get _allOptions => [
@@ -133,6 +190,7 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
     if (widget.selected == null) {
       _internalSelection = next;
     }
+    _lastCommitted = List<T>.of(next);
     widget.onSelectedChanged?.call(next);
   }
 
@@ -158,7 +216,9 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
   }
 
   void _removeValue(T value) {
-    final next = List<T>.of(_selection)..remove(value);
+    // Use the optimistic base so successive removals (e.g. rapid backspaces in
+    // controlled mode) build on the previous result rather than a stale prop.
+    final next = List<T>.of(_backspaceBase)..remove(value);
     _commit(next);
     _entry?.markNeedsBuild();
     setState(() {});
@@ -200,6 +260,20 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
     _highlight = -1;
   }
 
+  /// Whether [globalPosition] falls inside the input field's painted rect.
+  ///
+  /// The outside-tap barrier (which closes the list) covers the whole overlay,
+  /// including the area over the field. Without this guard a tap on the field —
+  /// e.g. to reposition the caret — would be swallowed by the barrier, closing
+  /// the list and dropping focus. Taps inside this rect are therefore let
+  /// through so the field handles them itself.
+  bool _isInsideField(Offset globalPosition) {
+    final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null || !box.hasSize) return false;
+    final topLeft = box.localToGlobal(Offset.zero);
+    return (topLeft & box.size).contains(globalPosition);
+  }
+
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
@@ -223,6 +297,7 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.arrowUp) {
+      _open();
       if (count > 0) {
         _highlight = (_highlight - 1 + count) % count;
         _entry?.markNeedsBuild();
@@ -231,10 +306,13 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
     }
     if (key == LogicalKeyboardKey.backspace &&
         widget.multiple &&
-        _controller.text.isEmpty &&
-        _selection.isNotEmpty) {
-      _removeValue(_selection.last);
-      return KeyEventResult.handled;
+        _controller.text.isEmpty) {
+      final base = _backspaceBase;
+      if (base.isNotEmpty) {
+        _removeValue(base.last);
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.ignored;
     }
     return KeyEventResult.ignored;
   }
@@ -274,21 +352,33 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
                 ],
               ),
             ),
-          Focus(
-            onKeyEvent: _onKey,
-            child: DsInput(
-              controller: _controller,
-              focusNode: _focusNode,
-              size: widget.size,
-              placeholder: widget.placeholder,
-              onTap: _open,
-              onChanged: (_) {
-                _open();
-                _highlight = -1;
-                _entry?.markNeedsBuild();
-                setState(() {});
-              },
-              onSubmitted: (_) => _selectHighlightedOrFirst(),
+          // textField + expanded mirror the combobox role for assistive tech:
+          // the field announces as an editable combobox whose popup is open
+          // (expanded) whenever the overlay list is showing. The GlobalKey
+          // tags this wrapper's render box so the outside-tap barrier can tell
+          // taps that land inside the field apart from taps outside it.
+          Semantics(
+            textField: true,
+            expanded: _entry != null,
+            child: Focus(
+              onKeyEvent: _onKey,
+              child: KeyedSubtree(
+                key: _fieldKey,
+                child: DsInput(
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  size: widget.size,
+                  placeholder: widget.placeholder,
+                  onTap: _open,
+                  onChanged: (_) {
+                    _open();
+                    _highlight = -1;
+                    _entry?.markNeedsBuild();
+                    setState(() {});
+                  },
+                  onSubmitted: (_) => _selectHighlightedOrFirst(),
+                ),
+              ),
             ),
           ),
         ],
@@ -311,9 +401,15 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
         child: Stack(
           children: [
             Positioned.fill(
-              child: GestureDetector(
+              // A Listener (not a GestureDetector) so it never enters the
+              // gesture arena and never steals the tap from the field or the
+              // option rows. onPointerDown decides whether the press landed
+              // outside the field; taps inside the field's rect are ignored so
+              // the field keeps focus and can move the caret.
+              child: Listener(
                 behavior: HitTestBehavior.translucent,
-                onTap: () {
+                onPointerDown: (event) {
+                  if (_isInsideField(event.position)) return;
                   _close();
                   _focusNode.unfocus();
                   setState(() {});
@@ -329,48 +425,65 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
                 alignment: Alignment.topLeft,
                 child: SizedBox(
                   width: _fieldWidth > 0 ? _fieldWidth : null,
-                  child: Container(
-                    constraints: const BoxConstraints(maxHeight: 240),
-                    decoration: BoxDecoration(
-                      color: colorScale.backgroundDefault,
-                      borderRadius: BorderRadius.circular(
-                        theme.borderRadius.defaultRadius,
+                  // container: true groups the overlay as a single listbox /
+                  // option-container node for assistive tech, so the options
+                  // (and the empty-state message) are announced as a list
+                  // rather than loose siblings of the page.
+                  child: Semantics(
+                    container: true,
+                    child: Container(
+                      constraints: const BoxConstraints(maxHeight: 240),
+                      decoration: BoxDecoration(
+                        color: colorScale.backgroundDefault,
+                        borderRadius: BorderRadius.circular(
+                          theme.borderRadius.defaultRadius,
+                        ),
+                        border: Border.all(
+                          color: colorScale.borderSubtle,
+                          width: 1,
+                        ),
+                        boxShadow: theme.shadows.sm,
                       ),
-                      border: Border.all(
-                        color: colorScale.borderSubtle,
-                        width: 1,
-                      ),
-                      boxShadow: theme.shadows.sm,
-                    ),
-                    child: isEmpty
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
-                            child: Text(
-                              widget.emptyText,
-                              style: theme.typography.bodySm.copyWith(
-                                color: colorScale.textSubtle,
+                      child: isEmpty
+                          ? Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              // liveRegion announces the "no matches" message
+                              // when it appears as the query narrows results.
+                              child: Semantics(
+                                liveRegion: true,
+                                child: Text(
+                                  widget.emptyText,
+                                  style: theme.typography.bodySm.copyWith(
+                                    color: colorScale.textSubtle,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  for (var i = 0; i < filtered.length; i++)
+                                    _optionRow(
+                                      filtered[i],
+                                      i,
+                                      theme,
+                                      colorScale,
+                                    ),
+                                  if (canCreate)
+                                    _createRow(
+                                      filtered.length,
+                                      theme,
+                                      colorScale,
+                                    ),
+                                ],
                               ),
                             ),
-                          )
-                        : SingleChildScrollView(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                for (var i = 0; i < filtered.length; i++)
-                                  _optionRow(filtered[i], i, theme, colorScale),
-                                if (canCreate)
-                                  _createRow(
-                                    filtered.length,
-                                    theme,
-                                    colorScale,
-                                  ),
-                              ],
-                            ),
-                          ),
+                    ),
                   ),
                 ),
               ),

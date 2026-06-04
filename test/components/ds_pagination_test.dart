@@ -1,5 +1,6 @@
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -14,6 +15,16 @@ Finder _semanticsWithLabel(String label) {
   return find.byWidgetPredicate(
     (w) => w is Semantics && w.properties.label == label,
   );
+}
+
+/// Requests focus on the nearest [Focus] ancestor of [target] and pumps so the
+/// focus change settles. Used to drive keyboard activation in tests since
+/// [DsPagination] creates its focus nodes internally.
+Future<void> _focusAncestorOf(WidgetTester tester, Finder target) async {
+  final context = tester.element(target);
+  final focusNode = Focus.of(context);
+  focusNode.requestFocus();
+  await tester.pump();
 }
 
 void main() {
@@ -124,6 +135,101 @@ void main() {
       expect(find.text('20'), findsOneWidget);
       // The collapsed middle pages are not rendered.
       expect(find.text('10'), findsNothing);
+    });
+
+    testWidgets('pressing Enter on a focused page button calls onPageChanged', (
+      tester,
+    ) async {
+      var changedTo = -1;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsPagination(
+            currentPage: 1,
+            totalPages: 3,
+            onPageChanged: (p) => changedTo = p,
+          ),
+        ),
+      );
+      await _focusAncestorOf(tester, find.text('3'));
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(changedTo, 3);
+    });
+
+    testWidgets('pressing Space on a focused page button calls onPageChanged', (
+      tester,
+    ) async {
+      var changedTo = -1;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsPagination(
+            currentPage: 1,
+            totalPages: 3,
+            onPageChanged: (p) => changedTo = p,
+          ),
+        ),
+      );
+      await _focusAncestorOf(tester, find.text('2'));
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(changedTo, 2);
+    });
+
+    testWidgets('pressing Enter on the focused next arrow advances the page', (
+      tester,
+    ) async {
+      var changedTo = -1;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsPagination(
+            currentPage: 2,
+            totalPages: 5,
+            onPageChanged: (p) => changedTo = p,
+          ),
+        ),
+      );
+      await _focusAncestorOf(tester, find.text('›'));
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(changedTo, 3);
+    });
+
+    testWidgets('pressing Space on the focused previous arrow goes back', (
+      tester,
+    ) async {
+      var changedTo = -1;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsPagination(
+            currentPage: 3,
+            totalPages: 5,
+            onPageChanged: (p) => changedTo = p,
+          ),
+        ),
+      );
+      await _focusAncestorOf(tester, find.text('‹'));
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(changedTo, 2);
+    });
+
+    testWidgets('active page is not announced as a button', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsPagination(currentPage: 2, totalPages: 3, onPageChanged: (_) {}),
+        ),
+      );
+      final activeSemantics = tester.widget<Semantics>(
+        _semanticsWithLabel('Side 2'),
+      );
+      expect(activeSemantics.properties.button, isFalse);
+      expect(activeSemantics.properties.selected, isTrue);
+
+      // A non-active page remains a button.
+      final inactiveSemantics = tester.widget<Semantics>(
+        _semanticsWithLabel('Side 1'),
+      );
+      expect(inactiveSemantics.properties.button, isTrue);
     });
   });
 

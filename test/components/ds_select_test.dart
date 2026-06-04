@@ -1,5 +1,6 @@
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -186,6 +187,121 @@ void main() {
         ),
       );
       expect(find.byType(DsSelect<String>), findsOneWidget);
+    });
+
+    testWidgets('Enter key opens the dropdown', (tester) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsSelect<String>(options: _fruit, placeholder: 'Choose'),
+        ),
+      );
+
+      // Focus the trigger, then press Enter to open.
+      Focus.of(tester.element(find.text('Choose'))).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Apple'), findsOneWidget);
+      expect(find.text('Banana'), findsOneWidget);
+    });
+
+    testWidgets('Space key opens the dropdown', (tester) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsSelect<String>(options: _fruit, placeholder: 'Choose'),
+        ),
+      );
+
+      Focus.of(tester.element(find.text('Choose'))).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Apple'), findsOneWidget);
+      expect(find.text('Banana'), findsOneWidget);
+    });
+
+    testWidgets('Enter toggles the dropdown closed when open', (tester) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsSelect<String>(options: _fruit, placeholder: 'Choose'),
+        ),
+      );
+
+      // Open via tap (this also focuses the trigger).
+      await tester.tap(find.text('Choose'));
+      await tester.pumpAndSettle();
+      expect(find.text('Apple'), findsOneWidget);
+
+      // Pressing Enter again toggles it closed.
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(find.text('Apple'), findsNothing);
+    });
+
+    testWidgets('Escape closes the open dropdown', (tester) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsSelect<String>(options: _fruit, placeholder: 'Choose'),
+        ),
+      );
+
+      await tester.tap(find.text('Choose'));
+      await tester.pumpAndSettle();
+      expect(find.text('Apple'), findsOneWidget);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
+      expect(find.text('Apple'), findsNothing);
+    });
+
+    testWidgets('tapping the trigger focuses it', (tester) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsSelect<String>(options: _fruit, placeholder: 'Choose'),
+        ),
+      );
+
+      await tester.tap(find.text('Choose'));
+      await tester.pumpAndSettle();
+
+      expect(Focus.of(tester.element(find.text('Choose'))).hasFocus, isTrue);
+    });
+
+    testWidgets('disabled does not open on Enter', (tester) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsSelect<String>(
+            options: _fruit,
+            disabled: true,
+            placeholder: 'Choose',
+          ),
+        ),
+      );
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(find.text('Apple'), findsNothing);
+    });
+
+    testWidgets('option list is wrapped in a semantics container', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsSelect<String>(options: _fruit, placeholder: 'Choose'),
+        ),
+      );
+
+      await tester.tap(find.text('Choose'));
+      await tester.pumpAndSettle();
+
+      // A Semantics node with container: true wraps the option rows.
+      expect(
+        find.byWidgetPredicate((w) => w is Semantics && w.container == true),
+        findsWidgets,
+      );
     });
   });
 }

@@ -1,6 +1,7 @@
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:designsystemet_flutter/src/components/radio/ds_radio.dart';
 import 'package:designsystemet_flutter/theme.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -40,6 +41,82 @@ void main() {
         ),
       );
       await tester.tap(find.byType(DsRadio));
+      expect(changedTo, isTrue);
+    });
+
+    testWidgets('tapping an already-selected radio does NOT deselect it', (
+      tester,
+    ) async {
+      bool? changedTo;
+      var callCount = 0;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(
+            value: true,
+            onChanged: (v) {
+              changedTo = v;
+              callCount++;
+            },
+            label: const Text('Allerede valgt'),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(DsRadio));
+      // Radio selection is idempotent: re-activating must not call
+      // onChanged(false) (which would leave the group with nothing selected).
+      expect(callCount, 0);
+      expect(changedTo, isNull);
+    });
+
+    testWidgets(
+      'pressing Space on an already-selected radio does NOT deselect',
+      (tester) async {
+        bool? changedTo;
+        var callCount = 0;
+        final focusNode = FocusNode();
+        addTearDown(focusNode.dispose);
+        await tester.pumpWidget(
+          wrapWithTheme(
+            DsRadio(
+              value: true,
+              onChanged: (v) {
+                changedTo = v;
+                callCount++;
+              },
+              focusNode: focusNode,
+              label: const Text('Allerede valgt'),
+            ),
+          ),
+        );
+        focusNode.requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.space);
+        await tester.pump();
+        expect(callCount, 0);
+        expect(changedTo, isNull);
+      },
+    );
+
+    testWidgets('pressing Space on an unselected radio selects it', (
+      tester,
+    ) async {
+      bool? changedTo;
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(
+            value: false,
+            onChanged: (v) => changedTo = v,
+            focusNode: focusNode,
+            label: const Text('Velg med tastatur'),
+          ),
+        ),
+      );
+      focusNode.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
       expect(changedTo, isTrue);
     });
 

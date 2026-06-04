@@ -27,6 +27,32 @@ void main() {
       expect(find.text('?'), findsOneWidget);
     });
 
+    testWidgets('renders "?" without exception when name is empty', (
+      tester,
+    ) async {
+      await tester.pumpWidget(wrapWithTheme(const DsAvatar(name: '')));
+      expect(tester.takeException(), isNull);
+      expect(find.text('?'), findsOneWidget);
+    });
+
+    testWidgets('renders "?" without exception when name is whitespace only', (
+      tester,
+    ) async {
+      await tester.pumpWidget(wrapWithTheme(const DsAvatar(name: '   ')));
+      expect(tester.takeException(), isNull);
+      expect(find.text('?'), findsOneWidget);
+    });
+
+    testWidgets('renders initials ignoring surrounding whitespace', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsAvatar(name: '  Stig   Vage  ')),
+      );
+      expect(tester.takeException(), isNull);
+      expect(find.text('SV'), findsOneWidget);
+    });
+
     testWidgets('has image semantics', (tester) async {
       await tester.pumpWidget(wrapWithTheme(const DsAvatar(name: 'Test')));
       final semantics = tester.getSemantics(find.byType(DsAvatar));

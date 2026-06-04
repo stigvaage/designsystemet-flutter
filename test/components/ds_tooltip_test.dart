@@ -81,6 +81,79 @@ void main() {
       expect(find.text('Tip'), findsOneWidget);
     });
 
+    testWidgets('stays visible when the pointer exits while still focused', (
+      tester,
+    ) async {
+      final node = FocusNode();
+      addTearDown(node.dispose);
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          DsTooltip(
+            message: 'Tip',
+            child: Focus(focusNode: node, child: const Text('Target')),
+          ),
+        ),
+      );
+
+      // Focus first, then hover: both signals are now active.
+      node.requestFocus();
+      await tester.pump();
+      await tester.pump();
+      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await gesture.addPointer(location: tester.getCenter(find.text('Target')));
+      await tester.pump();
+      expect(find.text('Tip'), findsOneWidget);
+
+      // Move the pointer away while focus remains: tooltip must stay visible.
+      await gesture.moveTo(const Offset(-100, -100));
+      await tester.pump();
+      expect(find.text('Tip'), findsOneWidget);
+
+      // Removing focus too hides the tooltip.
+      node.unfocus();
+      await tester.pump(); // process focus loss → _hide()
+      await tester.pump(); // overlay rebuilds without the tooltip
+      expect(find.text('Tip'), findsNothing);
+
+      await gesture.removePointer();
+    });
+
+    testWidgets('stays visible when focus is lost while still hovered', (
+      tester,
+    ) async {
+      final node = FocusNode();
+      addTearDown(node.dispose);
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          DsTooltip(
+            message: 'Tip',
+            child: Focus(focusNode: node, child: const Text('Target')),
+          ),
+        ),
+      );
+
+      // Hover first, then focus: both signals are active.
+      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await gesture.addPointer(location: tester.getCenter(find.text('Target')));
+      await tester.pump();
+      node.requestFocus();
+      await tester.pump();
+      await tester.pump();
+      expect(find.text('Tip'), findsOneWidget);
+
+      // Lose focus while the pointer is still over the trigger.
+      node.unfocus();
+      await tester.pump();
+      expect(find.text('Tip'), findsOneWidget);
+
+      // Pointer exit now hides the tooltip.
+      await gesture.moveTo(const Offset(-100, -100));
+      await tester.pump();
+      expect(find.text('Tip'), findsNothing);
+
+      await gesture.removePointer();
+    });
+
     testWidgets('shows tooltip with a non-default placement', (tester) async {
       await tester.pumpWidget(
         wrapWithOverlay(

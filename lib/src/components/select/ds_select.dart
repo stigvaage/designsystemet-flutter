@@ -97,6 +97,10 @@ class DsSelect<T> extends StatefulWidget {
 
 class _DsSelectState<T> extends State<DsSelect<T>> {
   final _layerLink = LayerLink();
+
+  /// Focus node for the trigger so it can be focused on tap and receive
+  /// keyboard activation (Enter/Space toggles open/close).
+  final _focusNode = FocusNode();
   OverlayEntry? _entry;
   DsThemeData? _capturedTheme;
   DsColor? _capturedColor;
@@ -122,6 +126,9 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
 
   void _open() {
     if (_isOpen || widget.disabled || widget.readOnly) return;
+    // Ensure the trigger holds focus while the dropdown is open so keyboard
+    // activation (Enter/Space/Escape) is routed to it.
+    _focusNode.requestFocus();
     _capturedTheme = DsTheme.of(context);
     _capturedColor = widget.color ?? DsColorScope.of(context);
     final box = context.findRenderObject() as RenderBox?;
@@ -144,10 +151,16 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is KeyDownEvent &&
-        event.logicalKey == LogicalKeyboardKey.escape &&
-        _isOpen) {
+    if (event is! KeyDownEvent || widget.disabled || widget.readOnly) {
+      return KeyEventResult.ignored;
+    }
+    if (event.logicalKey == LogicalKeyboardKey.escape && _isOpen) {
       _close();
+      return KeyEventResult.handled;
+    }
+    if (event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.space) {
+      _toggle();
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
@@ -159,6 +172,7 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
     // since setState during dispose throws.
     _entry?.remove();
     _entry = null;
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -238,10 +252,19 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
       value: semanticValue,
       expanded: _isOpen,
       child: Focus(
+        focusNode: _focusNode,
         onKeyEvent: _handleKeyEvent,
         child: CompositedTransformTarget(
           link: _layerLink,
-          child: GestureDetector(onTap: _toggle, child: trigger),
+          child: GestureDetector(
+            // Focus the trigger on tap so subsequent keyboard activation
+            // (Enter/Space/Escape) is routed here, then toggle the dropdown.
+            onTap: () {
+              _focusNode.requestFocus();
+              _toggle();
+            },
+            child: trigger,
+          ),
         ),
       ),
     );
@@ -290,16 +313,22 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
                       boxShadow: theme.shadows.md,
                     ),
                     child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          for (final option in widget.options)
-                            _optionRow(option, theme, colorScale),
-                          for (final group
-                              in widget.groups ?? <DsSelectOptgroup<T>>[])
-                            ..._groupRows(group, theme, colorScale),
-                        ],
+                      // Group the option rows under a single semantics
+                      // container so assistive technology announces them as a
+                      // cohesive listbox of options rather than loose buttons.
+                      child: Semantics(
+                        container: true,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            for (final option in widget.options)
+                              _optionRow(option, theme, colorScale),
+                            for (final group
+                                in widget.groups ?? <DsSelectOptgroup<T>>[])
+                              ..._groupRows(group, theme, colorScale),
+                          ],
+                        ),
                       ),
                     ),
                   ),

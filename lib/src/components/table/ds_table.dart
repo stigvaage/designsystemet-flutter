@@ -6,6 +6,7 @@ import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_focus.dart';
 import '../../utils/ds_icons.dart';
 
 /// A data table with a styled header, body rows, optional footer and caption.
@@ -216,7 +217,11 @@ class DsTable extends StatelessWidget {
   Widget _headerCell(int i, EdgeInsets cellPadding, DsColorScale colorScale) {
     final label = columns[i];
     if (onSort == null) {
-      return Padding(padding: cellPadding, child: label);
+      // Non-sortable headers are still column headers for screen readers.
+      return Semantics(
+        header: true,
+        child: Padding(padding: cellPadding, child: label),
+      );
     }
     final isActive = sortColumn == i;
     final direction = isActive
@@ -228,6 +233,7 @@ class DsTable extends StatelessWidget {
       _ => DsIcons.chevronsUpDown,
     };
     return Semantics(
+      header: true,
       button: true,
       // aria-sort equivalent conveyed via value + hint.
       value: switch (direction) {
@@ -236,24 +242,79 @@ class DsTable extends StatelessWidget {
         _ => null,
       },
       hint: 'Sorter',
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => onSort!(i),
-        child: Padding(
-          padding: cellPadding,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(child: label),
-              const SizedBox(width: 4),
-              Icon(
-                icon,
-                size: 14,
-                color: isActive
-                    ? colorScale.baseDefault
-                    : colorScale.textSubtle,
-              ),
-            ],
+      child: _DsTableHeaderCell(
+        cellPadding: cellPadding,
+        colorScale: colorScale,
+        onSort: () => onSort!(i),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(child: label),
+            const SizedBox(width: 4),
+            Icon(
+              icon,
+              size: 14,
+              color: isActive ? colorScale.baseDefault : colorScale.textSubtle,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A sortable column header: keyboard-focusable and -activatable (Enter/Space),
+/// with a visible focus ring. Tap or keyboard activation calls [onSort].
+class _DsTableHeaderCell extends StatefulWidget {
+  const _DsTableHeaderCell({
+    required this.cellPadding,
+    required this.colorScale,
+    required this.onSort,
+    required this.child,
+  });
+
+  final EdgeInsets cellPadding;
+  final DsColorScale colorScale;
+  final VoidCallback onSort;
+  final Widget child;
+
+  @override
+  State<_DsTableHeaderCell> createState() => _DsTableHeaderCellState();
+}
+
+class _DsTableHeaderCellState extends State<_DsTableHeaderCell> {
+  bool _isFocused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    // Always reserve focus ring space to prevent layout shift.
+    final focusDecoration = _isFocused
+        ? DsFocus.focusRing(widget.colorScale)
+        : const BoxDecoration(
+            border: Border.fromBorderSide(
+              BorderSide(color: Color(0x00000000), width: DsFocus.ringWidth),
+            ),
+          );
+
+    return Focus(
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.enter ||
+                event.logicalKey == LogicalKeyboardKey.space)) {
+          widget.onSort();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      onFocusChange: (f) => setState(() => _isFocused = f),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: widget.onSort,
+          child: DecoratedBox(
+            decoration: focusDecoration,
+            child: Padding(padding: widget.cellPadding, child: widget.child),
           ),
         ),
       ),

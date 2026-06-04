@@ -33,6 +33,10 @@ class DsBreadcrumbs extends StatelessWidget {
 
     return Semantics(
       label: ariaLabel,
+      // Group the trail as a single navigation landmark/list container so
+      // assistive technology announces it as one region (React `<nav><ol>`).
+      container: true,
+      explicitChildNodes: true,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -42,12 +46,16 @@ class DsBreadcrumbs extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
                   '/',
-                  style: TextStyle(color: colorScale.textSubtle, fontSize: 14),
+                  style: theme.typography.bodySm.copyWith(
+                    color: colorScale.textSubtle,
+                  ),
                 ),
               ),
             if (i < items.length - 1)
               Semantics(
                 link: true,
+                // Positional hint within the trail (e.g. "Steg 1 av 3").
+                hint: 'Steg ${i + 1} av ${items.length}',
                 child: Focus(
                   onKeyEvent: (node, event) {
                     if (event is KeyDownEvent &&

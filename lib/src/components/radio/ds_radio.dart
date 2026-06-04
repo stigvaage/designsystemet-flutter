@@ -152,7 +152,12 @@ class _DsRadioState extends State<DsRadio> {
             if (!widget.readOnly &&
                 event is KeyDownEvent &&
                 event.logicalKey == LogicalKeyboardKey.space) {
-              widget.onChanged?.call(!widget.value);
+              // Radio selection is idempotent: activating an already-selected
+              // radio must not deselect it (a group must always keep one
+              // selected). Only notify when transitioning to selected.
+              if (!widget.value) {
+                widget.onChanged?.call(true);
+              }
               return KeyEventResult.handled;
             }
             return KeyEventResult.ignored;
@@ -170,7 +175,14 @@ class _DsRadioState extends State<DsRadio> {
               behavior: HitTestBehavior.opaque,
               onTap: widget.readOnly
                   ? null
-                  : () => widget.onChanged?.call(!widget.value),
+                  // Radio selection is idempotent: tapping an already-selected
+                  // radio must not deselect it. Only notify when transitioning
+                  // to selected.
+                  : () {
+                      if (!widget.value) {
+                        widget.onChanged?.call(true);
+                      }
+                    },
               child: _wrapVariant(theme, colorScale, control),
             ),
           ),

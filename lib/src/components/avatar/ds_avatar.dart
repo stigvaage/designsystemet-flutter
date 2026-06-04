@@ -27,8 +27,13 @@ class DsAvatar extends StatelessWidget {
   final DsAvatarVariant variant;
 
   String get _initials {
-    if (name == null || name!.isEmpty) return '?';
-    final parts = name!.trim().split(RegExp(r'\s+'));
+    final trimmed = name?.trim() ?? '';
+    if (trimmed.isEmpty) return '?';
+    final parts = trimmed
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) return '?';
     if (parts.length >= 2) {
       return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
     }

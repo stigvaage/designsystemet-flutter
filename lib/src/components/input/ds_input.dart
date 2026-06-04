@@ -94,6 +94,33 @@ class _DsInputState extends State<DsInput> {
       _focusNode.addListener(_onFocusChange);
       _isFocused = _focusNode.hasFocus;
     }
+    // Reconcile controller swaps the same way _ownFocusNode is handled: when
+    // the parent hands us an external controller (or takes one away), carry the
+    // current text/selection across the boundary so the visible value does not
+    // jump or get lost, then dispose the now-unused _ownController.
+    if (widget.controller != oldWidget.controller) {
+      // The value the field showed before the swap. When the old widget had no
+      // external controller, that value lives in our _ownController.
+      final previous = (oldWidget.controller ?? _ownController)?.value;
+      if (widget.controller != null) {
+        // Switching to (or between) an external controller. Preserve continuity
+        // only when we owned the previous value and the incoming controller is
+        // still empty, so we never clobber text the parent already set.
+        if (oldWidget.controller == null &&
+            previous != null &&
+            widget.controller!.value == TextEditingValue.empty) {
+          widget.controller!.value = previous;
+        }
+        // We no longer need our own controller; dispose it like _ownFocusNode is
+        // disposed once an external node takes over (in dispose()).
+        _ownController?.dispose();
+        _ownController = null;
+      } else if (previous != null) {
+        // Switching back to internal management: seed a fresh _ownController
+        // from the value the external controller last showed.
+        (_ownController ??= TextEditingController()).value = previous;
+      }
+    }
   }
 
   @override

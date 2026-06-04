@@ -109,6 +109,39 @@ void main() {
       expect(find.text('Controlled content'), findsOneWidget);
     });
 
+    testWidgets('controlled open toggled true via didUpdateWidget shows '
+        'content after a frame', (tester) async {
+      var open = false;
+      late StateSetter setOuter;
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          StatefulBuilder(
+            builder: (context, setState) {
+              setOuter = setState;
+              return DsPopover(
+                open: open,
+                trigger: const Text('Toggle'),
+                content: const Text('Deferred content'),
+              );
+            },
+          ),
+        ),
+      );
+      expect(find.text('Deferred content'), findsNothing);
+
+      // Flip the controlled `open` to true → didUpdateWidget defers the show.
+      setOuter(() => open = true);
+      await tester.pump(); // rebuild + schedule post-frame
+      await tester.pump(); // run the deferred show
+      expect(find.text('Deferred content'), findsOneWidget);
+
+      // Flip back to false → didUpdateWidget defers the hide.
+      setOuter(() => open = false);
+      await tester.pump();
+      await tester.pump();
+      expect(find.text('Deferred content'), findsNothing);
+    });
+
     testWidgets('tinted variant fills with the tinted surface', (tester) async {
       final tinted = DsThemeDigdir.light().colorScheme
           .resolve(DsColor.accent)

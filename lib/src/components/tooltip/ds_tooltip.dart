@@ -44,6 +44,25 @@ class _DsTooltipState extends State<DsTooltip> {
   DsColor? _capturedColor;
   DsPlacement _resolvedPlacement = DsPlacement.top;
 
+  /// Whether the pointer is currently over the trigger.
+  bool _hovered = false;
+
+  /// Whether the trigger (or a descendant) currently holds keyboard focus.
+  bool _focused = false;
+
+  /// Reconciles the overlay with the current [_hovered]/[_focused] state: the
+  /// tooltip is shown while either signal is active and only hidden once both
+  /// are inactive. Tracking the two sources independently prevents losing one
+  /// signal (e.g. the pointer exiting while focus remains) from hiding the
+  /// tooltip prematurely.
+  void _sync() {
+    if (_hovered || _focused) {
+      _show();
+    } else {
+      _hide();
+    }
+  }
+
   void _show() {
     if (_entry != null) return;
     _capturedTheme = DsTheme.of(context);
@@ -127,10 +146,19 @@ class _DsTooltipState extends State<DsTooltip> {
           // Show on keyboard focus too (the trigger child supplies the focus
           // node). canRequestFocus:false avoids adding an extra tab stop.
           canRequestFocus: false,
-          onFocusChange: (hasFocus) => hasFocus ? _show() : _hide(),
+          onFocusChange: (hasFocus) {
+            _focused = hasFocus;
+            _sync();
+          },
           child: MouseRegion(
-            onEnter: (_) => _show(),
-            onExit: (_) => _hide(),
+            onEnter: (_) {
+              _hovered = true;
+              _sync();
+            },
+            onExit: (_) {
+              _hovered = false;
+              _sync();
+            },
             child: widget.child,
           ),
         ),

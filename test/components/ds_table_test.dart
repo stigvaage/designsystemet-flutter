@@ -1,5 +1,6 @@
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -77,6 +78,79 @@ void main() {
       expect(find.byIcon(DsIcons.chevronUp), findsOneWidget);
       await tester.tap(find.text('Age'));
       expect(sorted, 1);
+    });
+
+    testWidgets('sortable header is keyboard-focusable and activates with '
+        'Enter', (tester) async {
+      int? sorted;
+      await tester.pumpWidget(
+        host(
+          DsTable(
+            columns: const [Text('Name'), Text('Age')],
+            rows: const [
+              [Text('A'), Text('1')],
+            ],
+            onSort: (i) => sorted = i,
+          ),
+        ),
+      );
+
+      // Focus the sortable header (its enclosing Focus node) and activate it
+      // with Enter — proves WCAG 2.1.1 keyboard operability.
+      Focus.of(tester.element(find.text('Name'))).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(sorted, 0);
+    });
+
+    testWidgets('sortable header activates with Space when focused', (
+      tester,
+    ) async {
+      int? sorted;
+      await tester.pumpWidget(
+        host(
+          DsTable(
+            columns: const [Text('Name'), Text('Age')],
+            rows: const [
+              [Text('A'), Text('1')],
+            ],
+            onSort: (i) => sorted = i,
+          ),
+        ),
+      );
+
+      Focus.of(tester.element(find.text('Age'))).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(sorted, 1);
+    });
+
+    testWidgets('non-sortable header cells expose header semantics', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        host(
+          const DsTable(
+            columns: [Text('Name'), Text('Age')],
+            rows: [
+              [Text('Alice'), Text('30')],
+            ],
+          ),
+        ),
+      );
+
+      expect(
+        tester.getSemantics(find.text('Name')).flagsCollection.isHeader,
+        isTrue,
+      );
+      expect(
+        tester.getSemantics(find.text('Age')).flagsCollection.isHeader,
+        isTrue,
+      );
+      handle.dispose();
     });
 
     testWidgets('renders caption and footer rows', (tester) async {
