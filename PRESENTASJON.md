@@ -8,7 +8,7 @@ Lag en profesjonell PowerPoint-presentasjon (PPTX-fil) for prosjektet **Designsy
 
 ## Prosjektsammendrag
 
-**Designsystemet Flutter** er en uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra Digitaliseringsdirektoratet. Prosjektet ble utviklet på 6 dager (14.–20. mars 2026) av Stig H. Våge med Claude Code som AI-par-programmerer. Det er publisert som åpen kildekode under MIT-lisens.
+**Designsystemet Flutter** er en uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra Digitaliseringsdirektoratet. Prosjektet ble utviklet på 6 dager (14.–20. mars 2026) av SHV med Claude Code som AI-par-programmerer. Det er publisert som åpen kildekode under MIT-lisens.
 
 ## Nøkkeltall (bruk disse i slides)
 
@@ -33,7 +33,7 @@ Lag en profesjonell PowerPoint-presentasjon (PPTX-fil) for prosjektet **Designsy
 ### Slide 1: Tittelside
 - **Designsystemet Flutter**
 - Undertittel: «Uoffisiell Flutter-implementasjon av det norske offentlige designsystemet»
-- Utviklet av Stig H. Våge · Mars 2026
+- Utviklet av SHV · Mars 2026
 - Logo/ikon: Flutter-fugl i Designsystemet-blått
 
 ### Slide 2: Hva er Designsystemet?

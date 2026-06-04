@@ -7,7 +7,7 @@
 [![WCAG 2.1 AA](https://img.shields.io/badge/WCAG_2.1-AA-brightgreen.svg)](https://www.w3.org/WAI/WCAG21/quickref/)
 [![CI](https://github.com/stigvaage/designsystemet-flutter/actions/workflows/ci.yml/badge.svg)](https://github.com/stigvaage/designsystemet-flutter/actions/workflows/ci.yml)
 
-> Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra Digitaliseringsdirektoratet. Utviklet av Stig H. Våge.
+> Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra Digitaliseringsdirektoratet. Utviklet av SHV.
 
 > **[Les dokumentasjonen](https://stigvaage.github.io/designsystemet-flutter/)** | **[Interaktiv komponentkatalog (Widgetbook)](https://stigvaage.github.io/designsystemet-flutter/widgetbook/)**
 
@@ -345,7 +345,7 @@ Vi ønsker bidrag velkommen! Se [CONTRIBUTING.md](CONTRIBUTING.md) for retningsl
 
 ## Utviklet av
 
-Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra [Digitaliseringsdirektoratet](https://www.digdir.no). Utviklet av **Stig H. Våge**.
+Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra [Digitaliseringsdirektoratet](https://www.digdir.no). Utviklet av **SHV**.
 
 ## Lisens
 

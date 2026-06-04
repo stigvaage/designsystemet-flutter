@@ -305,7 +305,7 @@ export default defineConfig({
 
     footer: {
       message: 'Uoffisiell Flutter-implementasjon av <a href="https://designsystemet.no">Designsystemet</a> fra <a href="https://www.digdir.no">Digitaliseringsdirektoratet</a>. Utgitt under MIT-lisens.',
-      copyright: 'Utviklet av Stig H. Våge',
+      copyright: 'Utviklet av SHV',
     },
   },
 })

@@ -1,6 +1,6 @@
 # designsystemet_flutter — Utviklingsretningslinjer
 
-Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra Digitaliseringsdirektoratet. Utviklet av Stig H. Våge.
+Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra Digitaliseringsdirektoratet. Utviklet av SHV.
 
 ## Teknologi
 
