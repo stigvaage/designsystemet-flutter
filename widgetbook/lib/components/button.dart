@@ -22,6 +22,10 @@ final buttonComponent = WidgetbookComponent(
           label: 'Laster',
           initialValue: false,
         );
+        final autofocus = context.knobs.boolean(
+          label: 'Autofokus',
+          initialValue: false,
+        );
         final text = context.knobs.string(
           label: 'Tekst',
           initialValue: 'Klikk her',
@@ -31,6 +35,35 @@ final buttonComponent = WidgetbookComponent(
           child: DsButton(
             variant: variant,
             disabled: disabled,
+            loading: loading,
+            autofocus: autofocus,
+            onPressed: () {},
+            child: Text(text),
+          ),
+        );
+      },
+    ),
+    WidgetbookUseCase(
+      name: 'Laster',
+      builder: (context) {
+        final variant = context.knobs.object.dropdown(
+          label: 'Variant',
+          options: DsButtonVariant.values,
+          initialOption: DsButtonVariant.primary,
+          labelBuilder: (v) => v.name,
+        );
+        final loading = context.knobs.boolean(
+          label: 'Laster',
+          initialValue: true,
+        );
+        final text = context.knobs.string(
+          label: 'Tekst',
+          initialValue: 'Lagrer',
+        );
+
+        return Center(
+          child: DsButton(
+            variant: variant,
             loading: loading,
             onPressed: () {},
             child: Text(text),

@@ -3,7 +3,9 @@ import 'package:flutter/widgets.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 class _ToggleGroupPreview extends StatefulWidget {
-  const _ToggleGroupPreview();
+  const _ToggleGroupPreview({this.disabled = false, this.disabledIndices});
+  final bool disabled;
+  final Set<int>? disabledIndices;
 
   @override
   State<_ToggleGroupPreview> createState() => _ToggleGroupPreviewState();
@@ -18,6 +20,8 @@ class _ToggleGroupPreviewState extends State<_ToggleGroupPreview> {
       child: DsToggleGroup(
         items: const ['Dag', 'Uke', 'Måned'],
         selectedIndex: _selectedIndex,
+        disabled: widget.disabled,
+        disabledIndices: widget.disabledIndices,
         onChanged: (index) => setState(() => _selectedIndex = index),
       ),
     );
@@ -29,7 +33,20 @@ final toggleGroupComponent = WidgetbookComponent(
   useCases: [
     WidgetbookUseCase(
       name: 'Standard',
-      builder: (context) => const _ToggleGroupPreview(),
+      builder: (context) {
+        final disabled = context.knobs.boolean(
+          label: 'Deaktivert',
+          initialValue: false,
+        );
+        final disableMiddle = context.knobs.boolean(
+          label: 'Deaktiver «Uke»-segment',
+          initialValue: false,
+        );
+        return _ToggleGroupPreview(
+          disabled: disabled,
+          disabledIndices: disableMiddle ? const {1} : null,
+        );
+      },
     ),
   ],
 );
