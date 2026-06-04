@@ -13,13 +13,15 @@ Widget wrapWithTheme(Widget child) {
 void main() {
   group('DsAvatar', () {
     testWidgets('renders initials from single name', (tester) async {
-      await tester.pumpWidget(wrapWithTheme(const DsAvatar(name: 'Stig')));
-      expect(find.text('S'), findsOneWidget);
+      await tester.pumpWidget(wrapWithTheme(const DsAvatar(name: 'Jordan')));
+      expect(find.text('J'), findsOneWidget);
     });
 
     testWidgets('renders initials from full name', (tester) async {
-      await tester.pumpWidget(wrapWithTheme(const DsAvatar(name: 'Stig Vage')));
-      expect(find.text('SV'), findsOneWidget);
+      await tester.pumpWidget(
+        wrapWithTheme(const DsAvatar(name: 'Jordan Vik')),
+      );
+      expect(find.text('JV'), findsOneWidget);
     });
 
     testWidgets('renders "?" when name is null', (tester) async {
@@ -47,10 +49,10 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        wrapWithTheme(const DsAvatar(name: '  Stig   Vage  ')),
+        wrapWithTheme(const DsAvatar(name: '  Jordan   Vik  ')),
       );
       expect(tester.takeException(), isNull);
-      expect(find.text('SV'), findsOneWidget);
+      expect(find.text('JV'), findsOneWidget);
     });
 
     testWidgets('has image semantics', (tester) async {
@@ -60,7 +62,7 @@ void main() {
     });
 
     testWidgets('circle variant uses a circular shape', (tester) async {
-      await tester.pumpWidget(wrapWithTheme(const DsAvatar(name: 'Stig')));
+      await tester.pumpWidget(wrapWithTheme(const DsAvatar(name: 'Jordan')));
       final container = tester.widget<Container>(
         find.descendant(
           of: find.byType(DsAvatar),
@@ -77,7 +79,7 @@ void main() {
     ) async {
       await tester.pumpWidget(
         wrapWithTheme(
-          const DsAvatar(name: 'Stig', variant: DsAvatarVariant.square),
+          const DsAvatar(name: 'Jordan', variant: DsAvatarVariant.square),
         ),
       );
       final container = tester.widget<Container>(
@@ -111,6 +113,42 @@ void main() {
         ),
       );
       expect(semanticsWidget.properties.label, 'Profilbilde');
+    });
+
+    testWidgets('semanticLabel overrides the name-based default', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsAvatar(
+            name: 'Jordan Vik',
+            semanticLabel: 'Designsystemet-logo',
+          ),
+        ),
+      );
+      final semanticsWidget = tester.widget<Semantics>(
+        find.byWidgetPredicate(
+          (w) =>
+              w is Semantics &&
+              w.properties.label == 'Designsystemet-logo' &&
+              w.properties.image == true,
+        ),
+      );
+      expect(semanticsWidget.properties.label, 'Designsystemet-logo');
+    });
+
+    testWidgets('semanticLabel overrides the "Profilbilde" fallback', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsAvatar(semanticLabel: 'Designsystemet-logo')),
+      );
+      final semanticsWidget = tester.widget<Semantics>(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == 'Designsystemet-logo',
+        ),
+      );
+      expect(semanticsWidget.properties.label, 'Designsystemet-logo');
     });
   });
 }

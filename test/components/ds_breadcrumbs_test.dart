@@ -248,5 +248,23 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       expect(tappedIndex, 1);
     });
+
+    // Regression: link-role convention — Space must NOT activate a breadcrumb
+    // link (native hyperlinks activate on Enter only; Space is reserved for
+    // scrolling and button-role controls).
+    testWidgets('Space does not activate the focused link', (tester) async {
+      var tappedIndex = -1;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsBreadcrumbs(
+            items: const ['Home', 'Products', 'Current'],
+            onItemTap: (i) => tappedIndex = i,
+          ),
+        ),
+      );
+      await focusEnclosing(tester, find.text('Products'));
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      expect(tappedIndex, -1);
+    });
   });
 }

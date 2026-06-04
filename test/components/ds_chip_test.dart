@@ -1,3 +1,5 @@
+import 'dart:ui' show PointerDeviceKind;
+
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:flutter/services.dart';
@@ -476,6 +478,293 @@ void main() {
         ),
         findsNothing,
       );
+    });
+
+    // --- Hover state (#5) --------------------------------------------------
+
+    /// Returns the background color of the inner chip [Container].
+    Color chipBackground(WidgetTester tester) {
+      final container = tester
+          .widgetList<Container>(find.byType(Container))
+          .first;
+      return (container.decoration! as BoxDecoration).color!;
+    }
+
+    testWidgets('unselected interactive chip lifts to surfaceHover on hover', (
+      tester,
+    ) async {
+      final theme = DsThemeDigdir.light();
+      final scale = theme.colorScheme.resolve(DsColor.accent);
+      await tester.pumpWidget(
+        wrapWithTheme(DsChip(onTap: () {}, child: const Text('Hover'))),
+      );
+
+      expect(chipBackground(tester), scale.surfaceTinted);
+
+      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      addTearDown(gesture.removePointer);
+      await gesture.addPointer(location: Offset.zero);
+      await gesture.moveTo(tester.getCenter(find.byType(DsChip)));
+      await tester.pumpAndSettle();
+
+      expect(chipBackground(tester), scale.surfaceHover);
+    });
+
+    testWidgets('selected filled chip darkens to baseHover on hover', (
+      tester,
+    ) async {
+      final theme = DsThemeDigdir.light();
+      final scale = theme.colorScheme.resolve(DsColor.accent);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip.button(
+            selected: true,
+            onTap: () {},
+            child: const Text('Hover'),
+          ),
+        ),
+      );
+
+      expect(chipBackground(tester), scale.baseDefault);
+
+      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      addTearDown(gesture.removePointer);
+      await gesture.addPointer(location: Offset.zero);
+      await gesture.moveTo(tester.getCenter(find.byType(DsChip)));
+      await tester.pumpAndSettle();
+
+      expect(chipBackground(tester), scale.baseHover);
+    });
+
+    testWidgets('non-interactive chip does not change on hover', (
+      tester,
+    ) async {
+      final theme = DsThemeDigdir.light();
+      final scale = theme.colorScheme.resolve(DsColor.accent);
+      await tester.pumpWidget(
+        wrapWithTheme(const DsChip(child: Text('Statisk'))),
+      );
+
+      expect(chipBackground(tester), scale.surfaceTinted);
+
+      final gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      addTearDown(gesture.removePointer);
+      await gesture.addPointer(location: Offset.zero);
+      await gesture.moveTo(tester.getCenter(find.byType(DsChip)));
+      await tester.pumpAndSettle();
+
+      // No onTap → no hover styling.
+      expect(chipBackground(tester), scale.surfaceTinted);
+    });
+
+    testWidgets('interactive chip uses the click cursor', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(DsChip(onTap: () {}, child: const Text('Peker'))),
+      );
+      final region = tester.widget<MouseRegion>(
+        find
+            .descendant(
+              of: find.byType(DsChip),
+              matching: find.byType(MouseRegion),
+            )
+            .first,
+      );
+      expect(region.cursor, SystemMouseCursors.click);
+    });
+
+    // --- Disabled (#11) ----------------------------------------------------
+
+    testWidgets('disabled chip does not call onTap when tapped', (
+      tester,
+    ) async {
+      var tapped = false;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip(
+            disabled: true,
+            onTap: () => tapped = true,
+            child: const Text('Av'),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(DsChip));
+      expect(tapped, isFalse);
+    });
+
+    testWidgets('disabled chip exposes enabled: false semantics', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip(disabled: true, onTap: () {}, child: const Text('Av')),
+        ),
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.enabled == false,
+        ),
+        findsWidgets,
+      );
+    });
+
+    testWidgets('enabled chip exposes enabled: true semantics', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(DsChip(onTap: () {}, child: const Text('På'))),
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.enabled == true,
+        ),
+        findsWidgets,
+      );
+    });
+
+    testWidgets('disabled chip dims via Opacity(disabledOpacity)', (
+      tester,
+    ) async {
+      final theme = DsThemeDigdir.light();
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip(disabled: true, onTap: () {}, child: const Text('Av')),
+        ),
+      );
+      final opacity = tester.widget<Opacity>(
+        find.descendant(
+          of: find.byType(DsChip),
+          matching: find.byType(Opacity),
+        ),
+      );
+      expect(opacity.opacity, theme.disabledOpacity);
+    });
+
+    testWidgets('disabled chip uses the basic cursor', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip(disabled: true, onTap: () {}, child: const Text('Av')),
+        ),
+      );
+      final region = tester.widget<MouseRegion>(
+        find
+            .descendant(
+              of: find.byType(DsChip),
+              matching: find.byType(MouseRegion),
+            )
+            .first,
+      );
+      expect(region.cursor, SystemMouseCursors.basic);
+    });
+
+    testWidgets('disabled chip ignores Enter activation', (tester) async {
+      var tapped = false;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip(
+            disabled: true,
+            onTap: () => tapped = true,
+            child: const Text('Av'),
+          ),
+        ),
+      );
+      // A disabled chip cannot take focus, so requesting it is a no-op; the
+      // key handler also guards on `disabled`.
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(tapped, isFalse);
+    });
+
+    testWidgets('disabled removable chip does not call onRemove on tap', (
+      tester,
+    ) async {
+      var removed = false;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip.removable(
+            disabled: true,
+            onRemove: () => removed = true,
+            child: const Text('Tag'),
+          ),
+        ),
+      );
+      await tester.tap(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == 'Fjern',
+        ),
+      );
+      expect(removed, isFalse);
+    });
+
+    // --- focusNode (#11) ---------------------------------------------------
+
+    testWidgets('exposed focusNode controls chip focus', (tester) async {
+      final node = FocusNode();
+      addTearDown(node.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip(focusNode: node, onTap: () {}, child: const Text('Node')),
+        ),
+      );
+      expect(node.hasFocus, isFalse);
+      node.requestFocus();
+      await tester.pump();
+      expect(node.hasFocus, isTrue);
+    });
+
+    testWidgets('keyboard activation works via exposed focusNode', (
+      tester,
+    ) async {
+      final node = FocusNode();
+      addTearDown(node.dispose);
+      var tapped = false;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip(
+            focusNode: node,
+            onTap: () => tapped = true,
+            child: const Text('Node'),
+          ),
+        ),
+      );
+      node.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(tapped, isTrue);
+    });
+
+    // --- size override (#11) ----------------------------------------------
+
+    testWidgets('size override changes the label padding', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsChip(size: DsSize.sm, child: Text('Liten'))),
+      );
+      final smallPadding = tester
+          .widget<Padding>(
+            find
+                .ancestor(
+                  of: find.text('Liten'),
+                  matching: find.byType(Padding),
+                )
+                .first,
+          )
+          .padding
+          .resolve(TextDirection.ltr);
+
+      await tester.pumpWidget(
+        wrapWithTheme(const DsChip(size: DsSize.lg, child: Text('Liten'))),
+      );
+      final largePadding = tester
+          .widget<Padding>(
+            find
+                .ancestor(
+                  of: find.text('Liten'),
+                  matching: find.byType(Padding),
+                )
+                .first,
+          )
+          .padding
+          .resolve(TextDirection.ltr);
+
+      expect(largePadding.left, greaterThan(smallPadding.left));
     });
   });
 }

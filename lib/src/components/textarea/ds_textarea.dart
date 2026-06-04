@@ -6,6 +6,11 @@ import '../input/ds_input.dart';
 /// A multi-line text input area built on [DsInput].
 ///
 /// The number of visible lines is controlled by [rows].
+///
+/// [DsTextarea] is a thin wrapper that forwards every property directly to
+/// [DsInput] (passing [rows] as `maxLines`). Keep this in sync with
+/// [DsInput]'s constructor when adding properties, so the two components do
+/// not drift apart.
 class DsTextarea extends StatelessWidget {
   const DsTextarea({
     super.key,
@@ -15,7 +20,9 @@ class DsTextarea extends StatelessWidget {
     this.disabled = false,
     this.readOnly = false,
     this.onChanged,
+    this.onSubmitted,
     this.focusNode,
+    this.keyboardType,
     this.rows = 4,
     this.maxLength,
     this.autofocus = false,
@@ -35,7 +42,15 @@ class DsTextarea extends StatelessWidget {
   final bool disabled;
   final bool readOnly;
   final ValueChanged<String>? onChanged;
+
+  /// Called when the user submits the field (e.g. presses the action key on
+  /// the soft keyboard). Forwarded to [DsInput.onSubmitted].
+  final ValueChanged<String>? onSubmitted;
   final FocusNode? focusNode;
+
+  /// The keyboard layout to show for editing. Forwarded to
+  /// [DsInput.keyboardType].
+  final TextInputType? keyboardType;
   final int rows;
   final int? maxLength;
   final bool autofocus;
@@ -57,7 +72,9 @@ class DsTextarea extends StatelessWidget {
       disabled: disabled,
       readOnly: readOnly,
       onChanged: onChanged,
+      onSubmitted: onSubmitted,
       focusNode: focusNode,
+      keyboardType: keyboardType,
       maxLines: rows,
       maxLength: maxLength,
       autofocus: autofocus,

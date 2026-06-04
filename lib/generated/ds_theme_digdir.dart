@@ -16,7 +16,25 @@ import '../src/theme/ds_typography.dart';
 class DsThemeDigdir {
   DsThemeDigdir._();
 
-  static DsThemeData light() => DsThemeData(
+  /// The cached light theme. Built once and reused across all [light] calls.
+  static final DsThemeData _light = _buildLight();
+
+  /// The cached dark theme. Built once and reused across all [dark] calls.
+  static final DsThemeData _dark = _buildDark();
+
+  /// Returns the built-in Digdir light theme.
+  ///
+  /// The result is cached, so repeated calls return the same immutable
+  /// instance instead of rebuilding the typography and border-radius tokens.
+  static DsThemeData light() => _light;
+
+  /// Returns the built-in Digdir dark theme.
+  ///
+  /// The result is cached, so repeated calls return the same immutable
+  /// instance instead of rebuilding the typography and border-radius tokens.
+  static DsThemeData dark() => _dark;
+
+  static DsThemeData _buildLight() => DsThemeData(
     brightness: Brightness.light,
     colorScheme: _lightColorScheme,
     sizeTokens: DsSizeTokens.md,
@@ -25,7 +43,7 @@ class DsThemeDigdir {
     shadows: DsShadowTokens.light,
   );
 
-  static DsThemeData dark() => DsThemeData(
+  static DsThemeData _buildDark() => DsThemeData(
     brightness: Brightness.dark,
     colorScheme: _darkColorScheme,
     sizeTokens: DsSizeTokens.md,

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/widgets.dart';
 
 import '../../theme/ds_color_scope.dart';
@@ -96,7 +98,7 @@ class _DsSkeletonState extends State<DsSkeleton>
       animation: _controller,
       builder: (context, _) {
         final opacity =
-            0.3 + 0.3 * (0.5 + 0.5 * (_controller.value * 3.14159 * 2).sin());
+            0.3 + 0.3 * (0.5 + 0.5 * math.sin(_controller.value * 2 * math.pi));
         return Container(
           width: effectiveWidth,
           height: effectiveHeight,
@@ -109,13 +111,5 @@ class _DsSkeletonState extends State<DsSkeleton>
         );
       },
     );
-  }
-}
-
-extension on double {
-  double sin() {
-    // Simple sine approximation for shimmer
-    final x = this % (3.14159 * 2);
-    return x - (x * x * x) / 6 + (x * x * x * x * x) / 120;
   }
 }

@@ -23,6 +23,7 @@ class DsSearch extends StatefulWidget {
     this.focusNode,
     this.clearable = false,
     this.onClear,
+    this.clearLabel = 'Tøm',
   });
 
   /// Controls the text being edited. A controller is created internally when
@@ -55,6 +56,9 @@ class DsSearch extends StatefulWidget {
 
   /// Called after the field is cleared via the clear button.
   final VoidCallback? onClear;
+
+  /// Accessible label for the clear button. Defaults to «Tøm».
+  final String clearLabel;
 
   @override
   State<DsSearch> createState() => _DsSearchState();
@@ -131,7 +135,7 @@ class _DsSearchState extends State<DsSearch> {
       onChanged: widget.onChanged,
       onSubmitted: _handleSubmitted,
       focusNode: widget.focusNode,
-      placeholder: widget.placeholder ?? 'Search...',
+      placeholder: widget.placeholder ?? 'Søk...',
       prefix: const Icon(DsIcons.search, size: 16),
       suffix: showClear
           ? GestureDetector(
@@ -139,7 +143,7 @@ class _DsSearchState extends State<DsSearch> {
               onTap: _clear,
               child: Semantics(
                 button: true,
-                label: 'Tøm',
+                label: widget.clearLabel,
                 child: Icon(DsIcons.x, size: 16, color: colorScale.textSubtle),
               ),
             )

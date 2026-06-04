@@ -6,6 +6,7 @@ import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../theme/ds_theme_data.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_overlay_anchors.dart';
 import '../chip/ds_chip.dart';
 import '../input/ds_input.dart';
 
@@ -34,10 +35,12 @@ class DsSuggestion<T> extends StatefulWidget {
     this.filter = true,
     this.creatable = false,
     this.onCreate,
+    this.createLabel,
     this.placeholder,
     this.emptyText = 'Ingen treff',
     this.size,
     this.color,
+    this.focusNode,
   }) : assert(
          !creatable || onCreate != null,
          'onCreate is required when creatable is true',
@@ -64,6 +67,10 @@ class DsSuggestion<T> extends StatefulWidget {
   /// Builds a new value from the typed query. Required when [creatable].
   final T Function(String query)? onCreate;
 
+  /// Builds the label for the «create» row from the typed query. Defaults to
+  /// the Norwegian `Opprett "$query"`. Only used when [creatable] is true.
+  final String Function(String query)? createLabel;
+
   final String? placeholder;
 
   /// Shown when no options match and nothing can be created.
@@ -71,6 +78,10 @@ class DsSuggestion<T> extends StatefulWidget {
 
   final DsSize? size;
   final DsColor? color;
+
+  /// Optional external focus node for the underlying text field. When null the
+  /// widget creates and owns its own.
+  final FocusNode? focusNode;
 
   @override
   State<DsSuggestion<T>> createState() => _DsSuggestionState<T>();
@@ -86,7 +97,14 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
   // open.
   final _fieldKey = GlobalKey();
   late final TextEditingController _controller;
-  late final FocusNode _focusNode;
+  // Only owned (and disposed) when the host did not supply a [focusNode].
+  FocusNode? _ownFocusNode;
+  FocusNode get _focusNode =>
+      widget.focusNode ?? (_ownFocusNode ??= FocusNode());
+  // Per-row keys so the highlighted option can be scrolled into view during
+  // arrow-key navigation. Rebuilt each overlay build and keyed by row index
+  // (option rows first, then the optional create row).
+  final List<GlobalKey> _rowKeys = [];
   OverlayEntry? _entry;
   int _highlight = -1;
   List<T> _internalSelection = [];
@@ -100,6 +118,10 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
   DsThemeData? _capturedTheme;
   DsColor? _capturedColor;
   double _fieldWidth = 0;
+  // Resolved on open: whether the list flips above the field (#23) and the
+  // maxHeight it may occupy without colliding with the soft keyboard.
+  bool _placeAbove = false;
+  double _maxHeight = 240;
 
   List<T> get _selection => widget.selected ?? _internalSelection;
 
@@ -107,7 +129,6 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
   void initState() {
     super.initState();
     _controller = TextEditingController();
-    _focusNode = FocusNode();
     _focusNode.addListener(_handleFocusChange);
     if (widget.selected != null) {
       _internalSelection = List<T>.of(widget.selected!);
@@ -126,6 +147,15 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
     if (widget.selected != null &&
         !_listEquals(widget.selected!, oldWidget.selected)) {
       _lastCommitted = null;
+    }
+    // Move the focus listener if the host swapped the focus node (or toggled
+    // between an external one and our own). _focusNode resolves to the current
+    // node, so re-add the listener there.
+    if (widget.focusNode != oldWidget.focusNode) {
+      (oldWidget.focusNode ?? _ownFocusNode)?.removeListener(
+        _handleFocusChange,
+      );
+      _focusNode.addListener(_handleFocusChange);
     }
   }
 
@@ -254,6 +284,7 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
     _capturedColor = DsColorScope.of(context);
     final box = context.findRenderObject() as RenderBox?;
     _fieldWidth = box?.size.width ?? 0;
+    _resolveOverlayBounds(box);
     _entry = OverlayEntry(builder: _buildOverlay);
     Overlay.of(context).insert(_entry!);
     // Rebuild the host so Semantics(expanded: _entry != null) flips to true.
@@ -269,6 +300,68 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
     _highlight = -1;
     // Rebuild the host so Semantics(expanded:) flips back to false on close.
     if (mounted) setState(() {});
+  }
+
+  /// Decides whether the list opens below (default) or flips above the field,
+  /// and clamps its max height to the space actually available (#23).
+  ///
+  /// On phones the field focus raises the soft keyboard, so the room below the
+  /// anchor shrinks to `viewport.height - viewInsets.bottom - anchor.bottom`.
+  /// When there is more room above, the list flips up (reusing the shared
+  /// [dsResolvePlacement] flip logic) so it is not hidden behind the keyboard.
+  void _resolveOverlayBounds(RenderBox? box) {
+    const gap = 4.0; // Matches the follower offset below.
+    const preferred = 240.0; // The design default cap.
+    final media = MediaQuery.maybeOf(context);
+    final rect = (box != null && box.hasSize)
+        ? box.localToGlobal(Offset.zero) & box.size
+        : null;
+    // Without a real, positive viewport we cannot reason about available space
+    // (e.g. a zero-sized MediaQuery in tests); keep the canonical downward,
+    // preferred-height behavior.
+    if (rect == null ||
+        media == null ||
+        media.size.height <= 0 ||
+        media.size.width <= 0) {
+      _placeAbove = false;
+      _maxHeight = preferred;
+      return;
+    }
+    // The bottom inset (typically the soft keyboard) eats into the usable
+    // viewport; treat it as the effective bottom edge for the space below.
+    final usableBottom = media.size.height - media.viewInsets.bottom;
+    // dsResolvePlacement compares anchor.top against (screen.height -
+    // anchor.bottom). Shrinking screen.height by the bottom inset makes that
+    // "below" measurement account for the keyboard, so it flips up correctly.
+    final resolved = dsResolvePlacement(
+      placement: DsPlacement.bottomStart,
+      autoPlacement: true,
+      anchorRect: rect,
+      screen: Size(media.size.width, usableBottom),
+    );
+    _placeAbove = resolved == DsPlacement.topStart;
+    final spaceBelow = usableBottom - rect.bottom - gap;
+    final spaceAbove = rect.top - gap;
+    final available = _placeAbove ? spaceAbove : spaceBelow;
+    // Never go below a small floor so the list is at least usable; clamp to the
+    // preferred cap otherwise.
+    _maxHeight = available.clamp(64.0, preferred);
+  }
+
+  /// Scrolls the currently highlighted row into view during keyboard
+  /// navigation (#21). The row exposes a [GlobalKey]; once a frame is laid out
+  /// we use [Scrollable.ensureVisible] on its element.
+  void _scrollHighlightedIntoView() {
+    if (_highlight < 0 || _highlight >= _rowKeys.length) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = _rowKeys[_highlight].currentContext;
+      if (ctx == null) return;
+      Scrollable.ensureVisible(
+        ctx,
+        alignment: 0.5,
+        duration: const Duration(milliseconds: 100),
+      );
+    });
   }
 
   /// Whether [globalPosition] falls inside the field cluster's painted rect.
@@ -308,6 +401,7 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
       if (count > 0) {
         _highlight = (_highlight + 1) % count;
         _entry?.markNeedsBuild();
+        _scrollHighlightedIntoView();
       }
       return KeyEventResult.handled;
     }
@@ -316,6 +410,7 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
       if (count > 0) {
         _highlight = (_highlight - 1 + count) % count;
         _entry?.markNeedsBuild();
+        _scrollHighlightedIntoView();
       }
       return KeyEventResult.handled;
     }
@@ -335,7 +430,8 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
   @override
   void dispose() {
     _focusNode.removeListener(_handleFocusChange);
-    _focusNode.dispose();
+    // Only dispose the focus node we created; an external one is the host's.
+    _ownFocusNode?.dispose();
     _controller.dispose();
     // Remove the overlay directly — _close() calls setState, which is illegal
     // during dispose (mounted is still true here).
@@ -411,6 +507,26 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
     final canCreate = _canCreate;
     final isEmpty = filtered.isEmpty && !canCreate;
 
+    // One key per navigable row (options, then the optional create row) so the
+    // highlighted row can be scrolled into view. Reuse keys where possible so
+    // element identity is stable across rebuilds during navigation.
+    final rowCount = filtered.length + (canCreate ? 1 : 0);
+    while (_rowKeys.length < rowCount) {
+      _rowKeys.add(GlobalKey());
+    }
+    if (_rowKeys.length > rowCount) {
+      _rowKeys.removeRange(rowCount, _rowKeys.length);
+    }
+
+    // #23: when the soft keyboard leaves more room above the field, the list
+    // flips up. Anchor and follow off the matching edges so it grows upward.
+    final placement = _placeAbove
+        ? DsPlacement.topStart
+        : DsPlacement.bottomStart;
+    final (targetAnchor, followerAnchor, offset) = dsPlacementAnchors(
+      placement,
+    );
+
     return DsTheme(
       data: theme,
       child: DsColorScope(
@@ -435,11 +551,15 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
             ),
             CompositedTransformFollower(
               link: _layerLink,
-              targetAnchor: Alignment.bottomLeft,
-              followerAnchor: Alignment.topLeft,
-              offset: const Offset(0, 4),
+              targetAnchor: targetAnchor,
+              followerAnchor: followerAnchor,
+              offset: offset,
               child: Align(
-                alignment: Alignment.topLeft,
+                // Align toward the anchored edge so an upward list grows from
+                // the bottom edge and a downward one from the top.
+                alignment: _placeAbove
+                    ? Alignment.bottomLeft
+                    : Alignment.topLeft,
                 child: SizedBox(
                   width: _fieldWidth > 0 ? _fieldWidth : null,
                   // container: true groups the overlay as a single listbox /
@@ -449,7 +569,7 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
                   child: Semantics(
                     container: true,
                     child: Container(
-                      constraints: const BoxConstraints(maxHeight: 240),
+                      constraints: BoxConstraints(maxHeight: _maxHeight),
                       decoration: BoxDecoration(
                         color: colorScale.backgroundDefault,
                         borderRadius: BorderRadius.circular(
@@ -523,6 +643,8 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
         ? colorScale.surfaceHover
         : (selected ? colorScale.surfaceDefault : null);
     return Semantics(
+      // Keyed so _scrollHighlightedIntoView can locate this row's element.
+      key: index < _rowKeys.length ? _rowKeys[index] : null,
       button: true,
       selected: selected,
       label: option.label,
@@ -547,9 +669,13 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
   Widget _createRow(int index, DsThemeData theme, DsColorScale colorScale) {
     final highlighted = _highlight == index;
     final query = _controller.text.trim();
+    // Overridable label (#24); the Norwegian default keeps the quoted query.
+    final label = widget.createLabel?.call(query) ?? 'Opprett "$query"';
     return Semantics(
+      // Keyed so _scrollHighlightedIntoView can locate this row's element.
+      key: index < _rowKeys.length ? _rowKeys[index] : null,
       button: true,
-      label: 'Opprett $query',
+      label: label,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: _createFromQuery,
@@ -557,7 +683,7 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
           color: highlighted ? colorScale.surfaceHover : null,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Text(
-            'Opprett "$query"',
+            label,
             style: theme.typography.bodySm.copyWith(
               color: colorScale.textDefault,
               fontWeight: FontWeight.w600,

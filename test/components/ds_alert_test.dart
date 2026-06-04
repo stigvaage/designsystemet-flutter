@@ -103,5 +103,76 @@ void main() {
       );
       expect(semanticsWidget.properties.label, 'Lukk varsel');
     });
+
+    testWidgets('close button shows click mouse cursor', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsAlert(closable: true, onClose: () {}, child: const Text('msg')),
+        ),
+      );
+      final closeButton = find.byWidgetPredicate(
+        (w) => w is Semantics && w.properties.label == 'Lukk varsel',
+      );
+      final mouseRegion = tester.widget<MouseRegion>(
+        find.descendant(of: closeButton, matching: find.byType(MouseRegion)),
+      );
+      expect(mouseRegion.cursor, SystemMouseCursors.click);
+    });
+
+    testWidgets('close button reserves focus ring space', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsAlert(closable: true, onClose: () {}, child: const Text('msg')),
+        ),
+      );
+      // DsFocus.reserveRing wraps the close button in a DecoratedBox so the
+      // ring gap is always reserved (no layout shift on focus).
+      final closeButton = find.byWidgetPredicate(
+        (w) => w is Semantics && w.properties.label == 'Lukk varsel',
+      );
+      expect(
+        find.descendant(of: closeButton, matching: find.byType(DecoratedBox)),
+        findsWidgets,
+      );
+    });
+
+    testWidgets('close button paints focus ring when focused', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsAlert(closable: true, onClose: () {}, child: const Text('msg')),
+        ),
+      );
+      final closeButton = find.byWidgetPredicate(
+        (w) => w is Semantics && w.properties.label == 'Lukk varsel',
+      );
+
+      BoxDecoration ringDecoration() {
+        final decorated = tester.widget<DecoratedBox>(
+          find
+              .descendant(of: closeButton, matching: find.byType(DecoratedBox))
+              .first,
+        );
+        return decorated.decoration as BoxDecoration;
+      }
+
+      // Unfocused: the reserved border is transparent.
+      expect(ringDecoration().border!.top.color.a, 0);
+
+      // Focus the close button (look up the enclosing FocusNode from a
+      // descendant element) and verify a visible ring appears.
+      final descendantElement = tester.element(
+        find.descendant(
+          of: closeButton,
+          matching: find.byType(GestureDetector),
+        ),
+      );
+      Focus.of(descendantElement).requestFocus();
+      // First pump grants focus; a second lets the Focus.onFocusChange callback
+      // drive the button's setState so the reserved ring actually repaints.
+      await tester.pump();
+      await tester.pump();
+
+      expect(ringDecoration().border!.top.color.a, greaterThan(0));
+    });
   });
 }

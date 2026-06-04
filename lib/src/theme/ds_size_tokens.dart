@@ -1,3 +1,16 @@
+import '../utils/ds_enums.dart';
+
+/// Canonical size-keyed scalar values shared across components.
+///
+/// Provides the official Designsystemet font sizes (14/16/18) used by
+/// button, input and select so they are defined once instead of being
+/// duplicated in each component's `switch (size)`.
+abstract final class DsSizeValues {
+  /// The canonical body/control font size for [size]: 14 (sm), 16 (md), 18 (lg).
+  static double fontSize(DsSize size) =>
+      size.pick(sm: 14.0, md: 16.0, lg: 18.0);
+}
+
 /// Spacing and sizing tokens generated from a [base] value and [step]
 /// multiplier, producing 31 sizes (size0–size30).
 class DsSizeTokens {
@@ -124,42 +137,121 @@ class DsSizeTokens {
   /// Large size mode: 21px base
   static final lg = DsSizeTokens.fromBaseAndStep(base: 21);
 
+  /// Returns the size for [index] (0–30) by direct field lookup.
+  ///
+  /// Implemented as a `switch` so no intermediate list is allocated per call.
   double operator [](int index) {
     assert(index >= 0 && index <= 30, 'Size index must be 0-30');
-    // Use a list lookup for indexed access
-    final values = [
-      size0,
-      size1,
-      size2,
-      size3,
-      size4,
-      size5,
-      size6,
-      size7,
-      size8,
-      size9,
-      size10,
-      size11,
-      size12,
-      size13,
-      size14,
-      size15,
-      size16,
-      size17,
-      size18,
-      size19,
-      size20,
-      size21,
-      size22,
-      size23,
-      size24,
-      size25,
-      size26,
-      size27,
-      size28,
-      size29,
-      size30,
-    ];
-    return values[index];
+    return switch (index) {
+      0 => size0,
+      1 => size1,
+      2 => size2,
+      3 => size3,
+      4 => size4,
+      5 => size5,
+      6 => size6,
+      7 => size7,
+      8 => size8,
+      9 => size9,
+      10 => size10,
+      11 => size11,
+      12 => size12,
+      13 => size13,
+      14 => size14,
+      15 => size15,
+      16 => size16,
+      17 => size17,
+      18 => size18,
+      19 => size19,
+      20 => size20,
+      21 => size21,
+      22 => size22,
+      23 => size23,
+      24 => size24,
+      25 => size25,
+      26 => size26,
+      27 => size27,
+      28 => size28,
+      29 => size29,
+      30 => size30,
+      _ => throw RangeError.range(index, 0, 30, 'index'),
+    };
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DsSizeTokens &&
+          other.base == base &&
+          other.step == step &&
+          other.size0 == size0 &&
+          other.size1 == size1 &&
+          other.size2 == size2 &&
+          other.size3 == size3 &&
+          other.size4 == size4 &&
+          other.size5 == size5 &&
+          other.size6 == size6 &&
+          other.size7 == size7 &&
+          other.size8 == size8 &&
+          other.size9 == size9 &&
+          other.size10 == size10 &&
+          other.size11 == size11 &&
+          other.size12 == size12 &&
+          other.size13 == size13 &&
+          other.size14 == size14 &&
+          other.size15 == size15 &&
+          other.size16 == size16 &&
+          other.size17 == size17 &&
+          other.size18 == size18 &&
+          other.size19 == size19 &&
+          other.size20 == size20 &&
+          other.size21 == size21 &&
+          other.size22 == size22 &&
+          other.size23 == size23 &&
+          other.size24 == size24 &&
+          other.size25 == size25 &&
+          other.size26 == size26 &&
+          other.size27 == size27 &&
+          other.size28 == size28 &&
+          other.size29 == size29 &&
+          other.size30 == size30 &&
+          other.sizeUnit == sizeUnit;
+
+  @override
+  int get hashCode => Object.hashAll([
+    base,
+    step,
+    size0,
+    size1,
+    size2,
+    size3,
+    size4,
+    size5,
+    size6,
+    size7,
+    size8,
+    size9,
+    size10,
+    size11,
+    size12,
+    size13,
+    size14,
+    size15,
+    size16,
+    size17,
+    size18,
+    size19,
+    size20,
+    size21,
+    size22,
+    size23,
+    size24,
+    size25,
+    size26,
+    size27,
+    size28,
+    size29,
+    size30,
+    sizeUnit,
+  ]);
 }

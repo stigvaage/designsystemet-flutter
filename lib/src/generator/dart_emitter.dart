@@ -36,8 +36,20 @@ class DartEmitter {
     buffer.writeln('  DsTheme$className._();');
     buffer.writeln();
 
-    // Light factory
-    buffer.writeln('  static DsThemeData light() => DsThemeData(');
+    // Cached instances. Building a DsThemeData rebuilds the typography and
+    // border-radius tokens, so cache them and reuse across calls.
+    buffer.writeln('  static final DsThemeData _light = _buildLight();');
+    buffer.writeln('  static final DsThemeData _dark = _buildDark();');
+    buffer.writeln();
+
+    // Public factory API (cached). Kept as light()/dark() so callers and
+    // tests continue to work unchanged.
+    buffer.writeln('  static DsThemeData light() => _light;');
+    buffer.writeln('  static DsThemeData dark() => _dark;');
+    buffer.writeln();
+
+    // Light builder
+    buffer.writeln('  static DsThemeData _buildLight() => DsThemeData(');
     buffer.writeln('        brightness: Brightness.light,');
     buffer.writeln('        colorScheme: _lightColorScheme,');
     buffer.writeln('        sizeTokens: DsSizeTokens.md,');
@@ -49,8 +61,8 @@ class DartEmitter {
     buffer.writeln('      );');
     buffer.writeln();
 
-    // Dark factory
-    buffer.writeln('  static DsThemeData dark() => DsThemeData(');
+    // Dark builder
+    buffer.writeln('  static DsThemeData _buildDark() => DsThemeData(');
     buffer.writeln('        brightness: Brightness.dark,');
     buffer.writeln('        colorScheme: _darkColorScheme,');
     buffer.writeln('        sizeTokens: DsSizeTokens.md,');

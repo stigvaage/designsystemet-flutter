@@ -1,7 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import '../../theme/ds_color_scale.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_focus.dart';
 import '../../utils/ds_icons.dart';
 
 /// Severity-based notification banner for inline messages.
@@ -92,39 +94,72 @@ class DsAlert extends StatelessWidget {
             ),
             // Close button
             if (closable)
-              Semantics(
-                button: true,
-                label: 'Lukk varsel',
-                child: Focus(
-                  onKeyEvent: (node, event) {
-                    if (event is KeyDownEvent &&
-                        (event.logicalKey == LogicalKeyboardKey.enter ||
-                            event.logicalKey == LogicalKeyboardKey.space)) {
-                      onClose?.call();
-                      return KeyEventResult.handled;
-                    }
-                    return KeyEventResult.ignored;
-                  },
-                  child: GestureDetector(
-                    onTap: onClose,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: Center(
-                          child: Icon(
-                            DsIcons.x,
-                            size: 16,
-                            color: colorScale.textSubtle,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: _CloseButton(colorScale: colorScale, onClose: onClose),
               ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The dismiss control rendered when [DsAlert.closable] is `true`.
+///
+/// Tracks its own focus state so it can reserve and paint a focus ring
+/// (via [DsFocus.reserveRing]) without shifting layout, and shows the
+/// click cursor on hover. Activates on tap and on Enter/Space.
+class _CloseButton extends StatefulWidget {
+  const _CloseButton({required this.colorScale, required this.onClose});
+
+  final DsColorScale colorScale;
+  final VoidCallback? onClose;
+
+  @override
+  State<_CloseButton> createState() => _CloseButtonState();
+}
+
+class _CloseButtonState extends State<_CloseButton> {
+  bool _isFocused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget button = SizedBox(
+      width: 44,
+      height: 44,
+      child: Center(
+        child: Icon(DsIcons.x, size: 16, color: widget.colorScale.textSubtle),
+      ),
+    );
+
+    // Always reserve focus ring space to prevent layout shift.
+    button = DsFocus.reserveRing(
+      focused: _isFocused,
+      radius: BorderRadius.zero,
+      scale: widget.colorScale,
+      child: button,
+    );
+
+    return Semantics(
+      button: true,
+      label: 'Lukk varsel',
+      child: Focus(
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent &&
+              (event.logicalKey == LogicalKeyboardKey.enter ||
+                  event.logicalKey == LogicalKeyboardKey.space)) {
+            widget.onClose?.call();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        onFocusChange: (focused) {
+          setState(() => _isFocused = focused);
+        },
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(onTap: widget.onClose, child: button),
         ),
       ),
     );

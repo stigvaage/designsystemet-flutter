@@ -71,5 +71,118 @@ void main() {
       );
       expect(capturedError, 'Field error');
     });
+
+    // Finding #25: description text must scale with `size` instead of being
+    // pinned to bodyMd. Mapping mirrors DsLabel: sm→bodyMd (16), md→bodyLg
+    // (18), lg→bodyXl (20) at the reference theme scale.
+    for (final (size, expectedFontSize) in const [
+      (DsSize.sm, 16.0),
+      (DsSize.md, 18.0),
+      (DsSize.lg, 20.0),
+    ]) {
+      testWidgets('description scales with size $size', (tester) async {
+        await tester.pumpWidget(
+          wrapWithTheme(
+            DsField(
+              size: size,
+              description: 'Hjelpetekst',
+              child: const Text('input'),
+            ),
+          ),
+        );
+        final text = tester.widget<Text>(find.text('Hjelpetekst'));
+        expect(text.style?.fontSize, expectedFontSize);
+      });
+    }
+
+    testWidgets('description defaults to md (bodyLg) so it matches the label', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsField(description: 'Hjelpetekst', child: Text('input')),
+        ),
+      );
+      final text = tester.widget<Text>(find.text('Hjelpetekst'));
+      expect(text.style?.fontSize, 18.0);
+    });
+
+    testWidgets('description inherits size from DsSizeScope', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsSizeScope(
+            size: DsSize.sm,
+            child: DsField(description: 'Hjelpetekst', child: Text('input')),
+          ),
+        ),
+      );
+      final text = tester.widget<Text>(find.text('Hjelpetekst'));
+      expect(text.style?.fontSize, 16.0);
+    });
+
+    // Finding #25: DsValidationMessage takes no size param and pins itself to
+    // bodyMd, so DsField must apply the field size factor via a text scaler
+    // (sm→1.0, md→1.125, lg→1.25) layered on top of any user scaling.
+    for (final (size, expectedFactor) in const [
+      (DsSize.sm, 1.0),
+      (DsSize.md, 1.125),
+      (DsSize.lg, 1.25),
+    ]) {
+      testWidgets('validation message scaled for size $size', (tester) async {
+        await tester.pumpWidget(
+          wrapWithTheme(
+            DsField(
+              size: size,
+              error: 'Påkrevd felt',
+              child: const Text('input'),
+            ),
+          ),
+        );
+        final mq = tester.widget<MediaQuery>(
+          find
+              .ancestor(
+                of: find.byType(DsValidationMessage),
+                matching: find.byType(MediaQuery),
+              )
+              .first,
+        );
+        // scale(16) / 16 isolates the applied factor independent of font size.
+        expect(
+          mq.data.textScaler.scale(16) / 16,
+          closeTo(expectedFactor, 1e-9),
+        );
+      });
+    }
+
+    testWidgets('validation scaling composes with user text scaling', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        DsTheme(
+          data: DsThemeDigdir.light(),
+          child: const Directionality(
+            textDirection: TextDirection.ltr,
+            child: MediaQuery(
+              data: MediaQueryData(textScaler: TextScaler.linear(2.0)),
+              child: DsField(
+                size: DsSize.lg,
+                error: 'Påkrevd felt',
+                child: Text('input'),
+              ),
+            ),
+          ),
+        ),
+      );
+      final mq = tester.widget<MediaQuery>(
+        find
+            .ancestor(
+              of: find.byType(DsValidationMessage),
+              matching: find.byType(MediaQuery),
+            )
+            .first,
+      );
+      // User 2.0 scaling times the lg field factor 1.25 = 2.5.
+      expect(mq.data.textScaler.scale(16) / 16, closeTo(2.5, 1e-9));
+    });
   });
 }

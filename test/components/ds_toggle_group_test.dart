@@ -1,3 +1,5 @@
+import 'dart:ui' show Tristate;
+
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:designsystemet_flutter/src/components/toggle_group/ds_toggle_group.dart';
 import 'package:designsystemet_flutter/src/utils/ds_focus.dart';
@@ -314,6 +316,213 @@ void main() {
       await tester.pump();
       // Index 3 (Four) wraps to index 0 with ArrowRight.
       expect(changes, [3, 0]);
+    });
+
+    testWidgets('Home key jumps to the first segment', (tester) async {
+      final changes = <int>[];
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsToggleGroup(
+            items: const ['One', 'Two', 'Three'],
+            selectedIndex: 2,
+            onChanged: changes.add,
+          ),
+        ),
+      );
+
+      // Focus the last segment, then press Home.
+      await tester.tap(find.text('Three'));
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.home);
+      await tester.pump();
+      // Tap reported index 2, Home jumps to index 0.
+      expect(changes, [2, 0]);
+    });
+
+    testWidgets('End key jumps to the last segment', (tester) async {
+      final changes = <int>[];
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsToggleGroup(
+            items: const ['One', 'Two', 'Three'],
+            selectedIndex: 0,
+            onChanged: changes.add,
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('One'));
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.end);
+      await tester.pump();
+      // Tap reported index 0, End jumps to the last index 2.
+      expect(changes, [0, 2]);
+    });
+
+    testWidgets('disabled group does not call onChanged on tap', (
+      tester,
+    ) async {
+      final changes = <int>[];
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsToggleGroup(
+            items: const ['One', 'Two'],
+            selectedIndex: 0,
+            onChanged: changes.add,
+            disabled: true,
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Two'));
+      await tester.pump();
+      expect(changes, isEmpty);
+    });
+
+    testWidgets('disabled group shows reduced-opacity segments', (
+      tester,
+    ) async {
+      final opacity = DsThemeDigdir.light().disabledOpacity;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsToggleGroup(
+            items: const ['One', 'Two'],
+            selectedIndex: 0,
+            onChanged: (_) {},
+            disabled: true,
+          ),
+        ),
+      );
+
+      final opacities = tester
+          .widgetList<Opacity>(find.byType(Opacity))
+          .map((o) => o.opacity)
+          .toList();
+      expect(opacities, everyElement(opacity));
+      expect(opacities.length, 2);
+    });
+
+    testWidgets('disabled segments expose disabled semantics', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsToggleGroup(
+            items: const ['One', 'Two', 'Three'],
+            selectedIndex: 0,
+            onChanged: (_) {},
+            disabledIndices: const {1},
+          ),
+        ),
+      );
+
+      expect(
+        tester.getSemantics(find.text('One')).flagsCollection.isEnabled,
+        Tristate.isTrue,
+      );
+      expect(
+        tester.getSemantics(find.text('Two')).flagsCollection.isEnabled,
+        Tristate.isFalse,
+      );
+    });
+
+    testWidgets('disabledIndices is non-interactive on tap', (tester) async {
+      final changes = <int>[];
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsToggleGroup(
+            items: const ['One', 'Two', 'Three'],
+            selectedIndex: 0,
+            onChanged: changes.add,
+            disabledIndices: const {1},
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Two'));
+      await tester.pump();
+      expect(changes, isEmpty);
+
+      await tester.tap(find.text('Three'));
+      await tester.pump();
+      expect(changes, [2]);
+    });
+
+    testWidgets('arrow navigation skips disabled segments', (tester) async {
+      final changes = <int>[];
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsToggleGroup(
+            items: const ['One', 'Two', 'Three'],
+            selectedIndex: 0,
+            onChanged: changes.add,
+            disabledIndices: const {1},
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('One'));
+      await tester.pump();
+      // ArrowRight from index 0 skips disabled index 1 and lands on index 2.
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(changes, [0, 2]);
+    });
+
+    testWidgets('external focusNode focuses the first segment', (tester) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsToggleGroup(
+            items: const ['One', 'Two'],
+            selectedIndex: 0,
+            onChanged: (_) {},
+            focusNode: focusNode,
+          ),
+        ),
+      );
+
+      focusNode.requestFocus();
+      await tester.pump();
+      expect(focusNode.hasFocus, isTrue);
+    });
+
+    testWidgets('interactive segments use the click cursor', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsToggleGroup(
+            items: const ['One', 'Two'],
+            selectedIndex: 0,
+            onChanged: (_) {},
+          ),
+        ),
+      );
+
+      final region = tester.widget<MouseRegion>(
+        find
+            .ancestor(of: find.text('One'), matching: find.byType(MouseRegion))
+            .first,
+      );
+      expect(region.cursor, SystemMouseCursors.click);
+    });
+
+    testWidgets('disabled segments use the basic cursor', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsToggleGroup(
+            items: const ['One', 'Two'],
+            selectedIndex: 0,
+            onChanged: (_) {},
+            disabled: true,
+          ),
+        ),
+      );
+
+      final region = tester.widget<MouseRegion>(
+        find
+            .ancestor(of: find.text('One'), matching: find.byType(MouseRegion))
+            .first,
+      );
+      expect(region.cursor, SystemMouseCursors.basic);
     });
 
     testWidgets('shrinking items.length does not throw', (tester) async {

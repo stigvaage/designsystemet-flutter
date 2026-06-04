@@ -14,10 +14,15 @@ enum _DsChipRole { button, removable, checkbox, radio }
 
 /// A pill-shaped chip with optional selection state and remove button.
 ///
-/// Supports keyboard activation (Enter/Space to tap, Delete to remove). The
-/// chip shows a visible focus ring while focused. For a [DsChip.removable]
+/// Supports keyboard activation (Enter/Space to tap, Delete to remove) and a
+/// subtle hover state, matching the official Designsystemet chip / [DsButton].
+/// The chip shows a visible focus ring while focused. For a [DsChip.removable]
 /// chip the remove icon is a separately focusable button that activates with
 /// Enter/Space, in addition to Delete pressing on the chip itself.
+///
+/// Set [disabled] to render the chip as non-interactive (dimmed, no hover, no
+/// activation, basic cursor). A [focusNode] and a [size] override are exposed
+/// for parity with other interactive components.
 ///
 /// The default constructor renders a generic chip. For behaviour that mirrors
 /// the React chip parts, use the named constructors:
@@ -34,8 +39,10 @@ class DsChip extends StatefulWidget {
     this.color,
     this.removable = false,
     this.selected = false,
+    this.disabled = false,
     this.onRemove,
     this.onTap,
+    this.focusNode,
   }) : _role = _DsChipRole.button;
 
   /// A clickable action chip, mirroring React `Chip.Button`.
@@ -46,8 +53,10 @@ class DsChip extends StatefulWidget {
     required this.child,
     this.onTap,
     this.selected = false,
+    this.disabled = false,
     this.size,
     this.color,
+    this.focusNode,
   }) : removable = false,
        onRemove = null,
        _role = _DsChipRole.button;
@@ -59,8 +68,10 @@ class DsChip extends StatefulWidget {
     super.key,
     required this.child,
     required VoidCallback this.onRemove,
+    this.disabled = false,
     this.size,
     this.color,
+    this.focusNode,
   }) : removable = true,
        selected = false,
        onTap = null,
@@ -76,8 +87,10 @@ class DsChip extends StatefulWidget {
     required this.child,
     required this.selected,
     required ValueChanged<bool> onChanged,
+    this.disabled = false,
     this.size,
     this.color,
+    this.focusNode,
   }) : removable = false,
        onRemove = null,
        onTap = (() => onChanged(!selected)),
@@ -95,20 +108,42 @@ class DsChip extends StatefulWidget {
     required this.child,
     required this.selected,
     required VoidCallback onChanged,
+    this.disabled = false,
     this.size,
     this.color,
+    this.focusNode,
   }) : removable = false,
        onRemove = null,
        onTap = selected ? null : onChanged,
        _role = _DsChipRole.radio;
 
+  /// The chip's label content.
   final Widget child;
+
+  /// Size override; falls back to the nearest [DsSizeScope].
   final DsSize? size;
+
+  /// Color override; falls back to the nearest [DsColorScope].
   final DsColor? color;
+
+  /// Whether the chip shows a remove icon.
   final bool removable;
+
+  /// Whether the chip renders in its selected/active visual state.
   final bool selected;
+
+  /// Whether the chip is non-interactive (dimmed, no hover, no activation).
+  final bool disabled;
+
+  /// Called when the remove icon is activated (or Delete is pressed).
   final VoidCallback? onRemove;
+
+  /// Called when the chip body is activated (tap, Enter or Space).
   final VoidCallback? onTap;
+
+  /// An optional focus node for the chip body.
+  final FocusNode? focusNode;
+
   final _DsChipRole _role;
 
   @override
@@ -118,6 +153,10 @@ class DsChip extends StatefulWidget {
 class _DsChipState extends State<DsChip> {
   bool _isFocused = false;
   bool _isRemoveFocused = false;
+  bool _isHovered = false;
+
+  /// Whether the chip body can be activated right now.
+  bool get _isInteractive => !widget.disabled && widget.onTap != null;
 
   @override
   Widget build(BuildContext context) {
@@ -127,11 +166,11 @@ class _DsChipState extends State<DsChip> {
     final sizeMode = widget.size ?? DsSizeScope.of(context);
     final radius = BorderRadius.circular(theme.borderRadius.full);
 
-    final padding = switch (sizeMode) {
-      DsSize.sm => const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      DsSize.md => const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      DsSize.lg => const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-    };
+    final padding = sizeMode.pick(
+      sm: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      md: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      lg: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+    );
 
     // Checkbox/radio selection uses the softer [surfaceActive]/[textDefault]
     // pairing (a tinted active state), while button/removable keep the
@@ -139,15 +178,22 @@ class _DsChipState extends State<DsChip> {
     final isToggle =
         widget._role == _DsChipRole.checkbox ||
         widget._role == _DsChipRole.radio;
+    // A subtle hover only applies to interactive chips, matching DsButton.
+    final hovered = _isHovered && _isInteractive;
     final Color bgColor;
     final Color fgColor;
     if (widget.selected) {
-      bgColor = isToggle ? colorScale.surfaceActive : colorScale.baseDefault;
-      fgColor = isToggle
-          ? colorScale.textDefault
-          : colorScale.baseContrastDefault;
+      if (isToggle) {
+        bgColor = colorScale.surfaceActive;
+        fgColor = colorScale.textDefault;
+      } else {
+        // Filled selected chip: hover darkens the base, like DsButton primary.
+        bgColor = hovered ? colorScale.baseHover : colorScale.baseDefault;
+        fgColor = colorScale.baseContrastDefault;
+      }
     } else {
-      bgColor = colorScale.surfaceTinted;
+      // Unselected chip: hover lifts the tinted surface, like DsButton ghost.
+      bgColor = hovered ? colorScale.surfaceHover : colorScale.surfaceTinted;
       fgColor = colorScale.textDefault;
     }
     final Color borderColor = widget.selected
@@ -178,27 +224,19 @@ class _DsChipState extends State<DsChip> {
 
     // Always reserve focus ring space to prevent layout shift, matching the
     // pattern used by DsButton/DsCheckbox.
-    final focusDecoration = _isFocused
-        ? DsFocus.focusRingWithRadius(colorScale, radius)
-        : BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              radius.topLeft.x + DsFocus.ringWidth,
-            ),
-            border: Border.all(
-              color: const Color(0x00000000),
-              width: DsFocus.ringWidth,
-            ),
-          );
-
-    chip = DecoratedBox(
-      decoration: focusDecoration,
-      child: Padding(
-        padding: const EdgeInsets.all(DsFocus.ringWidth),
-        child: chip,
-      ),
+    chip = DsFocus.reserveRing(
+      focused: _isFocused && !widget.disabled,
+      radius: radius,
+      scale: colorScale,
+      child: chip,
     );
 
+    if (widget.disabled) {
+      chip = Opacity(opacity: theme.disabledOpacity, child: chip);
+    }
+
     return Semantics(
+      enabled: !widget.disabled,
       // Only the button role is announced as a button. The toggle roles
       // (checkbox/radio) carry their own role-specific state below.
       button: widget.onTap != null && widget._role == _DsChipRole.button,
@@ -211,7 +249,10 @@ class _DsChipState extends State<DsChip> {
       checked: widget._role == _DsChipRole.checkbox ? widget.selected : null,
       selected: widget._role == _DsChipRole.radio ? widget.selected : null,
       child: Focus(
+        focusNode: widget.focusNode,
+        canRequestFocus: !widget.disabled,
         onKeyEvent: (node, event) {
+          if (widget.disabled) return KeyEventResult.ignored;
           if (event is KeyDownEvent) {
             if ((event.logicalKey == LogicalKeyboardKey.enter ||
                     event.logicalKey == LogicalKeyboardKey.space) &&
@@ -230,12 +271,18 @@ class _DsChipState extends State<DsChip> {
         },
         onFocusChange: (f) => setState(() => _isFocused = f),
         child: MouseRegion(
-          cursor: widget.onTap != null
+          cursor: _isInteractive
               ? SystemMouseCursors.click
               : SystemMouseCursors.basic,
+          onEnter: (_) {
+            if (_isInteractive) setState(() => _isHovered = true);
+          },
+          onExit: (_) {
+            if (_isHovered) setState(() => _isHovered = false);
+          },
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: widget.onTap,
+            onTap: widget.disabled ? null : widget.onTap,
             child: chip,
           ),
         ),
@@ -260,31 +307,22 @@ class _DsChipState extends State<DsChip> {
 
     // Reserve a small focus ring around the remove icon so focusing it does
     // not shift the chip layout.
-    final removeRadius = BorderRadius.circular(DsFocus.ringWidth);
-    final removeFocusDecoration = _isRemoveFocused
-        ? DsFocus.focusRingWithRadius(colorScale, removeRadius)
-        : BoxDecoration(
-            borderRadius: BorderRadius.circular(DsFocus.ringWidth * 2),
-            border: Border.all(
-              color: const Color(0x00000000),
-              width: DsFocus.ringWidth,
-            ),
-          );
-
-    icon = DecoratedBox(
-      decoration: removeFocusDecoration,
-      child: Padding(
-        padding: const EdgeInsets.all(DsFocus.ringWidth),
-        child: icon,
-      ),
+    icon = DsFocus.reserveRing(
+      focused: _isRemoveFocused && !widget.disabled,
+      radius: BorderRadius.circular(DsFocus.ringWidth),
+      scale: colorScale,
+      child: icon,
     );
 
     return Semantics(
       button: true,
+      enabled: !widget.disabled,
       label: 'Fjern',
       child: Focus(
+        canRequestFocus: !widget.disabled,
         onKeyEvent: (node, event) {
-          if (event is KeyDownEvent &&
+          if (!widget.disabled &&
+              event is KeyDownEvent &&
               (event.logicalKey == LogicalKeyboardKey.enter ||
                   event.logicalKey == LogicalKeyboardKey.space) &&
               widget.onRemove != null) {
@@ -295,10 +333,12 @@ class _DsChipState extends State<DsChip> {
         },
         onFocusChange: (f) => setState(() => _isRemoveFocused = f),
         child: MouseRegion(
-          cursor: SystemMouseCursors.click,
+          cursor: widget.disabled
+              ? SystemMouseCursors.basic
+              : SystemMouseCursors.click,
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: widget.onRemove,
+            onTap: widget.disabled ? null : widget.onRemove,
             child: icon,
           ),
         ),

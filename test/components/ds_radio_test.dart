@@ -234,5 +234,191 @@ void main() {
         scale.baseDefault,
       );
     });
+
+    testWidgets('renders the error message text below the control', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(
+            value: false,
+            onChanged: (_) {},
+            error: 'Du må velge et alternativ',
+            label: const Text('Velg'),
+          ),
+        ),
+      );
+      expect(find.text('Du må velge et alternativ'), findsOneWidget);
+    });
+
+    testWidgets('error message is announced via a live region', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(
+            value: false,
+            onChanged: (_) {},
+            error: 'Påkrevd felt',
+            label: const Text('Velg'),
+          ),
+        ),
+      );
+      final liveRegion = find.byWidgetPredicate(
+        (w) => w is Semantics && w.properties.liveRegion == true,
+      );
+      expect(liveRegion, findsOneWidget);
+    });
+
+    testWidgets('error state uses the danger scale for the circle border', (
+      tester,
+    ) async {
+      final danger = DsThemeDigdir.light().colorScheme.danger;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(
+            value: false,
+            onChanged: (_) {},
+            error: 'Feil',
+            label: const Text('Velg'),
+          ),
+        ),
+      );
+      // The radio circle is a circular Container with a 1.5px border.
+      final circle = tester
+          .widgetList<Container>(find.byType(Container))
+          .firstWhere((c) {
+            final d = c.decoration;
+            return d is BoxDecoration && d.shape == BoxShape.circle;
+          });
+      final border = (circle.decoration as BoxDecoration).border! as Border;
+      expect(border.top.color, danger.borderDefault);
+    });
+
+    testWidgets('no error message when error is null', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(value: false, onChanged: (_) {}, label: const Text('Velg')),
+        ),
+      );
+      final liveRegion = find.byWidgetPredicate(
+        (w) => w is Semantics && w.properties.liveRegion == true,
+      );
+      expect(liveRegion, findsNothing);
+    });
+
+    testWidgets('disabled does not call onChanged when tapped', (tester) async {
+      var called = false;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(
+            value: false,
+            onChanged: (_) => called = true,
+            disabled: true,
+            label: const Text('Deaktivert'),
+          ),
+        ),
+      );
+      // A disabled radio is wrapped in IgnorePointer, so the tap does not hit
+      // it (warnIfMissed: false) and onChanged is never called.
+      await tester.tap(find.byType(DsRadio), warnIfMissed: false);
+      expect(called, isFalse);
+    });
+
+    testWidgets('disabled dims the control with disabledOpacity', (
+      tester,
+    ) async {
+      final opacity = DsThemeDigdir.light().disabledOpacity;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(
+            value: false,
+            onChanged: (_) {},
+            disabled: true,
+            label: const Text('Deaktivert'),
+          ),
+        ),
+      );
+      final dimmed = tester.widget<Opacity>(find.byType(Opacity));
+      expect(dimmed.opacity, opacity);
+      // Disabled controls also block pointer interaction.
+      expect(find.byType(IgnorePointer), findsOneWidget);
+    });
+
+    testWidgets('enabled control does not wrap in Opacity', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(value: false, onChanged: (_) {}, label: const Text('Aktiv')),
+        ),
+      );
+      expect(find.byType(Opacity), findsNothing);
+    });
+
+    testWidgets('null onChanged is treated as non-interactive (Space no-op)', (
+      tester,
+    ) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(
+            value: false,
+            onChanged: null,
+            focusNode: focusNode,
+            label: const Text('Uten handler'),
+          ),
+        ),
+      );
+      // A non-interactive radio cannot take focus, so Space cannot select it.
+      focusNode.requestFocus();
+      await tester.pump();
+      expect(focusNode.hasFocus, isFalse);
+    });
+
+    testWidgets('non-interactive radio reports enabled: false in semantics', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsRadio(
+            value: false,
+            onChanged: null,
+            label: Text('Uten handler'),
+          ),
+        ),
+      );
+      final enabledFalse = find.byWidgetPredicate(
+        (w) => w is Semantics && w.properties.enabled == false,
+      );
+      expect(enabledFalse, findsWidgets);
+    });
+
+    testWidgets('autofocus requests focus on build', (tester) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(
+            value: false,
+            onChanged: (_) {},
+            autofocus: true,
+            focusNode: focusNode,
+            label: const Text('Autofokus'),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(focusNode.hasFocus, isTrue);
+    });
+
+    testWidgets('selected state is reflected in semantics', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(value: true, onChanged: (_) {}, label: const Text('Valgt')),
+        ),
+      );
+      final selected = find.byWidgetPredicate(
+        (w) => w is Semantics && w.properties.selected == true,
+      );
+      expect(selected, findsWidgets);
+    });
   });
 }

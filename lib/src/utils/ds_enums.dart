@@ -1,6 +1,21 @@
 // DsSize enum
 enum DsSize { sm, md, lg }
 
+/// Selects one of three size-keyed values based on this [DsSize].
+///
+/// A concise replacement for the repeated `switch (size)` blocks across
+/// components: `size.pick(sm: 14.0, md: 16.0, lg: 18.0)` returns the value
+/// matching the current size. Works for any type [T] (doubles, paddings,
+/// widgets, etc.).
+extension DsSizePick on DsSize {
+  /// Returns [sm], [md] or [lg] depending on this [DsSize].
+  T pick<T>({required T sm, required T md, required T lg}) => switch (this) {
+    DsSize.sm => sm,
+    DsSize.md => md,
+    DsSize.lg => lg,
+  };
+}
+
 // DsColor — sealed class with 9 named + custom
 sealed class DsColor {
   const DsColor();

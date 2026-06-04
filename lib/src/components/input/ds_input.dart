@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
+import '../../theme/ds_size_tokens.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
@@ -177,17 +178,13 @@ class _DsInputState extends State<DsInput> {
     final radius = BorderRadius.circular(theme.borderRadius.defaultRadius);
     final duration = DsAnimation.resolveDuration(context, DsAnimation.fast);
 
-    final padding = switch (sizeMode) {
-      DsSize.sm => const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      DsSize.md => const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      DsSize.lg => const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    };
+    final padding = sizeMode.pick(
+      sm: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      md: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      lg: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    );
 
-    final fontSize = switch (sizeMode) {
-      DsSize.sm => 14.0,
-      DsSize.md => 16.0,
-      DsSize.lg => 18.0,
-    };
+    final fontSize = DsSizeValues.fontSize(sizeMode);
 
     Color borderColor;
     if (widget.disabled) {
@@ -336,20 +333,18 @@ class _DsInputState extends State<DsInput> {
     );
 
     // The focus-ring wrapper is ALWAYS in the tree (its space is always
-    // reserved); only its decoration toggles. Inserting/removing the
-    // DecoratedBox+Padding on focus would change the widget type under the
-    // MouseRegion, tearing down and recreating the TextField element — which
-    // kills the in-flight first-tap keyboard open (the double-tap bug). Keeping
-    // the structure constant also removes the 3px layout jump on focus.
+    // reserved); only its decoration toggles. DsFocus.reserveRing keeps the
+    // DecoratedBox+Padding structure constant regardless of focus state — so
+    // the widget type under the MouseRegion never changes and the TextField
+    // element is not torn down (which would kill the in-flight first-tap
+    // keyboard open — the double-tap bug). It also removes the 3px layout jump
+    // on focus by reserving the ring gap whether focused or not.
     final showFocusRing = _isFocused && !widget.disabled && !widget.readOnly;
-    result = DecoratedBox(
-      decoration: showFocusRing
-          ? DsFocus.focusRingWithRadius(colorScale, radius)
-          : const BoxDecoration(),
-      child: Padding(
-        padding: const EdgeInsets.all(DsFocus.ringWidth),
-        child: result,
-      ),
+    result = DsFocus.reserveRing(
+      focused: showFocusRing,
+      radius: radius,
+      scale: colorScale,
+      child: result,
     );
 
     if (widget.disabled) {

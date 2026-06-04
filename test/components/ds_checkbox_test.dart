@@ -177,5 +177,172 @@ void main() {
           );
       expect(hasCheckedSemantics, isTrue);
     });
+
+    testWidgets('error renders the message below the control', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (_) {},
+            label: const Text('Godta'),
+            error: 'Du må godta vilkårene',
+          ),
+        ),
+      );
+
+      expect(find.byType(DsValidationMessage), findsOneWidget);
+      expect(find.text('Du må godta vilkårene'), findsOneWidget);
+    });
+
+    testWidgets('error renders the box with the danger border', (tester) async {
+      final theme = DsThemeDigdir.light();
+      final dangerScale = theme.colorScheme.resolve(DsColor.danger);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (_) {},
+            label: const Text('Godta'),
+            error: 'Påkrevd',
+          ),
+        ),
+      );
+
+      final hasDangerBorder = tester
+          .widgetList<Container>(find.byType(Container))
+          .any((c) {
+            final decoration = c.decoration;
+            if (decoration is! BoxDecoration) return false;
+            final border = decoration.border;
+            return border is Border &&
+                border.top.color == dangerScale.borderDefault &&
+                border.top.width == 1.5;
+          });
+      expect(hasDangerBorder, isTrue);
+    });
+
+    testWidgets('error message is wrapped in a live region', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (_) {},
+            label: const Text('Godta'),
+            error: 'Påkrevd',
+          ),
+        ),
+      );
+
+      final hasLiveRegion = tester
+          .widgetList<Semantics>(find.byType(Semantics))
+          .any((s) => s.properties.liveRegion == true);
+      expect(hasLiveRegion, isTrue);
+    });
+
+    testWidgets('error sets the semantics hint', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (_) {},
+            label: const Text('Godta'),
+            error: 'Påkrevd',
+          ),
+        ),
+      );
+
+      final hasHint = tester
+          .widgetList<Semantics>(find.byType(Semantics))
+          .any((s) => s.properties.hint == 'Påkrevd');
+      expect(hasHint, isTrue);
+    });
+
+    testWidgets('disabled does not call onChanged when tapped', (tester) async {
+      var called = false;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (_) => called = true,
+            disabled: true,
+            label: const Text('Disabled'),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(DsCheckbox));
+      expect(called, isFalse);
+    });
+
+    testWidgets('disabled dims the control with theme opacity and ignores '
+        'pointer', (tester) async {
+      final theme = DsThemeDigdir.light();
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (_) {},
+            disabled: true,
+            label: const Text('Disabled'),
+          ),
+        ),
+      );
+
+      expect(find.byType(IgnorePointer), findsWidgets);
+      final hasDimmedOpacity = tester
+          .widgetList<Opacity>(find.byType(Opacity))
+          .any((o) => o.opacity == theme.disabledOpacity);
+      expect(hasDimmedOpacity, isTrue);
+    });
+
+    testWidgets('disabled reports disabled semantics', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (_) {},
+            disabled: true,
+            label: const Text('Disabled'),
+          ),
+        ),
+      );
+
+      final hasDisabledSemantics = tester
+          .widgetList<Semantics>(find.byType(Semantics))
+          .any((s) => s.properties.enabled == false);
+      expect(hasDisabledSemantics, isTrue);
+    });
+
+    testWidgets('null onChanged makes the checkbox non-interactive', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsCheckbox(value: false, onChanged: null, label: Text('Inert')),
+        ),
+      );
+      // Tapping must not throw and must leave the value unchanged (no callback
+      // to observe — the absence of an error is the assertion here).
+      await tester.tap(find.byType(DsCheckbox));
+      await tester.pump();
+      expect(find.byType(DsCheckbox), findsOneWidget);
+    });
+
+    testWidgets('autofocus focuses the control on first build', (tester) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (_) {},
+            autofocus: true,
+            focusNode: focusNode,
+            label: const Text('Autofocus'),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(focusNode.hasFocus, isTrue);
+    });
   });
 }

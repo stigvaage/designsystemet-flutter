@@ -15,11 +15,24 @@ class DsSpinner extends StatefulWidget {
     super.key,
     this.size,
     this.color,
+    this.paintColor,
     this.ariaLabel = 'Laster inn',
   });
 
-  final DsSize? size;
+  /// The design-system [DsColor] used to resolve the color scale the spinner
+  /// is drawn from (falls back to the ambient [DsColorScope]). The arc is
+  /// painted with the scale's `baseDefault` unless [paintColor] is set.
   final DsColor? color;
+
+  final DsSize? size;
+
+  /// An explicit paint color override for the spinner arc.
+  ///
+  /// When provided, the arc is painted with this exact [Color] instead of the
+  /// resolved scale's `baseDefault`. Pass a visible color when the scale
+  /// default would be invisible against the spinner's background (for example
+  /// a spinner shown on top of a filled `baseDefault` button).
+  final Color? paintColor;
 
   /// Accessible label announced by screen readers. The React Spinner requires
   /// `aria-label`; here it defaults to `'Laster inn'` and can be overridden,
@@ -83,7 +96,7 @@ class _DsSpinnerState extends State<DsSpinner>
           builder: (context, _) {
             return CustomPaint(
               painter: _SpinnerPainter(
-                color: colorScale.baseDefault,
+                color: widget.paintColor ?? colorScale.baseDefault,
                 progress: _controller.value,
                 strokeWidth: 2.5,
               ),

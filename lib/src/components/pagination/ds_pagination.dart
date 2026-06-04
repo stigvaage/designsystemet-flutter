@@ -141,6 +141,46 @@ class DsPagination extends StatelessWidget {
       );
     }
 
+    // Builds a prev/next arrow control. When [enabled] it is wrapped in a
+    // keyboard-focusable, activatable [_PaginationItem]; when disabled it is a
+    // plain, non-interactive (and non-focusable) glyph.
+    Widget arrow({
+      required String glyph,
+      required String label,
+      required bool enabled,
+      required VoidCallback onActivate,
+    }) {
+      final content = Container(
+        width: buttonSize,
+        height: buttonSize,
+        alignment: Alignment.center,
+        child: Text(
+          glyph,
+          style: TextStyle(
+            fontSize: fontSize + 4,
+            color: colorScale.textDefault,
+          ),
+        ),
+      );
+      return Semantics(
+        button: true,
+        enabled: enabled,
+        label: label,
+        child: Opacity(
+          opacity: enabled ? 1.0 : theme.disabledOpacity,
+          // Disabled arrows are non-interactive and not focusable.
+          child: enabled
+              ? _PaginationItem(
+                  colorScale: colorScale,
+                  borderRadius: pageRadius,
+                  onActivate: onActivate,
+                  child: content,
+                )
+              : content,
+        ),
+      );
+    }
+
     final hasPrev = currentPage > 1;
     final hasNext = currentPage < totalPages;
 
@@ -148,37 +188,11 @@ class DsPagination extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         // Previous
-        Semantics(
-          button: true,
-          enabled: hasPrev,
+        arrow(
+          glyph: '‹',
           label: 'Forrige side',
-          child: Opacity(
-            opacity: hasPrev ? 1.0 : theme.disabledOpacity,
-            child: () {
-              final arrow = Container(
-                width: buttonSize,
-                height: buttonSize,
-                alignment: Alignment.center,
-                child: Text(
-                  '‹',
-                  style: TextStyle(
-                    fontSize: fontSize + 4,
-                    color: colorScale.textDefault,
-                  ),
-                ),
-              );
-              // Disabled (first page): non-interactive and not focusable.
-              if (!hasPrev) {
-                return arrow;
-              }
-              return _PaginationItem(
-                colorScale: colorScale,
-                borderRadius: pageRadius,
-                onActivate: () => onPageChanged(currentPage - 1),
-                child: arrow,
-              );
-            }(),
-          ),
+          enabled: hasPrev,
+          onActivate: () => onPageChanged(currentPage - 1),
         ),
         // Pages (windowed with ellipsis for large ranges)
         for (final page in computeSteps(
@@ -188,37 +202,11 @@ class DsPagination extends StatelessWidget {
         ))
           if (page == 0) ellipsis() else pageButton(page),
         // Next
-        Semantics(
-          button: true,
-          enabled: hasNext,
+        arrow(
+          glyph: '›',
           label: 'Neste side',
-          child: Opacity(
-            opacity: hasNext ? 1.0 : theme.disabledOpacity,
-            child: () {
-              final arrow = Container(
-                width: buttonSize,
-                height: buttonSize,
-                alignment: Alignment.center,
-                child: Text(
-                  '›',
-                  style: TextStyle(
-                    fontSize: fontSize + 4,
-                    color: colorScale.textDefault,
-                  ),
-                ),
-              );
-              // Disabled (last page): non-interactive and not focusable.
-              if (!hasNext) {
-                return arrow;
-              }
-              return _PaginationItem(
-                colorScale: colorScale,
-                borderRadius: pageRadius,
-                onActivate: () => onPageChanged(currentPage + 1),
-                child: arrow,
-              );
-            }(),
-          ),
+          enabled: hasNext,
+          onActivate: () => onPageChanged(currentPage + 1),
         ),
       ],
     );
@@ -254,19 +242,6 @@ class _PaginationItemState extends State<_PaginationItem> {
 
   @override
   Widget build(BuildContext context) {
-    // Always reserve focus ring space to prevent layout shift.
-    final focusDecoration = _isFocused
-        ? DsFocus.focusRingWithRadius(widget.colorScale, widget.borderRadius)
-        : BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              widget.borderRadius.topLeft.x + DsFocus.ringWidth,
-            ),
-            border: Border.all(
-              color: const Color(0x00000000),
-              width: DsFocus.ringWidth,
-            ),
-          );
-
     return Focus(
       onKeyEvent: (node, event) {
         if (event is KeyDownEvent &&
@@ -282,12 +257,13 @@ class _PaginationItemState extends State<_PaginationItem> {
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
           onTap: widget.onActivate,
-          child: DecoratedBox(
-            decoration: focusDecoration,
-            child: Padding(
-              padding: const EdgeInsets.all(DsFocus.ringWidth),
-              child: widget.child,
-            ),
+          // Always reserves the focus-ring gap so layout never shifts when
+          // focus moves between items.
+          child: DsFocus.reserveRing(
+            focused: _isFocused,
+            radius: widget.borderRadius,
+            scale: widget.colorScale,
+            child: widget.child,
           ),
         ),
       ),

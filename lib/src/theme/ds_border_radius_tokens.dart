@@ -26,4 +26,18 @@ class DsBorderRadiusTokens {
       defaultRadius: base,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DsBorderRadiusTokens &&
+          other.sm == sm &&
+          other.md == md &&
+          other.lg == lg &&
+          other.xl == xl &&
+          other.defaultRadius == defaultRadius &&
+          other.full == full;
+
+  @override
+  int get hashCode => Object.hash(sm, md, lg, xl, defaultRadius, full);
 }

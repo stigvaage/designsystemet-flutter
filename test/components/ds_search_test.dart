@@ -106,6 +106,59 @@ void main() {
       },
     );
 
+    testWidgets('default placeholder is Norwegian «Søk...»', (tester) async {
+      await tester.pumpWidget(_host(const DsSearch()));
+      expect(find.text('Søk...'), findsOneWidget);
+    });
+
+    testWidgets('placeholder can be overridden', (tester) async {
+      await tester.pumpWidget(_host(const DsSearch(placeholder: 'Finn noe')));
+      expect(find.text('Finn noe'), findsOneWidget);
+      expect(find.text('Søk...'), findsNothing);
+    });
+
+    testWidgets('clear button label defaults to «Tøm»', (tester) async {
+      final controller = TextEditingController(text: 'hello');
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        _host(DsSearch(controller: controller, clearable: true)),
+      );
+      await tester.pump();
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == 'Tøm',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('clearLabel can be overridden', (tester) async {
+      final controller = TextEditingController(text: 'hello');
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        _host(
+          DsSearch(
+            controller: controller,
+            clearable: true,
+            clearLabel: 'Nullstill',
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == 'Nullstill',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == 'Tøm',
+        ),
+        findsNothing,
+      );
+    });
+
     testWidgets('onSubmit alias fires alongside onSubmitted', (tester) async {
       String? submitted;
       String? submit;

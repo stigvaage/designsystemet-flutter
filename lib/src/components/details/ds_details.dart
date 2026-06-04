@@ -18,12 +18,20 @@ class DsDetails extends StatefulWidget {
     this.initiallyExpanded = false,
     this.color,
     this.variant = DsDetailsVariant.default_,
+    this.focusNode,
   });
 
   final Widget summary;
   final Widget child;
   final bool initiallyExpanded;
   final DsColor? color;
+
+  /// An optional focus node for the summary, the single primary focus target.
+  ///
+  /// Provide this to control or observe keyboard focus of the disclosure
+  /// summary (for example to move focus programmatically or to participate in a
+  /// custom focus order). When omitted, an internally managed node is used.
+  final FocusNode? focusNode;
 
   /// The visual variant of the details widget.
   ///
@@ -103,24 +111,11 @@ class _DsDetailsState extends State<DsDetails>
       ),
     );
 
-    // Always reserve focus ring space to prevent layout shift, and only paint
-    // the visible ring while the summary holds keyboard focus.
-    final focusDecoration = _isFocused
-        ? DsFocus.focusRingWithRadius(colorScale, radius)
-        : BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              radius.topLeft.x + DsFocus.ringWidth,
-            ),
-            border: Border.all(
-              color: const Color(0x00000000),
-              width: DsFocus.ringWidth,
-            ),
-          );
-
     final summary = Semantics(
       button: true,
       onTap: _toggle,
       child: Focus(
+        focusNode: widget.focusNode,
         onKeyEvent: (node, event) {
           if (event is KeyDownEvent &&
               (event.logicalKey == LogicalKeyboardKey.enter ||
@@ -136,12 +131,13 @@ class _DsDetailsState extends State<DsDetails>
           // (including the 12px padding) toggles the disclosure.
           behavior: HitTestBehavior.opaque,
           onTap: _toggle,
-          child: DecoratedBox(
-            decoration: focusDecoration,
-            child: Padding(
-              padding: const EdgeInsets.all(DsFocus.ringWidth),
-              child: summaryRow,
-            ),
+          // Always reserves focus ring space to prevent layout shift, and only
+          // paints the visible ring while the summary holds keyboard focus.
+          child: DsFocus.reserveRing(
+            focused: _isFocused,
+            radius: radius,
+            scale: colorScale,
+            child: summaryRow,
           ),
         ),
       ),

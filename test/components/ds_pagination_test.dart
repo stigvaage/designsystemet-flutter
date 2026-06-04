@@ -24,6 +24,9 @@ Future<void> _focusAncestorOf(WidgetTester tester, Finder target) async {
   final context = tester.element(target);
   final focusNode = Focus.of(context);
   focusNode.requestFocus();
+  // First pump grants focus; a second lets the Focus.onFocusChange callback
+  // drive the item's setState so the focus ring actually repaints.
+  await tester.pump();
   await tester.pump();
 }
 
@@ -211,6 +214,45 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.space);
       await tester.pump();
       expect(changedTo, 2);
+    });
+
+    testWidgets('focused interactive item shows the borderStrong focus ring', (
+      tester,
+    ) async {
+      final theme = DsThemeDigdir.light();
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsPagination(currentPage: 1, totalPages: 3, onPageChanged: (_) {}),
+        ),
+      );
+
+      // No item is focused yet: no DecoratedBox should paint the focus colour.
+      bool hasFocusRing() =>
+          tester.widgetList<DecoratedBox>(find.byType(DecoratedBox)).any((box) {
+            final decoration = box.decoration;
+            if (decoration is! BoxDecoration) return false;
+            final border = decoration.border;
+            return border is Border &&
+                border.top.color == theme.colorScheme.accent.borderStrong;
+          });
+      expect(hasFocusRing(), isFalse);
+
+      await _focusAncestorOf(tester, find.text('2'));
+
+      // Once focused, DsFocus.reserveRing paints the borderStrong ring.
+      expect(hasFocusRing(), isTrue);
+    });
+
+    testWidgets('disabled previous arrow is not focusable', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsPagination(currentPage: 1, totalPages: 3, onPageChanged: (_) {}),
+        ),
+      );
+      // The disabled arrow renders a plain glyph without a Focus wrapper, so
+      // there is no focusable ancestor of the '‹' text.
+      final context = tester.element(find.text('‹'));
+      expect(Focus.maybeOf(context), isNull);
     });
 
     testWidgets('active page is not announced as a button', (tester) async {

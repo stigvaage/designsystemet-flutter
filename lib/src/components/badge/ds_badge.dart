@@ -31,6 +31,11 @@ class DsBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Fast path: nothing to render when there is no count — avoid computing
+    // sizes, colors and the semantics label every frame.
+    final currentCount = count;
+    if (currentCount == null) return child;
+
     final theme = DsTheme.of(context);
     final activeColor = color ?? DsColor.danger;
     final colorScale = theme.colorScheme.resolve(activeColor);
@@ -46,8 +51,6 @@ class DsBadge extends StatelessWidget {
       DsSize.md => 12.0,
       DsSize.lg => 14.0,
     };
-
-    if (count == null) return child;
 
     final offset = overlap ? -(badgeSize / 2) : 0.0;
 
@@ -74,7 +77,7 @@ class DsBadge extends StatelessWidget {
       ),
       child: Center(
         child: Text(
-          count! > maxCount ? '$maxCount+' : count.toString(),
+          currentCount > maxCount ? '$maxCount+' : currentCount.toString(),
           style: TextStyle(
             color: textColor,
             fontSize: fontSize,
@@ -111,9 +114,9 @@ class DsBadge extends StatelessWidget {
       ),
     };
 
-    final badgeLabel = count! > maxCount
+    final badgeLabel = currentCount > maxCount
         ? '$maxCount+ varsler'
-        : '$count ${count == 1 ? 'varsel' : 'varsler'}';
+        : '$currentCount ${currentCount == 1 ? 'varsel' : 'varsler'}';
 
     return Semantics(
       label: badgeLabel,

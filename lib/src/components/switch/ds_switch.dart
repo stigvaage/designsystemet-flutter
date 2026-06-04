@@ -6,13 +6,14 @@ import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../theme/ds_theme_data.dart';
 import '../../utils/ds_animation.dart';
+import '../../utils/ds_control_label.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_focus.dart';
 
 /// A toggle switch with an animated sliding thumb.
 ///
 /// Supports optional label and description, keyboard activation (Space),
-/// and a read-only mode.
+/// a [disabled] state, and a [readOnly] mode.
 ///
 /// The [variant] controls the visual style: [DsSelectionVariant.default_]
 /// renders the bare control, while [DsSelectionVariant.outline] wraps the
@@ -26,19 +27,52 @@ class DsSwitch extends StatefulWidget {
     this.description,
     this.size,
     this.color,
+    this.disabled = false,
     this.readOnly = false,
     this.focusNode,
+    this.autofocus = false,
     this.variant = DsSelectionVariant.default_,
   });
 
+  /// Whether the switch is on.
   final bool value;
+
+  /// Called when the user toggles the switch.
+  ///
+  /// When `null` the switch is non-interactive (rendered like [disabled]
+  /// without the dimming), mirroring the official disabled-by-absent-handler
+  /// behavior.
   final ValueChanged<bool>? onChanged;
+
+  /// Optional label shown next to the control.
   final Widget? label;
+
+  /// Optional description shown below the [label].
   final Widget? description;
+
+  /// The control size. Inherits from [DsSizeScope] when not set.
   final DsSize? size;
+
+  /// The accent color. Inherits from [DsColorScope] when not set.
   final DsColor? color;
+
+  /// Whether the switch is disabled.
+  ///
+  /// A disabled switch is dimmed with [DsThemeData.disabledOpacity] and does
+  /// not respond to pointer, keyboard, or focus. Distinct from [readOnly],
+  /// which keeps full opacity but blocks changes.
+  final bool disabled;
+
+  /// Whether the switch is read-only.
+  ///
+  /// A read-only switch keeps full opacity but does not respond to toggling.
   final bool readOnly;
+
+  /// An optional focus node to control the switch's focus.
   final FocusNode? focusNode;
+
+  /// Whether the switch should request focus when first built.
+  final bool autofocus;
 
   /// The visual style of the switch.
   ///
@@ -53,6 +87,12 @@ class DsSwitch extends StatefulWidget {
 
 class _DsSwitchState extends State<DsSwitch> {
   bool _isFocused = false;
+  bool _isHovered = false;
+
+  /// Non-interactive when explicitly disabled, read-only, or when there is no
+  /// change handler to call.
+  bool get _isInteractive =>
+      !widget.disabled && !widget.readOnly && widget.onChanged != null;
 
   @override
   Widget build(BuildContext context) {
@@ -62,30 +102,27 @@ class _DsSwitchState extends State<DsSwitch> {
     final duration = DsAnimation.resolveDuration(context, DsAnimation.normal);
     final sizeMode = widget.size ?? DsSizeScope.of(context);
 
-    final trackWidth = switch (sizeMode) {
-      DsSize.sm => 36.0,
-      DsSize.md => 44.0,
-      DsSize.lg => 52.0,
-    };
-    final trackHeight = switch (sizeMode) {
-      DsSize.sm => 20.0,
-      DsSize.md => 24.0,
-      DsSize.lg => 28.0,
-    };
+    final trackWidth = sizeMode.pick(sm: 36.0, md: 44.0, lg: 52.0);
+    final trackHeight = sizeMode.pick(sm: 20.0, md: 24.0, lg: 28.0);
     final thumbSize = trackHeight - 4;
 
     final trackColor = widget.value
         ? colorScale.baseDefault
         : colorScale.surfaceDefault;
+    // Subtle hover treatment consistent with DsButton/DsCheckbox: when off,
+    // strengthen the track border on hover; when on, keep the base border.
     final trackBorder = widget.value
         ? colorScale.baseDefault
-        : colorScale.borderDefault;
+        : (_isHovered && _isInteractive
+              ? colorScale.borderStrong
+              : colorScale.borderDefault);
     final thumbColor = widget.value
         ? colorScale.baseContrastDefault
         : colorScale.backgroundDefault;
 
     Widget track = AnimatedContainer(
       duration: duration,
+      curve: DsAnimation.defaultCurve,
       width: trackWidth,
       height: trackHeight,
       decoration: BoxDecoration(
@@ -95,6 +132,7 @@ class _DsSwitchState extends State<DsSwitch> {
       ),
       child: AnimatedAlign(
         duration: duration,
+        curve: DsAnimation.defaultCurve,
         alignment: widget.value ? Alignment.centerRight : Alignment.centerLeft,
         child: Padding(
           padding: const EdgeInsets.all(2),
@@ -110,60 +148,38 @@ class _DsSwitchState extends State<DsSwitch> {
       ),
     );
 
-    if (_isFocused) {
-      track = DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(
-            trackHeight / 2 + DsFocus.ringWidth,
-          ),
-          border: Border.all(
-            color: colorScale.borderStrong,
-            width: DsFocus.ringWidth,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(DsFocus.ringWidth),
-          child: track,
-        ),
-      );
-    }
+    // Always reserve the focus-ring space (no layout shift on focus). The
+    // track is a pill, so pass a stadium radius matching its half-height.
+    track = DsFocus.reserveRing(
+      focused: _isFocused && _isInteractive,
+      radius: BorderRadius.circular(trackHeight / 2),
+      scale: colorScale,
+      child: track,
+    );
 
     final hasLabelContent = widget.label != null || widget.description != null;
 
     final Widget inner = hasLabelContent
-        ? Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: widget.description != null
-                ? CrossAxisAlignment.start
-                : CrossAxisAlignment.center,
-            children: [
-              track,
-              const SizedBox(width: 8),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (widget.label != null) widget.label!,
-                  if (widget.description != null)
-                    DefaultTextStyle(
-                      style: theme.typography.bodySm.copyWith(
-                        color: colorScale.textSubtle,
-                      ),
-                      child: widget.description!,
-                    ),
-                ],
-              ),
-            ],
+        ? DsControlLabel(
+            control: track,
+            label: widget.label ?? const SizedBox.shrink(),
+            description: widget.description,
+            descriptionStyle: theme.typography.bodySm.copyWith(
+              color: colorScale.textSubtle,
+            ),
           )
         : track;
 
-    return Semantics(
+    Widget result = Semantics(
       toggled: widget.value,
-      enabled: !widget.readOnly,
+      enabled: _isInteractive,
       child: Focus(
         focusNode: widget.focusNode,
+        autofocus: widget.autofocus,
+        canRequestFocus: _isInteractive,
+        descendantsAreFocusable: _isInteractive,
         onKeyEvent: (node, event) {
-          if (!widget.readOnly &&
+          if (_isInteractive &&
               event is KeyDownEvent &&
               event.logicalKey == LogicalKeyboardKey.space) {
             widget.onChanged?.call(!widget.value);
@@ -172,21 +188,43 @@ class _DsSwitchState extends State<DsSwitch> {
           return KeyEventResult.ignored;
         },
         onFocusChange: (f) => setState(() => _isFocused = f),
-        child: GestureDetector(
-          // Opaque so a tap anywhere in the control area (including the label
-          // and the outline padding/border zone) toggles the switch.
-          behavior: HitTestBehavior.opaque,
-          onTap: widget.readOnly
-              ? null
-              : () => widget.onChanged?.call(!widget.value),
-          // The outline wrapper is the GestureDetector's CHILD so its
-          // padding/border zone is inside the hit-test area (no dead tap-zone).
-          child: widget.variant == DsSelectionVariant.outline
-              ? _wrapInOutline(inner, theme, colorScale)
-              : inner,
+        child: MouseRegion(
+          cursor: _isInteractive
+              ? SystemMouseCursors.click
+              : SystemMouseCursors.basic,
+          onEnter: (_) {
+            if (_isInteractive) setState(() => _isHovered = true);
+          },
+          onExit: (_) {
+            if (_isInteractive) setState(() => _isHovered = false);
+          },
+          child: GestureDetector(
+            // Opaque so a tap anywhere in the control area (including the label
+            // and the outline padding/border zone) toggles the switch.
+            behavior: HitTestBehavior.opaque,
+            onTap: _isInteractive
+                ? () => widget.onChanged?.call(!widget.value)
+                : null,
+            // The outline wrapper is the GestureDetector's CHILD so its
+            // padding/border zone is inside the hit-test area (no dead tap-zone).
+            child: widget.variant == DsSelectionVariant.outline
+                ? _wrapInOutline(inner, theme, colorScale)
+                : inner,
+          ),
         ),
       ),
     );
+
+    // A disabled switch is dimmed and fully non-interactive. readOnly and the
+    // null-handler case stay at full opacity but are still non-interactive.
+    if (widget.disabled) {
+      result = Opacity(
+        opacity: theme.disabledOpacity,
+        child: IgnorePointer(child: result),
+      );
+    }
+
+    return result;
   }
 
   Widget _wrapInOutline(

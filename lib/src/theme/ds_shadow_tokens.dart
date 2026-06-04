@@ -1,4 +1,5 @@
 import 'dart:ui' show Color, Offset;
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/painting.dart' show BoxShadow;
 
 /// Design tokens for box shadows at five elevation levels (xs–xl).
@@ -215,5 +216,24 @@ class DsShadowTokens {
         color: Color.fromRGBO(0, 0, 0, 0.32),
       ),
     ],
+  );
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DsShadowTokens &&
+          listEquals(other.xs, xs) &&
+          listEquals(other.sm, sm) &&
+          listEquals(other.md, md) &&
+          listEquals(other.lg, lg) &&
+          listEquals(other.xl, xl);
+
+  @override
+  int get hashCode => Object.hash(
+    Object.hashAll(xs),
+    Object.hashAll(sm),
+    Object.hashAll(md),
+    Object.hashAll(lg),
+    Object.hashAll(xl),
   );
 }

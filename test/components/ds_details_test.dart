@@ -77,6 +77,33 @@ void main() {
       expect(semantics.flagsCollection.isExpanded, isNot(Tristate.none));
     });
 
+    testWidgets('forwards an external focusNode to the summary', (
+      tester,
+    ) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsDetails(
+            focusNode: focusNode,
+            summary: const Text('Summary'),
+            child: const Text('Content'),
+          ),
+        ),
+      );
+
+      // Requesting focus on the external node focuses the summary, and a
+      // keyboard activation through that focus toggles the disclosure.
+      focusNode.requestFocus();
+      await tester.pump();
+      expect(focusNode.hasFocus, isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(find.text('Content'), findsOneWidget);
+    });
+
     testWidgets('summary exposes a button with an onTap action', (
       tester,
     ) async {

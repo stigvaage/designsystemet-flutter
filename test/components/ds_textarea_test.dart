@@ -37,5 +37,29 @@ void main() {
         reason: 'the soft keyboard must open after a single tap',
       );
     });
+
+    testWidgets('forwards onSubmitted and keyboardType to DsInput', (
+      tester,
+    ) async {
+      String? submitted;
+      await tester.pumpWidget(
+        _host(
+          DsTextarea(
+            onSubmitted: (value) => submitted = value,
+            keyboardType: TextInputType.emailAddress,
+          ),
+        ),
+      );
+
+      final input = tester.widget<DsInput>(find.byType(DsInput));
+      expect(input.keyboardType, TextInputType.emailAddress);
+      expect(input.onSubmitted, isNotNull);
+
+      await tester.enterText(find.byType(DsTextarea), 'hei@eksempel.no');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pump();
+
+      expect(submitted, 'hei@eksempel.no');
+    });
   });
 }

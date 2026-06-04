@@ -67,23 +67,27 @@ class _DsCardState extends State<DsCard> {
       boxShadow: widget.elevated ? theme.shadows.sm : null,
     );
 
+    // A non-interactive card can never change its hover/focus state, so there
+    // is no reason to run an [AnimatedContainer] ticker. Render a plain
+    // [DecoratedBox] instead to avoid the needless animation and focus chrome.
+    if (!isClickable) {
+      return DecoratedBox(decoration: decoration, child: widget.child);
+    }
+
     Widget card = AnimatedContainer(
       duration: duration,
+      curve: DsAnimation.defaultCurve,
       decoration: decoration,
       child: widget.child,
     );
 
-    if (_isFocused && isClickable) {
-      card = DecoratedBox(
-        decoration: DsFocus.focusRingWithRadius(colorScale, radius),
-        child: Padding(
-          padding: const EdgeInsets.all(DsFocus.ringWidth),
-          child: card,
-        ),
-      );
-    }
-
-    if (!isClickable) return card;
+    // Always reserve focus ring space so focusing never shifts layout.
+    card = DsFocus.reserveRing(
+      focused: _isFocused,
+      radius: radius,
+      scale: colorScale,
+      child: card,
+    );
 
     return Semantics(
       button: true,

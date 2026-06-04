@@ -121,4 +121,59 @@ class DsTypography {
       bodyLongXs: body(13 * scale, 1.7, 0.015 * 13 * scale),
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DsTypography &&
+          other.fontFamily == fontFamily &&
+          other.heading2xl == heading2xl &&
+          other.headingXl == headingXl &&
+          other.headingLg == headingLg &&
+          other.headingMd == headingMd &&
+          other.headingSm == headingSm &&
+          other.headingXs == headingXs &&
+          other.heading2xs == heading2xs &&
+          other.bodyXl == bodyXl &&
+          other.bodyLg == bodyLg &&
+          other.bodyMd == bodyMd &&
+          other.bodySm == bodySm &&
+          other.bodyXs == bodyXs &&
+          other.bodyShortXl == bodyShortXl &&
+          other.bodyShortLg == bodyShortLg &&
+          other.bodyShortMd == bodyShortMd &&
+          other.bodyShortSm == bodyShortSm &&
+          other.bodyShortXs == bodyShortXs &&
+          other.bodyLongXl == bodyLongXl &&
+          other.bodyLongLg == bodyLongLg &&
+          other.bodyLongMd == bodyLongMd &&
+          other.bodyLongSm == bodyLongSm &&
+          other.bodyLongXs == bodyLongXs;
+
+  @override
+  int get hashCode => Object.hashAll([
+    fontFamily,
+    heading2xl,
+    headingXl,
+    headingLg,
+    headingMd,
+    headingSm,
+    headingXs,
+    heading2xs,
+    bodyXl,
+    bodyLg,
+    bodyMd,
+    bodySm,
+    bodyXs,
+    bodyShortXl,
+    bodyShortLg,
+    bodyShortMd,
+    bodyShortSm,
+    bodyShortXs,
+    bodyLongXl,
+    bodyLongLg,
+    bodyLongMd,
+    bodyLongSm,
+    bodyLongXs,
+  ]);
 }

@@ -90,9 +90,14 @@ class DsBreadcrumbs extends StatelessWidget {
 /// A single tappable breadcrumb link.
 ///
 /// Tracks keyboard focus so it can render a visible focus indicator
-/// ([DsFocus.focusRingWithRadius]) when focused, satisfying WCAG 2.4.7. The
-/// ring space is always reserved to prevent layout shift between the focused
-/// and unfocused states (matching the [DsCheckbox]/[DsButton] pattern).
+/// ([DsFocus.reserveRing]) when focused, satisfying WCAG 2.4.7. The ring space
+/// is always reserved to prevent layout shift between the focused and
+/// unfocused states (matching the [DsButton] pattern).
+///
+/// As a link-role control it activates on `Enter` only — not `Space` — which
+/// matches native hyperlink behaviour (`Space` is reserved for scrolling and
+/// for activating button-role controls). This is the shared convention for all
+/// link-role widgets in the library.
 class _DsBreadcrumbLink extends StatefulWidget {
   const _DsBreadcrumbLink({
     required this.label,
@@ -116,25 +121,12 @@ class _DsBreadcrumbLinkState extends State<_DsBreadcrumbLink> {
   @override
   Widget build(BuildContext context) {
     final colorScale = widget.colorScale;
-    final radius = BorderRadius.circular(DsFocus.ringOffset);
-
-    // Always reserve focus ring space to prevent layout shift between the
-    // focused and unfocused states.
-    final focusDecoration = _isFocused
-        ? DsFocus.focusRingWithRadius(colorScale, radius)
-        : BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              radius.topLeft.x + DsFocus.ringWidth,
-            ),
-            border: Border.all(
-              color: const Color(0x00000000),
-              width: DsFocus.ringWidth,
-            ),
-          );
 
     return Focus(
       onFocusChange: (f) => setState(() => _isFocused = f),
       onKeyEvent: (node, event) {
+        // Link-role convention: activate on Enter only (not Space), matching
+        // native hyperlinks and the other link-role widgets in the library.
         if (event is KeyDownEvent &&
             event.logicalKey == LogicalKeyboardKey.enter) {
           widget.onTap();
@@ -146,16 +138,15 @@ class _DsBreadcrumbLinkState extends State<_DsBreadcrumbLink> {
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
           onTap: widget.onTap,
-          child: DecoratedBox(
-            decoration: focusDecoration,
-            child: Padding(
-              padding: const EdgeInsets.all(DsFocus.ringWidth),
-              child: Text(
-                widget.label,
-                style: widget.typography.bodySm.copyWith(
-                  color: colorScale.textDefault,
-                  decoration: TextDecoration.underline,
-                ),
+          child: DsFocus.reserveRing(
+            focused: _isFocused,
+            radius: BorderRadius.circular(DsFocus.ringOffset),
+            scale: colorScale,
+            child: Text(
+              widget.label,
+              style: widget.typography.bodySm.copyWith(
+                color: colorScale.textDefault,
+                decoration: TextDecoration.underline,
               ),
             ),
           ),

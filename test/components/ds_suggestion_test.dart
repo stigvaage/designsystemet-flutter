@@ -113,6 +113,176 @@ void main() {
       expect(changes.last, ['Mango']);
     });
 
+    testWidgets('createLabel overrides the create row label and semantics', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          DsSuggestion<String>(
+            options: _fruits,
+            creatable: true,
+            onCreate: (q) => q,
+            createLabel: (q) => 'Legg til $q',
+            onSelectedChanged: (_) {},
+          ),
+        ),
+      );
+      await tester.enterText(find.byType(EditableText), 'Mango');
+      await tester.pump();
+      // The custom label replaces the Norwegian default everywhere.
+      expect(find.text('Legg til Mango'), findsOneWidget);
+      expect(find.text('Opprett "Mango"'), findsNothing);
+      final createSemantics = find.byWidgetPredicate(
+        (w) =>
+            w is Semantics &&
+            w.properties.button == true &&
+            w.properties.label == 'Legg til Mango',
+      );
+      expect(createSemantics, findsOneWidget);
+    });
+
+    testWidgets('accepts an external focusNode that drives focus/open', (
+      tester,
+    ) async {
+      final node = FocusNode();
+      addTearDown(node.dispose);
+      await tester.pumpWidget(
+        host(
+          DsSuggestion<String>(
+            options: _fruits,
+            focusNode: node,
+            onSelectedChanged: (_) {},
+          ),
+        ),
+      );
+      expect(find.text('Apple'), findsNothing);
+
+      // Requesting focus on the supplied node must open the overlay (the
+      // widget listens to the external node just like its own). One pump grants
+      // focus and runs the listener's _open(); a second renders the freshly
+      // inserted overlay entry.
+      node.requestFocus();
+      await tester.pump();
+      await tester.pump();
+      expect(find.text('Apple'), findsOneWidget);
+    });
+
+    testWidgets('disposing does not dispose an external focusNode', (
+      tester,
+    ) async {
+      final node = FocusNode();
+      addTearDown(node.dispose);
+      await tester.pumpWidget(
+        host(
+          DsSuggestion<String>(
+            options: _fruits,
+            focusNode: node,
+            onSelectedChanged: (_) {},
+          ),
+        ),
+      );
+      // Replace the widget so DsSuggestion is disposed; the external node must
+      // survive (a later use would throw if it had been disposed).
+      await tester.pumpWidget(host(const SizedBox.shrink()));
+      // Still usable — accessing/using a disposed FocusNode would throw.
+      expect(node.hasFocus, isFalse);
+      node.requestFocus();
+    });
+
+    testWidgets('opens above the field when the keyboard inset crowds below', (
+      tester,
+    ) async {
+      // Place the field near the bottom and simulate a soft keyboard via
+      // viewInsets.bottom. The list must still render (flipped up / clamped)
+      // rather than being pushed off-screen behind the keyboard (#23).
+      await tester.pumpWidget(
+        DsTheme(
+          data: DsThemeDigdir.light(),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: MediaQuery(
+              data: const MediaQueryData(
+                size: Size(400, 800),
+                viewInsets: EdgeInsets.only(bottom: 500),
+              ),
+              child: Overlay(
+                initialEntries: [
+                  OverlayEntry(
+                    builder: (_) => Align(
+                      alignment: Alignment.bottomLeft,
+                      child: SizedBox(
+                        width: 300,
+                        child: DsSuggestion<String>(
+                          options: _fruits,
+                          onSelectedChanged: (_) {},
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.enterText(find.byType(EditableText), 'a');
+      await tester.pump();
+      // The list is shown.
+      expect(find.text('Apple'), findsOneWidget);
+      // And its top is above the field's top (it flipped upward), so it is not
+      // hidden behind the keyboard inset.
+      final listTop = tester.getTopLeft(find.text('Apple')).dy;
+      final fieldTop = tester.getTopLeft(find.byType(EditableText)).dy;
+      expect(listTop, lessThan(fieldTop));
+    });
+
+    testWidgets('arrow navigation scrolls the highlighted option into view', (
+      tester,
+    ) async {
+      // A long option list in a short overlay forces scrolling; navigating to
+      // a far-down option must bring it into the viewport (#21).
+      final many = [
+        for (var i = 0; i < 40; i++)
+          DsSuggestionOption(value: 'v$i', label: 'Option $i'),
+      ];
+      await tester.pumpWidget(
+        host(
+          DsSuggestion<String>(
+            options: many,
+            filter: false,
+            onSelectedChanged: (_) {},
+          ),
+        ),
+      );
+      await tester.showKeyboard(find.byType(EditableText));
+      await tester.pump();
+
+      // SingleChildScrollView builds every row (it is not lazy), so assert by
+      // paint position relative to the scroll viewport rather than presence.
+      final scrollView = find.ancestor(
+        of: find.text('Option 0'),
+        matching: find.byType(SingleChildScrollView),
+      );
+      Rect viewportRect() => tester.getRect(scrollView);
+      // Option 30 starts below the visible viewport (clipped off the bottom).
+      expect(
+        tester.getRect(find.text('Option 30')).top,
+        greaterThan(viewportRect().bottom),
+      );
+
+      // Walk the highlight down to option 30.
+      for (var i = 0; i <= 30; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      }
+      await tester.pumpAndSettle();
+
+      // ensureVisible scrolled it into the viewport's vertical bounds.
+      final vp = viewportRect();
+      final row = tester.getRect(find.text('Option 30'));
+      expect(row.top, greaterThanOrEqualTo(vp.top - 1));
+      expect(row.bottom, lessThanOrEqualTo(vp.bottom + 1));
+    });
+
     testWidgets('Enter selects the single filtered match', (tester) async {
       final changes = <List<String>>[];
       await tester.pumpWidget(

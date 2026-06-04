@@ -18,13 +18,34 @@ class DsAvatar extends StatelessWidget {
     this.size,
     this.color,
     this.variant = DsAvatarVariant.circle,
+    this.semanticLabel,
   });
 
+  /// The name used to derive the displayed initials and the default semantic
+  /// label.
   final String? name;
+
+  /// An optional image URL. When set, the image is loaded with an initials
+  /// fallback while loading or on error.
   final String? imageUrl;
+
+  /// The size of the avatar. Falls back to [DsSizeScope.of] when null.
   final DsSize? size;
+
+  /// The color used for the avatar surface, border and text. Falls back to
+  /// [DsColorScope.of] when null.
   final DsColor? color;
+
+  /// The shape of the avatar; see [DsAvatarVariant].
   final DsAvatarVariant variant;
+
+  /// An optional override for the accessibility label.
+  ///
+  /// Use this when the avatar image carries meaning (for example a company
+  /// logo) and the [name]-based default is not descriptive enough. When null,
+  /// the semantic label falls back to [name], or «Profilbilde» when [name] is
+  /// also null.
+  final String? semanticLabel;
 
   String get _initials {
     final trimmed = name?.trim() ?? '';
@@ -73,7 +94,7 @@ class DsAvatar extends StatelessWidget {
     );
 
     return Semantics(
-      label: name ?? 'Profilbilde',
+      label: semanticLabel ?? name ?? 'Profilbilde',
       image: true,
       child: Container(
         width: dimension,

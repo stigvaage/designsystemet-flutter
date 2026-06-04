@@ -139,5 +139,157 @@ void main() {
           .any((c) => c.padding == const EdgeInsets.all(12));
       expect(hasOutline, isFalse);
     });
+
+    testWidgets('disabled: does not call onChanged when tapped', (
+      tester,
+    ) async {
+      var called = false;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsSwitch(
+            value: false,
+            disabled: true,
+            onChanged: (_) => called = true,
+          ),
+        ),
+      );
+      await tester.tap(find.byType(DsSwitch));
+      expect(called, isFalse);
+    });
+
+    testWidgets('disabled: dims the control with Opacity + IgnorePointer', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsSwitch(value: false, disabled: true, onChanged: (_) {}),
+        ),
+      );
+      final opacity = tester.widget<Opacity>(
+        find
+            .descendant(
+              of: find.byType(DsSwitch),
+              matching: find.byType(Opacity),
+            )
+            .first,
+      );
+      expect(opacity.opacity, lessThan(1.0));
+      expect(
+        find.descendant(
+          of: find.byType(DsSwitch),
+          matching: find.byType(IgnorePointer),
+        ),
+        findsWidgets,
+      );
+    });
+
+    testWidgets('readOnly stays at full opacity (not dimmed)', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsSwitch(value: false, readOnly: true, onChanged: (_) {}),
+        ),
+      );
+      final hasDim = tester
+          .widgetList<Opacity>(
+            find.descendant(
+              of: find.byType(DsSwitch),
+              matching: find.byType(Opacity),
+            ),
+          )
+          .any((o) => o.opacity < 1.0);
+      expect(hasDim, isFalse);
+    });
+
+    testWidgets('null onChanged is treated as non-interactive', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsSwitch(value: false, onChanged: null)),
+      );
+      // Tapping must not throw and there is nothing to toggle.
+      await tester.tap(find.byType(DsSwitch));
+      final semantics = tester.widget<Semantics>(
+        find
+            .descendant(
+              of: find.byType(DsSwitch),
+              matching: find.byType(Semantics),
+            )
+            .first,
+      );
+      expect(semantics.properties.enabled, isFalse);
+    });
+
+    testWidgets('autofocus requests focus on first build', (tester) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsSwitch(
+            value: false,
+            onChanged: (_) {},
+            autofocus: true,
+            focusNode: focusNode,
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(focusNode.hasFocus, isTrue);
+    });
+
+    testWidgets('focus does not shift layout (ring space always reserved)', (
+      tester,
+    ) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          Center(
+            child: DsSwitch(
+              value: false,
+              onChanged: (_) {},
+              focusNode: focusNode,
+            ),
+          ),
+        ),
+      );
+      final unfocusedRect = tester.getRect(find.byType(DsSwitch));
+
+      focusNode.requestFocus();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      final focusedRect = tester.getRect(find.byType(DsSwitch));
+      expect(focusedRect.size, unfocusedRect.size);
+    });
+
+    testWidgets('interactive switch uses the click cursor', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(DsSwitch(value: false, onChanged: (_) {})),
+      );
+      final region = tester.widget<MouseRegion>(
+        find
+            .descendant(
+              of: find.byType(DsSwitch),
+              matching: find.byType(MouseRegion),
+            )
+            .first,
+      );
+      expect(region.cursor, SystemMouseCursors.click);
+    });
+
+    testWidgets('disabled switch uses the basic cursor', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsSwitch(value: false, disabled: true, onChanged: (_) {}),
+        ),
+      );
+      final region = tester.widget<MouseRegion>(
+        find
+            .descendant(
+              of: find.byType(DsSwitch),
+              matching: find.byType(MouseRegion),
+            )
+            .first,
+      );
+      expect(region.cursor, SystemMouseCursors.basic);
+    });
   });
 }

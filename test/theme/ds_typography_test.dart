@@ -59,5 +59,28 @@ void main() {
     test('has cv05 font feature', () {
       expect(typo.heading2xl.fontFeatures, contains(const FontFeature('cv05')));
     });
+
+    test('value equality: same parameters are equal and share hashCode', () {
+      final a = DsTypography.create(baseFontSize: 18);
+      final b = DsTypography.create(baseFontSize: 18);
+      expect(a, equals(b));
+      expect(a.hashCode, equals(b.hashCode));
+    });
+
+    test('value equality: different base font size is unequal', () {
+      expect(
+        DsTypography.create(baseFontSize: 18),
+        isNot(equals(DsTypography.create(baseFontSize: 16))),
+      );
+    });
+
+    test('value equality: different font family is unequal', () {
+      expect(
+        DsTypography.create(baseFontSize: 18),
+        isNot(
+          equals(DsTypography.create(fontFamily: 'Roboto', baseFontSize: 18)),
+        ),
+      );
+    });
   });
 }

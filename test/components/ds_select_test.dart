@@ -365,5 +365,187 @@ void main() {
         findsWidgets,
       );
     });
+
+    testWidgets('overridable semantics label is used instead of "Velg"', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsSelect<String>(
+            options: _fruit,
+            placeholder: 'Choose',
+            semanticsLabel: 'Velg frukt',
+          ),
+        ),
+      );
+
+      final semanticsWidget = tester.widget<Semantics>(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == 'Velg frukt',
+        ),
+      );
+      expect(semanticsWidget.properties.button, isTrue);
+      // The default label is no longer present.
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == 'Velg',
+        ),
+        findsNothing,
+      );
+    });
+
+    testWidgets('trigger reserves a focus ring (no layout shift on focus)', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsSelect<String>(options: _fruit, placeholder: 'Choose'),
+        ),
+      );
+
+      // Height before focus.
+      final before = tester.getSize(find.text('Choose').first);
+
+      Focus.of(tester.element(find.text('Choose'))).requestFocus();
+      await tester.pumpAndSettle();
+
+      // Height after focus is unchanged: the ring space is always reserved.
+      final after = tester.getSize(find.text('Choose').first);
+      expect(after.height, before.height);
+    });
+
+    testWidgets(
+      'focusing the trigger promotes the border to the strong colour',
+      (tester) async {
+        final theme = DsThemeDigdir.light();
+        final scale = theme.colorScheme.resolve(DsColor.accent);
+
+        await tester.pumpWidget(
+          wrapWithOverlay(
+            const DsSelect<String>(options: _fruit, placeholder: 'Choose'),
+          ),
+        );
+
+        Color triggerBorderColor() {
+          final container = tester.widget<AnimatedContainer>(
+            find.byType(AnimatedContainer),
+          );
+          final decoration = container.decoration! as BoxDecoration;
+          return decoration.border!.top.color;
+        }
+
+        expect(triggerBorderColor(), scale.borderDefault);
+
+        Focus.of(tester.element(find.text('Choose'))).requestFocus();
+        await tester.pumpAndSettle();
+
+        expect(triggerBorderColor(), scale.borderStrong);
+      },
+    );
+
+    testWidgets('readOnly drops the border for a visual distinction', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsSelect<String>(
+            options: _fruit,
+            value: 'apple',
+            readOnly: true,
+          ),
+        ),
+      );
+
+      final theme = DsThemeDigdir.light();
+      final scale = theme.colorScheme.resolve(DsColor.accent);
+      final container = tester.widget<AnimatedContainer>(
+        find.byType(AnimatedContainer),
+      );
+      final decoration = container.decoration! as BoxDecoration;
+      // Border is none and the fill uses the subtle read-only surface.
+      expect(decoration.border, const Border.fromBorderSide(BorderSide.none));
+      expect(decoration.color, scale.surfaceDefault);
+    });
+
+    testWidgets('accepts an external focus node', (tester) async {
+      final node = FocusNode();
+      addTearDown(node.dispose);
+
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          DsSelect<String>(
+            options: _fruit,
+            placeholder: 'Choose',
+            focusNode: node,
+          ),
+        ),
+      );
+
+      node.requestFocus();
+      await tester.pumpAndSettle();
+      expect(node.hasFocus, isTrue);
+
+      // Pressing Enter on the externally-focused node opens the dropdown.
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(find.text('Apple'), findsOneWidget);
+    });
+
+    testWidgets('arrow navigation scrolls the highlighted row into view', (
+      tester,
+    ) async {
+      // Enough options to overflow the dropdown so scrolling is required.
+      final many = List.generate(
+        30,
+        (i) => DsSelectOption<String>(value: 'v$i', label: 'Option $i'),
+      );
+      String? selected;
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          DsSelect<String>(
+            options: many,
+            placeholder: 'Choose',
+            onChanged: (v) => selected = v,
+          ),
+        ),
+      );
+
+      Focus.of(tester.element(find.text('Choose'))).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+
+      // Walk the highlight far enough that the row would be clipped without
+      // scroll-into-view, then select it.
+      for (var i = 0; i < 25; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await tester.pumpAndSettle();
+      }
+
+      // The highlighted row was scrolled into view and is hittable.
+      expect(find.text('Option 25'), findsOneWidget);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(selected, 'v25');
+    });
+
+    testWidgets('dropdown clamps its height to the available viewport space', (
+      tester,
+    ) async {
+      final many = List.generate(
+        100,
+        (i) => DsSelectOption<String>(value: 'v$i', label: 'Option $i'),
+      );
+      await tester.pumpWidget(
+        wrapWithOverlay(DsSelect<String>(options: many, placeholder: 'Choose')),
+      );
+
+      await tester.tap(find.text('Choose'));
+      await tester.pumpAndSettle();
+
+      // The scrollable dropdown is constrained and never taller than the cap.
+      final box = tester.getSize(find.byType(SingleChildScrollView));
+      expect(box.height, lessThanOrEqualTo(280));
+    });
   });
 }

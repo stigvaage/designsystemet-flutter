@@ -1,5 +1,6 @@
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:designsystemet_flutter/src/components/button/ds_button.dart';
+import 'package:designsystemet_flutter/src/components/spinner/ds_spinner.dart';
 import 'package:designsystemet_flutter/theme.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -31,6 +32,72 @@ void main() {
       );
       await tester.tap(find.byType(DsButton));
       expect(pressed, isTrue);
+    });
+
+    testWidgets('null onPressed is treated as disabled', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsButton(child: Text('No handler'))),
+      );
+      // Disabled buttons dim to disabledOpacity via an Opacity wrapper.
+      expect(find.byType(Opacity), findsOneWidget);
+      // Tapping must not throw and there is nothing to call.
+      await tester.tap(find.byType(DsButton));
+      // The button semantics is marked disabled.
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.enabled == false,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('autofocus requests focus on insert', (tester) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsButton(
+            onPressed: () {},
+            autofocus: true,
+            focusNode: focusNode,
+            child: const Text('Auto'),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(focusNode.hasFocus, isTrue);
+    });
+
+    testWidgets('loading announces "Laster" to assistive tech', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsButton(onPressed: () {}, loading: true, child: const Text('Lagre')),
+        ),
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == 'Laster',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('loading spinner uses the foreground/contrast color', (
+      tester,
+    ) async {
+      final theme = DsThemeDigdir.light();
+      final fgColor = theme.colorScheme
+          .resolve(DsColor.accent)
+          .baseContrastDefault;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsButton(onPressed: () {}, loading: true, child: const Text('Lagre')),
+        ),
+      );
+      final spinner = tester.widget<DsSpinner>(find.byType(DsSpinner));
+      // The spinner must paint with the visible contrast color, not the
+      // (invisible) baseDefault used as the primary background.
+      expect(spinner.paintColor, fgColor);
     });
 
     testWidgets('does not call onPressed when disabled', (tester) async {

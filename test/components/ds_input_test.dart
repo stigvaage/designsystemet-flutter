@@ -113,6 +113,87 @@ void main() {
     });
   });
 
+  group('DsInput disabled treatment', () {
+    // Finding #29: the canonical disabled treatment is IgnorePointer + Opacity.
+    // A disabled field must dim (Opacity) and swallow pointer input
+    // (IgnorePointer) — verify both wrappers are present, and absent otherwise.
+    // Flutter's own text-field internals add IgnorePointer widgets of their
+    // own (and they may be inactive), so we cannot assert on the raw widget
+    // count. Instead assert the meaningful state: when disabled, DsInput's own
+    // wrapper actively ignores pointers (ignoring == true) AND dims the field
+    // (an Opacity with opacity < 1.0). When enabled, neither is present.
+    testWidgets('wraps in IgnorePointer + Opacity when disabled', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(const DsInput(size: DsSize.md, disabled: true)),
+      );
+
+      expect(
+        find.descendant(
+          of: find.byType(DsInput),
+          matching: find.byWidgetPredicate(
+            (w) => w is IgnorePointer && w.ignoring,
+          ),
+        ),
+        findsAtLeastNWidgets(1),
+      );
+      expect(
+        find.descendant(
+          of: find.byType(DsInput),
+          matching: find.byWidgetPredicate(
+            (w) => w is Opacity && w.opacity < 1.0,
+          ),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('no IgnorePointer/Opacity when enabled', (tester) async {
+      await tester.pumpWidget(_host(const DsInput(size: DsSize.md)));
+
+      expect(
+        find.descendant(
+          of: find.byType(DsInput),
+          matching: find.byWidgetPredicate(
+            (w) => w is IgnorePointer && w.ignoring,
+          ),
+        ),
+        findsNothing,
+      );
+      expect(
+        find.descendant(
+          of: find.byType(DsInput),
+          matching: find.byWidgetPredicate(
+            (w) => w is Opacity && w.opacity < 1.0,
+          ),
+        ),
+        findsNothing,
+      );
+    });
+  });
+
+  group('DsInput focus ring (reserveRing)', () {
+    // DsFocus.reserveRing always reserves the 3px ring gap, so focusing must
+    // NOT shift the field's layout (no jump) — only the ring decoration swaps.
+    testWidgets('focusing does not shift the field layout', (tester) async {
+      final focus = FocusNode();
+      addTearDown(focus.dispose);
+      await tester.pumpWidget(
+        _host(DsInput(focusNode: focus, size: DsSize.md)),
+      );
+
+      final before = tester.getRect(find.byType(TextField));
+
+      focus.requestFocus();
+      await tester.pumpAndSettle();
+      expect(focus.hasFocus, isTrue);
+
+      final after = tester.getRect(find.byType(TextField));
+      expect(after, before, reason: 'focus ring must not move the field');
+    });
+  });
+
   group('DsInput controller swap', () {
     // Regression: didUpdateWidget used to reconcile only focusNode changes, so
     // swapping the controller (external <-> internal) lost the typed text or
