@@ -41,9 +41,36 @@ kontrasttest).
   `keepVisibleAtStart` + respekterer redusert bevegelse + hopper over read-only.
 - Lukket 17 funn fra ultrakritisk code review (dekker PR #32).
 
+### Robusthet og forbedringer
+
+Lukket alle 59 funn fra en intern forbedringsgjennomgang, alle vurdert mot offisiell
+Designsystemet-troskap:
+
+- **Delte hjelpere (DRY):** `DsFocus.reserveRing`/`reserveRingCircle` (alltid-reservert
+  fokusring, samlet fra ~13 komponenter), `DsSize.pick` + `DsSizeValues.fontSize`,
+  `DsControlLabel` (kontroll+label+beskrivelse), `DsSpinner.paintColor`.
+- **Skjemakontroller:** Checkbox/Radio fikk faktisk `error`-tilstand (danger-skala +
+  feilmelding + a11y) — feltet var tidligere død kode; `disabled` skilt fra `readOnly`
+  på Checkbox/Radio/Switch; hover respekterer `readOnly`; `autofocus` lagt til.
+- **Knapp:** `onPressed == null` regnes som deaktivert; loading-spinner er nå synlig på
+  alle varianter (forgrunnsfarge); «Laster» annonseres for skjermlesere.
+- **Fokus/tastatur:** synlig fokusring og tastaturbetjening på Select-trigger,
+  ErrorSummary-lenker og Alert-lukkeknapp; Switch hopper ikke lenger i layout ved fokus;
+  Dropdown fikk pil/Enter-navigasjon; ToggleGroup fikk Home/End; `focusNode` eksponert på
+  flere komponenter.
+- **Overlays:** Select/Suggestion klamrer høyde mot tastatur og vipper opp ved behov;
+  highlightet rad scrolles inn i synsfeltet; Dropdown rydder overlay uten `setState`.
+- **Norsk tekst:** Search defaulter til «Søk...»; ErrorSummary-tittel og Select/Suggestion-
+  etiketter er norske og overstyrbare.
+- **Tema-ytelse:** verdibasert `==`/`hashCode` på `DsThemeData` m.fl. (unngår unødvendige
+  rebuilds), farge-/skygge-`lerp`, og cachede `DsThemeDigdir.light()/dark()`.
+- **Diverse:** Skeleton bruker `dart:math.sin` (riktig shimmer), AvatarStack kobler `size`
+  til dimensjon + «+N»-overflyt + gruppe-semantikk, ikke-interaktivt Card kortslutter
+  uten animasjon.
+
 ### Tester
 
-- 202 → 290 tester. `flutter analyze` uten merknader.
+- 202 → 511 tester. `flutter analyze` uten merknader; MCP-server 16 tester grønne.
 
 ## 0.2.1
 
