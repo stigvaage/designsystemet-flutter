@@ -9,6 +9,23 @@ Avledet fra plan: full API-paritet med Designsystemet (React-referanse `digdir/d
 
 ---
 
+## STATUS (sluttført på branchen)
+
+**Levert og verifisert:** `flutter analyze` = 0 issues, **360 tester grønne**, `dart format` rent (CI-gate), MCP `npm run build` + 11 tester grønne. Versjon **0.3.0** (pubspec ↔ mcp), CHANGELOG oppdatert.
+
+- ✅ **Track 0** — variant-enums (mot v1.15.0-kilde) + `DsPlacement`/`DsSortDirection`; `DsCard.block/.header/.footer` compound-aliaser. *(Avgrensning: `DsSize` beholdt sm/md/lg = React `data-size`.)*
+- ✅ **Track A** — varianter (outline/tinted/circle-square/primary-secondary) + a11y (aria-current, aria-hidden, ariaLabel, tooltip-fokus) + tap-target-fikser.
+- ✅ **Track B** — Popover, **Suggestion (combobox)**, Table (sticky/sort/foot), Pagination (ellipse), Search, **Select<T>**, Chip-varianter.
+- ✅ **Track C3** — WCAG-kontrasttest (accent #003087 verifisert AA).
+- ✅ **Track D3/D4** — README + site (#003087 + manglende mønstre). **D5** — MCP versjon-synk + #003087 + dart-parser dartdoc. **D6** — 0.3.0 + CHANGELOG + CI-format-gate. **D1/D2** — alle 40 komponenter har test + Widgetbook-story.
+- ✅ **Track E** — alle 28 funn fra ultrakritisk adversarisk review lukket + regresjonstester.
+
+### Gjenstående (bevisst avgrenset oppfølging)
+- **T0.4 verdi-basert seleksjon for Tabs/ToggleGroup** (`<T>` + deprecated indeks-shims). Select er allerede `<T>`; Tabs/ToggleGroup bruker fungerende indeks-API — utsatt for å ikke bryte arbeidende komponenter uten klar gevinst.
+- **C1/C2 full token-regenerering fra #003087 via offisiell algoritme** (reproduserbar DTCG). Accent ER #003087 og oppfyller WCAG AA (verifisert). Funn fra C3: `success` (4.35:1) og `info` (3.77:1) hvit-på-base ligger like under 4.5 — løses presist av algoritme-regenerering.
+
+---
+
 ## Track 0 — Fundament (låser opp alt)
 - [ ] **T0.1** Utvid `lib/src/utils/ds_enums.dart`: `DsCardVariant`, `DsDetailsVariant`, `DsToggleGroupVariant`, `DsAvatarVariant`, `DsDialogModality`, `DsPlacement` (12 verdier), `DsSelectionVariant {default_, outline}`, `DsSortDirection`, `DsComboboxMode`.
 - [ ] **T0.2** Legg `xs` + `xl` til `DsSize`; oppdater alle 17 uttømmende `switch (size)` (avatar, badge, button, checkbox, chip, input, pagination, radio, select, spinner, switch, table, tabs, tag, toggle_group, label, size_scope). Test-sikret.
