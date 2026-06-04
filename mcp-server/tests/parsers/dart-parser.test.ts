@@ -1,4 +1,6 @@
 import { describe, it, expect } from "vitest";
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseComponent } from "../../src/parsers/dart-parser.js";
@@ -85,6 +87,67 @@ describe("parseComponent", () => {
       );
       expect(closable).toBeDefined();
       expect(closable!.defaultValue).toBe("false");
+    });
+  });
+
+  describe("generic widget classes", () => {
+    // Regression: class-detection regexes previously required whitespace
+    // directly between the class name and `extends`, so generic widgets like
+    // `class DsX<T> extends StatefulWidget` were silently dropped from the
+    // catalogue. The regexes must now tolerate an optional generic clause.
+
+    it("parses the class name of a `class DsX<T> extends StatefulWidget` fixture", () => {
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "ds-parser-"));
+      const fixturePath = path.join(tmpDir, "ds_x.dart");
+      fs.writeFileSync(
+        fixturePath,
+        [
+          "class DsX<T> extends StatefulWidget {",
+          "  const DsX({",
+          "    super.key,",
+          "    required this.value,",
+          "  });",
+          "",
+          "  /// The current value.",
+          "  final T value;",
+          "",
+          "  @override",
+          "  State<DsX<T>> createState() => _DsXState<T>();",
+          "}",
+          "",
+          "class _DsXState<T> extends State<DsX<T>> {",
+          "  @override",
+          "  Widget build(BuildContext context) => const SizedBox.shrink();",
+          "}",
+          "",
+        ].join("\n"),
+        "utf-8"
+      );
+
+      try {
+        const component = parseComponent(fixturePath, repoRoot);
+        expect(component.name).toBe("DsX");
+      } finally {
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+      }
+    });
+
+    it("parses DsSelect<T> from the real source file", () => {
+      const selectPath = path.join(
+        repoRoot,
+        "lib/src/components/select/ds_select.dart"
+      );
+      const component = parseComponent(selectPath, repoRoot);
+      expect(component.name).toBe("DsSelect");
+    });
+
+    it("parses DsSuggestion<T> from the real source file", () => {
+      const suggestionPath = path.join(
+        repoRoot,
+        "lib/src/components/suggestion/ds_suggestion.dart"
+      );
+      const component = parseComponent(suggestionPath, repoRoot);
+      expect(component.name).toBe("DsSuggestion");
     });
   });
 

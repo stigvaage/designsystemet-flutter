@@ -165,9 +165,19 @@ class _DsDetailsState extends State<DsDetails>
             summary,
             SizeTransition(
               sizeFactor: _controller,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                child: widget.child,
+              // While collapsed, gate the child out of the accessibility tree
+              // and focus traversal so screen readers and Tab do not reach
+              // hidden content that the node reports as expanded:false. The
+              // SizeTransition still drives the visual collapse animation.
+              child: ExcludeSemantics(
+                excluding: !_isExpanded,
+                child: ExcludeFocus(
+                  excluding: !_isExpanded,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                    child: widget.child,
+                  ),
+                ),
               ),
             ),
           ],

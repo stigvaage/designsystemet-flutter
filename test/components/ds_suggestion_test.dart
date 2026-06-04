@@ -316,5 +316,87 @@ void main() {
       await tester.pump();
       expect(find.text('Apple'), findsOneWidget);
     });
+
+    testWidgets(
+      'expanded becomes true when the list re-opens via ArrowDown after Escape',
+      (tester) async {
+        // Regression: opening through a non-onChanged path (ArrowDown/ArrowUp,
+        // focus, onTap) reaches _open() without its own setState, so the host
+        // Semantics(expanded:) used to stay false (collapsed) while the list
+        // was visible. _open()/_close() now setState the host.
+        await tester.pumpWidget(
+          host(
+            DsSuggestion<String>(options: _fruits, onSelectedChanged: (_) {}),
+          ),
+        );
+        final fieldSemantics = find.byWidgetPredicate(
+          (w) =>
+              w is Semantics &&
+              w.properties.textField == true &&
+              w.properties.expanded != null,
+        );
+
+        // Open via focus, then close with Escape: expanded must be false.
+        await tester.showKeyboard(find.byType(EditableText));
+        await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+        await tester.pump();
+        expect(find.text('Apple'), findsNothing);
+        expect(
+          tester.widget<Semantics>(fieldSemantics).properties.expanded,
+          isFalse,
+        );
+
+        // Re-open via ArrowDown: the host must rebuild so expanded is true
+        // while the list is showing.
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await tester.pump();
+        expect(find.text('Apple'), findsOneWidget);
+        expect(
+          tester.widget<Semantics>(fieldSemantics).properties.expanded,
+          isTrue,
+        );
+      },
+    );
+
+    testWidgets('removing a chip while the list is open keeps the list open', (
+      tester,
+    ) async {
+      // Regression: the outside-tap barrier only excluded the input rect, so a
+      // pointer-down on a chip's remove button (which sits above the input)
+      // counted as "outside" and closed the list. The barrier now excludes the
+      // whole field cluster (chips + input).
+      final changes = <List<String>>[];
+      await tester.pumpWidget(
+        host(
+          DsSuggestion<String>(
+            options: _fruits,
+            multiple: true,
+            selected: const ['a', 'b'],
+            onSelectedChanged: changes.add,
+          ),
+        ),
+      );
+
+      // Open the list.
+      await tester.enterText(find.byType(EditableText), 'c');
+      await tester.pump();
+      expect(find.text('Cherry'), findsOneWidget);
+
+      // Remove the first chip (Apple) via its remove button. The remove button
+      // is the GestureDetector under the chip's "Fjern" remove-icon Semantics.
+      final removeButtons = find.descendant(
+        of: find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == 'Fjern',
+        ),
+        matching: find.byType(GestureDetector),
+      );
+      await tester.tap(removeButtons.first);
+      await tester.pump();
+
+      // The chip was removed...
+      expect(changes.last, ['b']);
+      // ...and the list stayed open (was not closed by the outside-tap barrier).
+      expect(find.text('Cherry'), findsOneWidget);
+    });
   });
 }

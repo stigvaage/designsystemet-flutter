@@ -285,6 +285,68 @@ void main() {
       expect(find.text('Apple'), findsNothing);
     });
 
+    testWidgets('ArrowDown then Enter selects an option via keyboard', (
+      tester,
+    ) async {
+      String? selected;
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          DsSelect<String>(
+            options: _fruit,
+            placeholder: 'Choose',
+            onChanged: (value) => selected = value,
+          ),
+        ),
+      );
+
+      // Focus the trigger, then ArrowDown opens the dropdown and highlights the
+      // first option.
+      Focus.of(tester.element(find.text('Choose'))).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+
+      // Dropdown is open.
+      expect(find.text('Apple'), findsOneWidget);
+      expect(find.text('Banana'), findsOneWidget);
+
+      // Enter selects the highlighted (first) option without any pointer use.
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(selected, 'apple');
+      // Selecting also closes the dropdown.
+      expect(find.text('Banana'), findsNothing);
+    });
+
+    testWidgets('ArrowDown twice then Enter selects the second option', (
+      tester,
+    ) async {
+      String? selected;
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          DsSelect<String>(
+            options: _fruit,
+            placeholder: 'Choose',
+            onChanged: (value) => selected = value,
+          ),
+        ),
+      );
+
+      Focus.of(tester.element(find.text('Choose'))).requestFocus();
+      await tester.pump();
+      // First ArrowDown opens + highlights index 0, second moves to index 1.
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(selected, 'banana');
+    });
+
     testWidgets('option list is wrapped in a semantics container', (
       tester,
     ) async {

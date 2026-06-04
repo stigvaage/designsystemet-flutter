@@ -160,29 +160,42 @@ class _DsToggleGroupState extends State<DsToggleGroup> {
                   widget.onChanged(i);
                 },
                 child: DecoratedBox(
+                  // Always reserve focus ring space (transparent when not
+                  // focused) so the 3px ring never overlaps the segment fill,
+                  // text, or the outer group border. Matches the pattern used
+                  // by DsChip/DsCheckbox/DsButton.
                   decoration: isFocused
                       ? DsFocus.focusRingWithRadius(colorScale, segmentRadius)
-                      : const BoxDecoration(),
-                  child: AnimatedContainer(
-                    duration: duration,
-                    height: height,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: isSelected ? selectedFill : null,
-                      borderRadius: segmentRadius,
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      widget.items[i],
-                      style: TextStyle(
-                        fontFamily: theme.typography.fontFamily,
-                        fontSize: fontSize,
-                        fontWeight: isSelected
-                            ? FontWeight.w500
-                            : FontWeight.w400,
-                        color: isSelected
-                            ? selectedText
-                            : colorScale.textDefault,
+                      : BoxDecoration(
+                          borderRadius: segmentRadius,
+                          border: Border.all(
+                            color: const Color(0x00000000),
+                            width: DsFocus.ringWidth,
+                          ),
+                        ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(DsFocus.ringWidth),
+                    child: AnimatedContainer(
+                      duration: duration,
+                      height: height,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: isSelected ? selectedFill : null,
+                        borderRadius: segmentRadius,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        widget.items[i],
+                        style: TextStyle(
+                          fontFamily: theme.typography.fontFamily,
+                          fontSize: fontSize,
+                          fontWeight: isSelected
+                              ? FontWeight.w500
+                              : FontWeight.w400,
+                          color: isSelected
+                              ? selectedText
+                              : colorScale.textDefault,
+                        ),
                       ),
                     ),
                   ),

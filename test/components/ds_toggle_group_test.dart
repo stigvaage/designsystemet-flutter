@@ -196,6 +196,58 @@ void main() {
       expect(hasRing('Two'), isFalse);
     });
 
+    testWidgets(
+      'reserves transparent focus ring space when unfocused to avoid overlap',
+      (tester) async {
+        // Regression (WCAG 2.4.7): the 3px focus ring used to paint flush
+        // against the segment fill/text and the outer group border because no
+        // ring space was reserved. Now a transparent ring (border + padding of
+        // DsFocus.ringWidth) is always present, so the visible ring on focus
+        // does not overlap content. Verify both states reserve the space.
+        await tester.pumpWidget(
+          wrapWithTheme(
+            DsToggleGroup(
+              items: const ['One', 'Two'],
+              selectedIndex: 0,
+              onChanged: (_) {},
+              color: DsColor.accent,
+            ),
+          ),
+        );
+
+        // The DecoratedBox wrapping a segment must have a 3px border (so ring
+        // space is reserved) and a child Padding of 3px on all sides.
+        bool reservesRingSpace(String label) {
+          final boxes = tester
+              .widgetList<DecoratedBox>(
+                find.ancestor(
+                  of: find.text(label),
+                  matching: find.byType(DecoratedBox),
+                ),
+              )
+              .toList();
+          return boxes.any((box) {
+            final decoration = box.decoration;
+            if (decoration is! BoxDecoration) return false;
+            final border = decoration.border;
+            if (border is! Border) return false;
+            if (border.top.width != DsFocus.ringWidth) return false;
+            final child = box.child;
+            if (child is! Padding) return false;
+            return child.padding == const EdgeInsets.all(DsFocus.ringWidth);
+          });
+        }
+
+        // Unfocused segment still reserves the ring space (transparent border).
+        expect(reservesRingSpace('Two'), isTrue);
+
+        // Focused segment also has padded ring space (now with a visible ring).
+        await tester.tap(find.text('One'));
+        await tester.pump();
+        expect(reservesRingSpace('One'), isTrue);
+      },
+    );
+
     testWidgets('segments expose button semantics', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(

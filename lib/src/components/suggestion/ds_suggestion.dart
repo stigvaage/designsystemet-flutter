@@ -78,8 +78,12 @@ class DsSuggestion<T> extends StatefulWidget {
 
 class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
   final _layerLink = LayerLink();
-  // Identifies the field's render box so the outside-tap barrier can exclude
-  // taps that land inside the field (moving the caret must not close the list).
+  // Identifies the field cluster's render box so the outside-tap barrier can
+  // exclude taps that land inside it (moving the caret must not close the list,
+  // and in multiple mode tapping a chip's remove button must not either). This
+  // tags the whole cluster — the chips Wrap and the input together — not just
+  // the input rect, so interactions anywhere within the field keep the list
+  // open.
   final _fieldKey = GlobalKey();
   late final TextEditingController _controller;
   late final FocusNode _focusNode;
@@ -252,21 +256,32 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
     _fieldWidth = box?.size.width ?? 0;
     _entry = OverlayEntry(builder: _buildOverlay);
     Overlay.of(context).insert(_entry!);
+    // Rebuild the host so Semantics(expanded: _entry != null) flips to true.
+    // Several open paths (ArrowDown/ArrowUp, focus, onTap) reach here without
+    // their own setState, so without this the combobox would announce as
+    // collapsed while the list is visible (WCAG 4.1.2).
+    if (mounted) setState(() {});
   }
 
   void _close() {
     _entry?.remove();
     _entry = null;
     _highlight = -1;
+    // Rebuild the host so Semantics(expanded:) flips back to false on close.
+    if (mounted) setState(() {});
   }
 
-  /// Whether [globalPosition] falls inside the input field's painted rect.
+  /// Whether [globalPosition] falls inside the field cluster's painted rect.
+  ///
+  /// The rect spans the whole cluster — the chips Wrap (in multiple mode) and
+  /// the input — because [_fieldKey] tags the outer [Column].
   ///
   /// The outside-tap barrier (which closes the list) covers the whole overlay,
   /// including the area over the field. Without this guard a tap on the field —
-  /// e.g. to reposition the caret — would be swallowed by the barrier, closing
-  /// the list and dropping focus. Taps inside this rect are therefore let
-  /// through so the field handles them itself.
+  /// e.g. to reposition the caret, or a chip's remove button in multiple mode —
+  /// would be swallowed by the barrier, closing the list and dropping focus.
+  /// Taps inside this rect are therefore let through so the field (or chip)
+  /// handles them itself.
   bool _isInsideField(Offset globalPosition) {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     if (box == null || !box.hasSize) return false;
@@ -322,7 +337,10 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
     _focusNode.removeListener(_handleFocusChange);
     _focusNode.dispose();
     _controller.dispose();
-    _close();
+    // Remove the overlay directly — _close() calls setState, which is illegal
+    // during dispose (mounted is still true here).
+    _entry?.remove();
+    _entry = null;
     super.dispose();
   }
 
@@ -331,6 +349,10 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
     return CompositedTransformTarget(
       link: _layerLink,
       child: Column(
+        // The GlobalKey tags this cluster's render box (chips + input) so the
+        // outside-tap barrier can tell taps inside the field — including a
+        // chip's remove button — apart from taps outside it.
+        key: _fieldKey,
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -354,30 +376,25 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
             ),
           // textField + expanded mirror the combobox role for assistive tech:
           // the field announces as an editable combobox whose popup is open
-          // (expanded) whenever the overlay list is showing. The GlobalKey
-          // tags this wrapper's render box so the outside-tap barrier can tell
-          // taps that land inside the field apart from taps outside it.
+          // (expanded) whenever the overlay list is showing.
           Semantics(
             textField: true,
             expanded: _entry != null,
             child: Focus(
               onKeyEvent: _onKey,
-              child: KeyedSubtree(
-                key: _fieldKey,
-                child: DsInput(
-                  controller: _controller,
-                  focusNode: _focusNode,
-                  size: widget.size,
-                  placeholder: widget.placeholder,
-                  onTap: _open,
-                  onChanged: (_) {
-                    _open();
-                    _highlight = -1;
-                    _entry?.markNeedsBuild();
-                    setState(() {});
-                  },
-                  onSubmitted: (_) => _selectHighlightedOrFirst(),
-                ),
+              child: DsInput(
+                controller: _controller,
+                focusNode: _focusNode,
+                size: widget.size,
+                placeholder: widget.placeholder,
+                onTap: _open,
+                onChanged: (_) {
+                  _open();
+                  _highlight = -1;
+                  _entry?.markNeedsBuild();
+                  setState(() {});
+                },
+                onSubmitted: (_) => _selectHighlightedOrFirst(),
               ),
             ),
           ),

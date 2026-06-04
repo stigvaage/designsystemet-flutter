@@ -106,6 +106,11 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
   DsColor? _capturedColor;
   double _fieldWidth = 0;
 
+  /// Index of the keyboard-highlighted option within [_allOptions], or -1 when
+  /// nothing is highlighted. Driven by ArrowUp/ArrowDown so a keyboard user can
+  /// navigate and select an option without a pointer.
+  int _highlight = -1;
+
   bool get _isOpen => _entry != null;
 
   /// All options, flattened across [DsSelect.options] and group options.
@@ -127,10 +132,13 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
   void _open() {
     if (_isOpen || widget.disabled || widget.readOnly) return;
     // Ensure the trigger holds focus while the dropdown is open so keyboard
-    // activation (Enter/Space/Escape) is routed to it.
+    // activation (Enter/Space/Escape/arrows) is routed to it.
     _focusNode.requestFocus();
     _capturedTheme = DsTheme.of(context);
     _capturedColor = widget.color ?? DsColorScope.of(context);
+    // Seed the keyboard highlight on the currently selected option so arrow
+    // navigation starts from the user's existing choice.
+    _highlight = _allOptions.indexWhere((o) => o.value == widget.value);
     final box = context.findRenderObject() as RenderBox?;
     _fieldWidth = box?.size.width ?? 0;
     _entry = OverlayEntry(builder: _buildOverlay);
@@ -142,6 +150,7 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
     if (!_isOpen) return;
     _entry?.remove();
     _entry = null;
+    _highlight = -1;
     setState(() {});
   }
 
@@ -151,16 +160,45 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent || widget.disabled || widget.readOnly) {
+    if (widget.disabled || widget.readOnly) {
       return KeyEventResult.ignored;
     }
-    if (event.logicalKey == LogicalKeyboardKey.escape && _isOpen) {
+    // Allow key repeat for arrow navigation so holding the key keeps moving.
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+    final key = event.logicalKey;
+    final count = _allOptions.length;
+
+    if (key == LogicalKeyboardKey.escape && _isOpen) {
       _close();
       return KeyEventResult.handled;
     }
-    if (event.logicalKey == LogicalKeyboardKey.enter ||
-        event.logicalKey == LogicalKeyboardKey.space) {
-      _toggle();
+    if (key == LogicalKeyboardKey.arrowDown) {
+      // Open first if closed, then advance the highlight.
+      if (!_isOpen) _open();
+      if (count > 0) {
+        _highlight = (_highlight + 1) % count;
+        _entry?.markNeedsBuild();
+      }
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowUp) {
+      if (!_isOpen) _open();
+      if (count > 0) {
+        _highlight = (_highlight - 1 + count) % count;
+        _entry?.markNeedsBuild();
+      }
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.space) {
+      // When open with a highlighted option, Enter/Space selects it; otherwise
+      // it toggles the dropdown open/closed.
+      if (_isOpen && _highlight >= 0 && _highlight < count) {
+        _select(_allOptions[_highlight]);
+      } else {
+        _toggle();
+      }
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
@@ -323,7 +361,12 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             for (final option in widget.options)
-                              _optionRow(option, theme, colorScale),
+                              _optionRow(
+                                option,
+                                _allOptions.indexOf(option),
+                                theme,
+                                colorScale,
+                              ),
                             for (final group
                                 in widget.groups ?? <DsSelectOptgroup<T>>[])
                               ..._groupRows(group, theme, colorScale),
@@ -357,16 +400,25 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
           ),
         ),
       ),
-      for (final option in group.options) _optionRow(option, theme, colorScale),
+      for (final option in group.options)
+        _optionRow(option, _allOptions.indexOf(option), theme, colorScale),
     ];
   }
 
   Widget _optionRow(
     DsSelectOption<T> option,
+    int index,
     DsThemeData theme,
     DsColorScale colorScale,
   ) {
     final selected = widget.value != null && option.value == widget.value;
+    final highlighted = _highlight == index;
+    // Keyboard highlight takes precedence visually so arrow navigation is
+    // clearly visible; a selected-but-not-highlighted row keeps the subtle
+    // surface background.
+    final background = highlighted
+        ? colorScale.surfaceHover
+        : (selected ? colorScale.surfaceDefault : null);
     return Semantics(
       button: true,
       selected: selected,
@@ -375,7 +427,7 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
         behavior: HitTestBehavior.opaque,
         onTap: () => _select(option),
         child: Container(
-          color: selected ? colorScale.surfaceDefault : null,
+          color: background,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Text(
             option.label,

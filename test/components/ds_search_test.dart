@@ -72,6 +72,40 @@ void main() {
       },
     );
 
+    testWidgets(
+      'clearable: clear button works after switching from external to internal '
+      'controller',
+      (tester) async {
+        final controller = TextEditingController();
+        addTearDown(controller.dispose);
+
+        // Start with an external controller.
+        await tester.pumpWidget(
+          _host(DsSearch(controller: controller, clearable: true)),
+        );
+        await tester.pump();
+
+        // Rebuild without the external controller so the widget falls back to
+        // its lazily-created internal controller. The listener must follow to
+        // the internal controller, otherwise the clear button never appears.
+        await tester.pumpWidget(_host(const DsSearch(clearable: true)));
+        await tester.pump();
+
+        // No text yet -> no clear button.
+        expect(_clearIcon(), findsNothing);
+
+        // Typing into the internal controller must surface the clear button.
+        await tester.enterText(find.byType(DsSearch), 'flutter');
+        await tester.pump();
+        expect(_clearIcon(), findsOneWidget);
+
+        // Tapping it must empty the field and hide the button again.
+        await tester.tap(_clearIcon());
+        await tester.pump();
+        expect(_clearIcon(), findsNothing);
+      },
+    );
+
     testWidgets('onSubmit alias fires alongside onSubmitted', (tester) async {
       String? submitted;
       String? submit;

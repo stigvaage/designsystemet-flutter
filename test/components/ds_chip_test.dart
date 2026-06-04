@@ -195,6 +195,43 @@ void main() {
       expect(selectedCount, 1);
     });
 
+    testWidgets('DsChip.radio is idempotent: tap on already selected chip '
+        'does not re-fire onChanged', (tester) async {
+      var selectedCount = 0;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip.radio(
+            selected: true,
+            onChanged: () => selectedCount++,
+            child: const Text('Nynorsk'),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(DsChip));
+      await tester.pump();
+      expect(selectedCount, 0);
+    });
+
+    testWidgets('DsChip.radio is idempotent: Enter/Space on already selected '
+        'chip does not re-fire onChanged', (tester) async {
+      var selectedCount = 0;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsChip.radio(
+            selected: true,
+            onChanged: () => selectedCount++,
+            child: const Text('Nynorsk'),
+          ),
+        ),
+      );
+      await focusEnclosing(tester, find.text('Nynorsk'));
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(selectedCount, 0);
+    });
+
     testWidgets('DsChip.radio exposes selected semantics', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(

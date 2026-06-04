@@ -114,7 +114,7 @@ function parseFieldDocs(source: string): Map<string, string> {
  * Looks for `class DsXxx extends StatelessWidget` or `StatefulWidget`.
  */
 function extractClassName(source: string): string | null {
-  const classRe = /class\s+(Ds\w+)\s+extends\s+(?:Stateless|Stateful)Widget/;
+  const classRe = /class\s+(Ds\w+)(?:<[^>]+>)?\s+extends\s+(?:Stateless|Stateful)Widget/;
   const m = classRe.exec(source);
   return m ? m[1] : null;
 }
@@ -212,7 +212,7 @@ export function parseAllComponents(repoRoot: string): Component[] {
   for (const filePath of dartFiles) {
     const source = fs.readFileSync(filePath, "utf-8");
     // Skip files without a public Ds* widget class
-    if (!/class\s+Ds\w+\s+extends\s+(?:Stateless|Stateful)Widget/.test(source)) {
+    if (!/class\s+Ds\w+(?:<[^>]+>)?\s+extends\s+(?:Stateless|Stateful)Widget/.test(source)) {
       continue;
     }
 

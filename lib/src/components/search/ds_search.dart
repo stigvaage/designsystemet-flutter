@@ -76,14 +76,20 @@ class _DsSearchState extends State<DsSearch> {
   void didUpdateWidget(DsSearch oldWidget) {
     super.didUpdateWidget(oldWidget);
     final oldController = oldWidget.controller ?? _ownController;
-    final newController = widget.controller ?? _ownController;
+    // Resolve through the getter so the listener is attached to the controller
+    // [build] actually uses. When switching from an external controller to the
+    // internal one, [_ownController] may still be null here; reading it via the
+    // getter lazily creates it, ensuring the listener lands on the right
+    // instance (otherwise the clear button would never show/hide).
+    final newController =
+        widget.controller ?? (_ownController ??= TextEditingController());
     if (oldController != newController ||
         oldWidget.clearable != widget.clearable) {
       if (oldWidget.clearable) {
         oldController?.removeListener(_onTextChanged);
       }
       if (widget.clearable) {
-        newController?.addListener(_onTextChanged);
+        newController.addListener(_onTextChanged);
       }
     }
   }

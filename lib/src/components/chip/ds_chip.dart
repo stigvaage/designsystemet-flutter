@@ -87,6 +87,9 @@ class DsChip extends StatefulWidget {
   ///
   /// [selected] reflects the chosen state and [onChanged] is called when the
   /// chip is activated. Exposes selected semantics for assistive technology.
+  ///
+  /// The radio role is idempotent: activating an already-[selected] chip (via
+  /// tap, Enter or Space) does not re-fire [onChanged], matching [DsRadio].
   const DsChip.radio({
     super.key,
     required this.child,
@@ -96,7 +99,7 @@ class DsChip extends StatefulWidget {
     this.color,
   }) : removable = false,
        onRemove = null,
-       onTap = onChanged,
+       onTap = selected ? null : onChanged,
        _role = _DsChipRole.radio;
 
   final Widget child;

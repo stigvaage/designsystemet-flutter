@@ -1,5 +1,6 @@
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -8,6 +9,16 @@ Widget wrapWithTheme(Widget child) {
     data: DsThemeDigdir.light(),
     child: Directionality(textDirection: TextDirection.ltr, child: child),
   );
+}
+
+/// Requests focus on the nearest enclosing [Focus] of the widget found by
+/// [finder]. Used to drive keyboard/focus tests for breadcrumb links that do
+/// not expose a public `focusNode`.
+Future<void> focusEnclosing(WidgetTester tester, Finder finder) async {
+  final context = tester.element(finder);
+  Focus.of(context).requestFocus();
+  await tester.pump(); // process the focus change
+  await tester.pump(); // rebuild with the focus ring
 }
 
 void main() {
@@ -167,6 +178,75 @@ void main() {
         ),
         findsOneWidget,
       );
+    });
+
+    // Regression (WCAG 2.4.7): a focused breadcrumb link must show a visible
+    // focus indicator — a borderStrong focus ring of focus-ring width.
+    testWidgets('shows a visible focus ring (borderStrong) when a link is '
+        'focused', (tester) async {
+      final theme = DsThemeDigdir.light();
+      final colorScale = theme.colorScheme.resolve(DsColor.accent);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsBreadcrumbs(items: const ['Home', 'Current'], onItemTap: (_) {}),
+        ),
+      );
+
+      bool hasFocusRing() =>
+          tester.widgetList<DecoratedBox>(find.byType(DecoratedBox)).any((d) {
+            final decoration = d.decoration;
+            if (decoration is! BoxDecoration) return false;
+            final border = decoration.border;
+            return border is Border &&
+                border.top.color == colorScale.borderStrong &&
+                border.top.width == 3.0;
+          });
+
+      // No focus ring before focusing.
+      expect(hasFocusRing(), isFalse);
+
+      await focusEnclosing(tester, find.text('Home'));
+
+      expect(hasFocusRing(), isTrue);
+    });
+
+    // Regression: the focus ring space is always reserved (transparent border
+    // of focus-ring width) so focusing a link does not shift the layout.
+    testWidgets('reserves focus ring space on links even when not focused', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsBreadcrumbs(items: const ['Home', 'Current'], onItemTap: (_) {}),
+        ),
+      );
+      final reserved = tester
+          .widgetList<DecoratedBox>(find.byType(DecoratedBox))
+          .any((d) {
+            final decoration = d.decoration;
+            if (decoration is! BoxDecoration) return false;
+            final border = decoration.border;
+            return border is Border &&
+                border.top.color.a == 0.0 &&
+                border.top.width == 3.0;
+          });
+      expect(reserved, isTrue);
+    });
+
+    // Regression: Enter activates the focused link (keyboard operability).
+    testWidgets('Enter activates the focused link', (tester) async {
+      var tappedIndex = -1;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsBreadcrumbs(
+            items: const ['Home', 'Products', 'Current'],
+            onItemTap: (i) => tappedIndex = i,
+          ),
+        ),
+      );
+      await focusEnclosing(tester, find.text('Products'));
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      expect(tappedIndex, 1);
     });
   });
 }

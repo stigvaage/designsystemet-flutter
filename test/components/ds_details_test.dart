@@ -131,6 +131,51 @@ void main() {
       expect(semantics.flagsCollection.isExpanded, isNot(Tristate.none));
     });
 
+    testWidgets('collapsed content is excluded from semantics', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsDetails(summary: Text('Summary'), child: Text('Content')),
+        ),
+      );
+
+      // Collapsed: the hidden child must not appear in the semantics tree,
+      // even though the SizeTransition still keeps it in the widget tree.
+      final handle = tester.ensureSemantics();
+      expect(find.bySemanticsLabel('Content'), findsNothing);
+      expect(find.text('Content'), findsOneWidget);
+
+      // Expanding it brings the content into the semantics tree.
+      await tester.tap(find.text('Summary'));
+      await tester.pumpAndSettle();
+      expect(find.bySemanticsLabel('Content'), findsOneWidget);
+      handle.dispose();
+    });
+
+    testWidgets('collapsed content is gated out of focus traversal', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsDetails(summary: Text('Summary'), child: Text('Content')),
+        ),
+      );
+
+      ExcludeFocus excludeFocus() => tester.widget<ExcludeFocus>(
+        find.ancestor(
+          of: find.text('Content'),
+          matching: find.byType(ExcludeFocus),
+        ),
+      );
+
+      // Collapsed: the content subtree is excluded from focus traversal.
+      expect(excludeFocus().excluding, isTrue);
+
+      // Expanding releases the focus gate.
+      await tester.tap(find.text('Summary'));
+      await tester.pumpAndSettle();
+      expect(excludeFocus().excluding, isFalse);
+    });
+
     testWidgets('tinted variant fills with surfaceTinted', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(
