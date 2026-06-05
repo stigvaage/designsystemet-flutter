@@ -68,9 +68,30 @@ Designsystemet-troskap:
   til dimensjon + «+N»-overflyt + gruppe-semantikk, ikke-interaktivt Card kortslutter
   uten animasjon.
 
+### Ultra-kritisk gjennomgang av hele repoet
+
+Kjørte en altomfattende, adversarielt verifisert review av HELE repoet (25 lenser,
+344 rå funn → 302 bekreftet) og lukket alle bekreftede funn:
+
+- **KRITISK — Material fjernet:** `DsInput` var bygget på Material `TextField`; reimplementert
+  på `EditableText` (kun `package:flutter/widgets.dart`). Hele tekst-overflaten (Textfield/
+  Textarea/Search/Suggestion/Select) er nå fri for Material/Cupertino i `lib/` (eneste unntak:
+  `show ThemeExtension` for valgfri Material-integrasjon).
+- **Typografi-troskap:** font-størrelse-skalaen var ett offisielt trinn for liten — rettet til
+  Designsystemets primitiv-tokens (overskrift 60/48/36/30/24/21/18, brødtekst 24/21/18/16/14).
+- **Tilgjengelighet:** 44×44 tap-mål, live-region feilmeldinger, fokusring + tastaturbetjening
+  og korrekte `SemanticsRole` (meny/liste/listItem) på tvers.
+- **Dokumentasjon/MCP/site:** kompilerende kodeeksempler, korrekte standardtitler, selvhostet
+  Inter (ikke render-blokkerende Google Fonts), MCP-data og -parser oppdatert, widgetbook-knotter.
+
+**Bevisst utsatt (dokumentert, lav/medium risiko):**
+- Dedikerte fokus-tokens (`focusOuter`/`focusInner`) i fargeskalaen — krever en strukturell
+  token-/generator-endring; dagens fokusring bruker `borderStrong` og oppfyller WCAG-kontrast.
+- Eget scrim-/overlay-token for `DsDialog`-barrieren — barrierfargen er allerede token-avledet.
+
 ### Tester
 
-- 202 → 577 Dart-tester. `flutter analyze` uten merknader; MCP-server 16 tester grønne.
+- 202 → 657 Dart-tester. `flutter analyze` uten merknader; MCP-server 16 tester grønne.
 
 ## 0.2.1
 
