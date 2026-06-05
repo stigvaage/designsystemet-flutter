@@ -63,6 +63,10 @@ class DsPopover extends StatefulWidget {
 
 class _DsPopoverState extends State<DsPopover> {
   final _layerLink = LayerLink();
+
+  /// Focus on the trigger so the Escape key is routed to the popover even when
+  /// it was opened with a pointer, and so focus can be restored on close.
+  final _triggerFocusNode = FocusNode(debugLabel: 'DsPopover trigger');
   OverlayEntry? _entry;
   bool _internalOpen = false;
   DsThemeData? _capturedTheme;
@@ -113,6 +117,9 @@ class _DsPopoverState extends State<DsPopover> {
 
   void _requestClose() {
     widget.onClose?.call();
+    // Return focus to the trigger so keyboard users land back where they
+    // started (WCAG 2.4.3). Applies in both controlled and uncontrolled modes.
+    _triggerFocusNode.requestFocus();
     if (_controlled) return;
     setState(() => _internalOpen = false);
     _hide();
@@ -120,6 +127,9 @@ class _DsPopoverState extends State<DsPopover> {
 
   void _show() {
     if (_entry != null) return;
+    // Hold focus on the trigger while the popover is open so the Escape key is
+    // routed to the trigger-level handler regardless of how it was opened.
+    _triggerFocusNode.requestFocus();
     _capturedTheme = DsTheme.of(context);
     _capturedColor = DsColorScope.of(context);
     final box = context.findRenderObject() as RenderBox?;
@@ -156,37 +166,51 @@ class _DsPopoverState extends State<DsPopover> {
       data: theme,
       child: DsColorScope(
         color: activeColor,
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: _requestClose,
-          child: Stack(
-            children: [
-              CompositedTransformFollower(
-                link: _layerLink,
-                targetAnchor: targetAnchor,
-                followerAnchor: followerAnchor,
-                offset: offset,
-                child: GestureDetector(
-                  onTap: () {}, // Absorb taps on the popover content.
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 320),
-                    decoration: BoxDecoration(
-                      color: fill,
-                      borderRadius: BorderRadius.circular(
-                        theme.borderRadius.defaultRadius,
+        // Handle Escape from inside the overlay too, so the popover closes even
+        // when keyboard focus has moved into interactive [content]. The popover
+        // is non-modal, so focus is not trapped or auto-grabbed here.
+        child: Focus(
+          onKeyEvent: (node, event) {
+            if (event is KeyDownEvent &&
+                event.logicalKey == LogicalKeyboardKey.escape &&
+                _isOpen) {
+              _requestClose();
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: _requestClose,
+            child: Stack(
+              children: [
+                CompositedTransformFollower(
+                  link: _layerLink,
+                  targetAnchor: targetAnchor,
+                  followerAnchor: followerAnchor,
+                  offset: offset,
+                  child: GestureDetector(
+                    onTap: () {}, // Absorb taps on the popover content.
+                    child: Container(
+                      constraints: const BoxConstraints(maxWidth: 320),
+                      decoration: BoxDecoration(
+                        color: fill,
+                        borderRadius: BorderRadius.circular(
+                          theme.borderRadius.defaultRadius,
+                        ),
+                        border: Border.all(
+                          color: colorScale.borderSubtle,
+                          width: 1,
+                        ),
+                        boxShadow: theme.shadows.md,
                       ),
-                      border: Border.all(
-                        color: colorScale.borderSubtle,
-                        width: 1,
-                      ),
-                      boxShadow: theme.shadows.md,
+                      padding: const EdgeInsets.all(16),
+                      child: widget.content,
                     ),
-                    padding: const EdgeInsets.all(16),
-                    child: widget.content,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -196,12 +220,21 @@ class _DsPopoverState extends State<DsPopover> {
   @override
   void dispose() {
     _hide();
+    _triggerFocusNode.dispose();
     super.dispose();
+  }
+
+  void _handleTriggerTap() {
+    // Move focus to the trigger so a pointer-opened popover still routes the
+    // Escape key to the trigger-level handler.
+    _triggerFocusNode.requestFocus();
+    _requestToggle();
   }
 
   @override
   Widget build(BuildContext context) {
     return Focus(
+      focusNode: _triggerFocusNode,
       onKeyEvent: (node, event) {
         if (event is KeyDownEvent &&
             event.logicalKey == LogicalKeyboardKey.escape &&
@@ -216,7 +249,10 @@ class _DsPopoverState extends State<DsPopover> {
         child: Semantics(
           button: true,
           expanded: _isOpen,
-          child: GestureDetector(onTap: _requestToggle, child: widget.trigger),
+          child: GestureDetector(
+            onTap: _handleTriggerTap,
+            child: widget.trigger,
+          ),
         ),
       ),
     );

@@ -1,8 +1,52 @@
 import { defineConfig } from 'vitepress'
-import { writeFileSync, mkdirSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const base = '/designsystemet-flutter/'
+const hostname = 'https://stigvaage.github.io'
+const repoSlug = 'stigvaage/designsystemet-flutter'
+
+// ESM-trygt katalogoppslag (config-filen kjøres som ESM, så __dirname finnes ikke).
+const configDir = dirname(fileURLToPath(import.meta.url))
+const srcRoot = resolve(configDir, '..', 'nb')
+
+/**
+ * Utleder en kort beskrivelse fra første brødtekst-avsnitt i en markdown-fil,
+ * slik at sider uten frontmatter `description:` likevel får en distinkt
+ * og:description i stedet for den generiske fallback-teksten.
+ */
+function deriveDescription(relativePath: string): string | undefined {
+  try {
+    const raw = readFileSync(resolve(srcRoot, relativePath), 'utf-8')
+    // Fjern YAML-frontmatter, deretter første H1.
+    const body = raw.replace(/^---[\s\S]*?---\s*/, '')
+    const lines = body.split(/\r?\n/)
+    let paragraph = ''
+    for (const line of lines) {
+      const trimmed = line.trim()
+      if (!trimmed) {
+        if (paragraph) break
+        continue
+      }
+      // Hopp over overskrifter, kode-gjerder, HTML-blokker og lister.
+      if (/^(#|`{3}|<|[-*]|\||:::)/.test(trimmed)) {
+        if (paragraph) break
+        continue
+      }
+      paragraph += (paragraph ? ' ' : '') + trimmed
+    }
+    if (!paragraph) return undefined
+    // Strip enkel inline-markdown (lenker/utheving/kode) og kutt til ~160 tegn.
+    const clean = paragraph
+      .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+      .replace(/[*_`]/g, '')
+      .trim()
+    return clean.length > 160 ? `${clean.slice(0, 157).trimEnd()}…` : clean
+  } catch {
+    return undefined
+  }
+}
 
 const redirects: Record<string, string> = {
   // komponenter/kjernekomponenter → komponenter
@@ -59,6 +103,8 @@ const redirects: Record<string, string> = {
   // introduksjon → intro
   'introduksjon/om-designsystemet': 'intro/om-designsystemet',
   'introduksjon/om-flutter-biblioteket': 'intro/om-flutter-biblioteket',
+  // rettet stavefeil i slug (knappplassering → knappeplassering)
+  'monstre/knappplassering': 'monstre/knappeplassering',
 }
 
 export default defineConfig({
@@ -69,24 +115,48 @@ export default defineConfig({
   srcDir: 'nb',
   base,
 
+  sitemap: {
+    hostname: `${hostname}${base}`,
+  },
+
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}favicon.svg` }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:site_name', content: 'Designsystemet Flutter' }],
     ['meta', { property: 'og:locale', content: 'nb_NO' }],
-    ['meta', { name: 'twitter:card', content: 'summary' }],
+    ['meta', { property: 'og:image', content: `${hostname}${base}og-image.png` }],
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:image', content: `${hostname}${base}og-image.png` }],
   ],
 
   transformPageData(pageData) {
     const title = pageData.frontmatter.layout === 'home'
       ? 'Designsystemet Flutter'
       : `${pageData.title} | Designsystemet Flutter`
-    const description = pageData.description || 'Flutter-implementasjon av det norske offentlige designsystemet'
+
+    // Bruk per-side frontmatter `description` når den finnes; fall ellers
+    // tilbake til første avsnitt i kildefilen (etter H1) slik at hver side får
+    // en distinkt og:description, ikke samme generiske tekst overalt.
+    const description =
+      pageData.description ||
+      deriveDescription(pageData.relativePath) ||
+      'Flutter-implementasjon av det norske offentlige designsystemet'
+
+    // Normaliser stien slik at index-sider peker på katalog-URL-en
+    // (.../komponenter/) i stedet for .../komponenter/index.html.
+    const path = pageData.relativePath
+      .replace(/\.md$/, '.html')
+      .replace(/(^|\/)index\.html$/, '$1')
+    const canonicalUrl = `${hostname}${base}${path}`
+
     pageData.frontmatter.head ??= []
     pageData.frontmatter.head.push(
       ['meta', { property: 'og:title', content: title }],
       ['meta', { property: 'og:description', content: description }],
-      ['meta', { property: 'og:url', content: `https://stigvaage.github.io${base}${pageData.relativePath.replace(/\.md$/, '.html')}` }],
+      ['meta', { property: 'og:url', content: canonicalUrl }],
+      ['meta', { name: 'twitter:title', content: title }],
+      ['meta', { name: 'twitter:description', content: description }],
+      ['link', { rel: 'canonical', href: canonicalUrl }],
     )
   },
 
@@ -111,7 +181,6 @@ export default defineConfig({
     darkModeSwitchLabel: 'Utseende',
     lightModeSwitchTitle: 'Bytt til lyst tema',
     darkModeSwitchTitle: 'Bytt til mørkt tema',
-    langMenuLabel: 'Språk',
 
     nav: [
       { text: 'Intro', link: '/intro/om-designsystemet' },
@@ -220,7 +289,7 @@ export default defineConfig({
             { text: 'Obligatoriske felt', link: '/monstre/obligatoriske-felt' },
             { text: 'Systemvarsler', link: '/monstre/systemvarsler' },
             { text: 'Dato og klokkeslett', link: '/monstre/dato-og-klokkeslett' },
-            { text: 'Knappeplassering', link: '/monstre/knappplassering' },
+            { text: 'Knappeplassering', link: '/monstre/knappeplassering' },
             { text: 'Samtykkebanner', link: '/monstre/samtykkebanner' },
             { text: 'Eksterne lenker', link: '/monstre/eksterne-lenker' },
             { text: 'Representasjon', link: '/monstre/representasjon' },
@@ -295,12 +364,12 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: 'https://github.com/stigvaage/designsystemet-flutter/edit/main/site/nb/:path',
+      pattern: `https://github.com/${repoSlug}/edit/main/site/nb/:path`,
       text: 'Rediger denne siden på GitHub',
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/stigvaage/designsystemet-flutter' },
+      { icon: 'github', link: `https://github.com/${repoSlug}` },
     ],
 
     footer: {

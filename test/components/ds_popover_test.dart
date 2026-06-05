@@ -1,5 +1,6 @@
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -164,6 +165,85 @@ void main() {
             return d is BoxDecoration && d.color == tinted;
           });
       expect(hasTintedFill, isTrue);
+    });
+
+    testWidgets('Escape closes the popover after a pointer open', (
+      tester,
+    ) async {
+      var closed = 0;
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          DsPopover(
+            trigger: const Text('Toggle'),
+            content: const Text('Content'),
+            onClose: () => closed++,
+          ),
+        ),
+      );
+      await tester.tap(find.text('Toggle'));
+      await tester.pump();
+      expect(find.text('Content'), findsOneWidget);
+
+      // No manual focus call: the trigger tap moves focus onto the trigger so
+      // Escape is routed to the popover.
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pump();
+      expect(find.text('Content'), findsNothing);
+      expect(closed, 1);
+    });
+
+    testWidgets('Escape closes the popover when focus is inside the content', (
+      tester,
+    ) async {
+      final innerFocus = FocusNode();
+      addTearDown(innerFocus.dispose);
+      var closed = 0;
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          DsPopover(
+            trigger: const Text('Toggle'),
+            content: Focus(
+              focusNode: innerFocus,
+              child: const Text('Interactive'),
+            ),
+            onClose: () => closed++,
+          ),
+        ),
+      );
+      await tester.tap(find.text('Toggle'));
+      await tester.pump();
+      expect(find.text('Interactive'), findsOneWidget);
+
+      // Move keyboard focus into the popover content, then press Escape.
+      innerFocus.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pump();
+      expect(find.text('Interactive'), findsNothing);
+      expect(closed, 1);
+    });
+
+    testWidgets('outside tap dismisses the popover', (tester) async {
+      var closed = 0;
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          DsPopover(
+            trigger: const Text('Toggle'),
+            content: const Text('Content'),
+            onClose: () => closed++,
+          ),
+        ),
+      );
+      await tester.tap(find.text('Toggle'));
+      await tester.pump();
+      expect(find.text('Content'), findsOneWidget);
+
+      // Tap a point outside the content container (top-left corner of the
+      // translucent barrier).
+      await tester.tapAt(const Offset(5, 5));
+      await tester.pump();
+      expect(find.text('Content'), findsNothing);
+      expect(closed, 1);
     });
   });
 }

@@ -35,7 +35,7 @@ void main() {
         wrapWithTheme(DsCheckbox(value: false, onChanged: (_) {})),
       );
       final semantics = tester.getSemantics(find.byType(Semantics).first);
-      expect(semantics.flagsCollection.isChecked, isNot(CheckedState.none));
+      expect(semantics.flagsCollection.isChecked, CheckedState.isFalse);
     });
 
     testWidgets('DsRadio has selected semantics when selected', (tester) async {
@@ -73,7 +73,7 @@ void main() {
         ),
       );
       final semantics = tester.getSemantics(find.byType(Semantics).first);
-      expect(semantics.flagsCollection.isEnabled, isNot(Tristate.none));
+      expect(semantics.flagsCollection.isEnabled, Tristate.isFalse);
     });
   });
 }

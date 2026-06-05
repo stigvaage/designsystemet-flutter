@@ -38,14 +38,16 @@ void main() {
       await tester.pumpWidget(
         wrapWithTheme(const DsChip(selected: true, child: Text('Active'))),
       );
-      // The outer Container should have baseDefault background
+      // The outer Container should have baseDefault background. Assert
+      // membership directly: a missing container fails as a clean expect
+      // rather than a thrown StateError from firstWhere.
       final containers = tester.widgetList<Container>(find.byType(Container));
-      final chipContainer = containers.firstWhere(
+      final hasBaseDefault = containers.any(
         (c) =>
             c.decoration is BoxDecoration &&
             (c.decoration as BoxDecoration).color == colorScale.baseDefault,
       );
-      expect(chipContainer, isNotNull);
+      expect(hasBaseDefault, isTrue);
     });
 
     testWidgets('onTap called when tapped', (tester) async {
@@ -72,6 +74,23 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets(
+      'removable:true without onRemove renders no dead remove button',
+      (tester) async {
+        await tester.pumpWidget(
+          wrapWithTheme(const DsChip(removable: true, child: Text('Tag'))),
+        );
+        // No handler => no remove button at all, so assistive technology does
+        // not announce an enabled "Fjern" control that does nothing.
+        expect(
+          find.byWidgetPredicate(
+            (w) => w is Semantics && w.properties.label == 'Fjern',
+          ),
+          findsNothing,
+        );
+      },
+    );
 
     testWidgets('onRemove called when remove icon tapped', (tester) async {
       var removed = false;

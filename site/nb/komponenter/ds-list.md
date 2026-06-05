@@ -48,7 +48,7 @@ DsList(
 ## Retningslinjer
 - Velg mellom ordnet og uordnet liste basert på om rekkefølgen er meningsbærende.
 - Hold listeelementene konsistente i form og lengde for bedre lesbarhet.
-- Bruk `size`-egenskapen for å tilpasse listestørrelsen til konteksten.
+- Bruk `color`-egenskapen for å tilpasse fargetemaet til konteksten.
 
 ## Tekst
 - Start hvert listeelement med stor bokstav.
@@ -63,7 +63,7 @@ DsList(
 | --- | --- | --- | --- |
 | items | `List<Widget>` | påkrevd | Listeelementene som skal vises. |
 | ordered | `bool` | `false` | Om listen er nummerert (ordnet). |
-| size | `DsSize?` | `null` | Størrelse på listen. |
+| color | `DsColor?` | `null` | Fargetema for listen; faller tilbake til `DsColorScope` når den ikke er satt. |
 
 ## Import
 

@@ -84,6 +84,11 @@ class _DsSpinnerState extends State<DsSpinner>
       DsSize.md => 20.0,
       DsSize.lg => 24.0,
     };
+    // Stroke skaleres proporsjonalt med diameteren, slik som i den offisielle
+    // SVG-en (strokeWidth 5 i en viewBox på 50 → 10 % av diameteren). Dette
+    // gir sm 1,6 / md 2,0 / lg 2,4 og holder strektykkelsen visuelt konstant
+    // på tvers av størrelser.
+    final strokeWidth = dimension * 0.1;
 
     return Semantics(
       label: widget.ariaLabel,
@@ -98,7 +103,7 @@ class _DsSpinnerState extends State<DsSpinner>
               painter: _SpinnerPainter(
                 color: widget.paintColor ?? colorScale.baseDefault,
                 progress: _controller.value,
-                strokeWidth: 2.5,
+                strokeWidth: strokeWidth,
               ),
             );
           },

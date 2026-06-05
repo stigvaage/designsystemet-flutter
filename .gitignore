@@ -11,6 +11,9 @@ pubspec.lock
 .vscode/
 *.iml
 
+# Claude Code session state (cron locks, scheduled tasks)
+.claude/
+
 # OS
 .DS_Store
 Thumbs.db

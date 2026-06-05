@@ -30,5 +30,23 @@ void main() {
       final theme = DsThemeDigdir.light();
       expect(text.style?.color, theme.colorScheme.accent.textDefault);
     });
+
+    testWidgets('weight maps DsFontWeight to FontWeight', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsLabel(text: 'Bold', weight: DsFontWeight.semibold),
+        ),
+      );
+      final text = tester.widget<Text>(find.byType(Text));
+      expect(text.style?.fontWeight, FontWeight.w600);
+    });
+
+    testWidgets('lg size resolves to official 21px font size', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsLabel(text: 'Large', size: DsSize.lg)),
+      );
+      final text = tester.widget<Text>(find.byType(Text));
+      expect(text.style?.fontSize, closeTo(21, 0.001));
+    });
   });
 }

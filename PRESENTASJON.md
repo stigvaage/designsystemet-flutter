@@ -12,19 +12,24 @@ Lag en profesjonell PowerPoint-presentasjon (PPTX-fil) for prosjektet **Designsy
 
 ## Nøkkeltall (bruk disse i slides)
 
+> Tallene er et øyeblikksbilde målt per 2026-06-05 (versjon 0.3.0). Oppdater dem
+> ved behov: `find lib -name '*.dart' | xargs wc -l` (kodelinjer),
+> `git rev-list --count HEAD` (commits), `flutter test` (Dart-tester),
+> `cd mcp-server && npm test` (MCP-tester).
+
 | Metrikk | Verdi |
 |---------|-------|
 | Komponenter | 40 tokendrevne UI-komponenter |
-| Dart-kodelinjer (lib/) | 6 340 |
-| Tester | 177 (40 testfiler) |
+| Dart-kodelinjer (lib/) | ~12 600 |
+| Dart-tester | 577 (53 testfiler) |
+| MCP-tester | 16 |
 | pub.dev-poeng | 160/160 (perfekt) |
 | API-dokumentasjonsdekning | 96,0 % |
 | Plattformer | Android, iOS, Web, macOS, Linux, Windows + WASM |
 | VitePress-sider | 67 norskspråklige dokumentasjonssider |
 | MCP-verktøy | 6 verktøy + 2 ressurser |
 | Migrasjoner | 18 Material→Designsystemet-mappinger |
-| Commits | 74 |
-| Utviklingstid | 6 dager |
+| Commits | 111 |
 | TypeScript-kode (MCP) | ~64 000 bytes |
 | Lisens | MIT |
 
@@ -84,21 +89,21 @@ Kategorisert:
 ### Slide 8: Kodekvalitet
 - **pub.dev: 160/160 poeng** (perfekt score)
 - 96 % API-dokumentasjonsdekning (dartdoc)
-- 177 tester (enhet, widget, semantikk, tastatur)
+- 577 Dart-tester (enhet, widget, semantikk, tastatur) + 16 MCP-tester
 - Streng analyse: strict-casts, strict-inference, strict-raw-types
 - `flutter_lints` med null-sikkerhet
 - 0 feil, 0 advarsler i analyse
 - CI via GitHub Actions (format, analyse, test)
 
 ### Slide 9: Testdekning
-- 40 testfiler dekker alle komponentkategorier
+- 53 testfiler dekker alle komponentkategorier
 - Testtyper:
   - Rendering: verifiserer at komponenter vises korrekt
   - Callbacks: verifiserer at onTap/onChanged/onClose utløses
   - Semantikk: verifiserer ARIA-egenskaper (isButton, isLink, isExpanded, liveRegion)
   - Tastatur: verifiserer Enter/Space/Escape-håndtering
   - Tilstand: verifiserer disabled-opacity, selected-styling, error-border
-- Fra 88 → 177 tester på én arbeidsøkt
+- 577 Dart-tester (i tillegg til 16 MCP-tester)
 
 ### Slide 10: Dokumentasjonsside (VitePress)
 - 67 norskspråklige sider på GitHub Pages
@@ -147,8 +152,8 @@ Kategorisert:
 
 ### Slide 14: Utviklingsprosess — AI-assistert
 - 6 dagers intensiv utvikling (14.–20. mars 2026)
-- Claude Code som AI-par-programmerer (Claude Opus 4.6)
-- 74 commits, ~6 340 linjer Dart + ~64 000 bytes TypeScript
+- Claude Code som AI-par-programmerer (Claude Opus)
+- 111 commits, ~12 600 linjer Dart + ~64 000 bytes TypeScript
 - Arbeidsflyt: planlegging → implementering → testing → dokumentasjon → publisering
 - AI bidro til: komponentkode, tester, dokumentasjon, VitePress-oppsett, MCP-server
 - Mennesket bidro til: arkitekturbeslutninger, kvalitetssikring, designvalg, publisering

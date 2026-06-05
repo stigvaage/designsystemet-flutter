@@ -15,33 +15,34 @@ export function registerLookupComponent(
   server: McpServer,
   repoRoot: string,
 ): void {
+  // Parse all components and assign their categories ONCE at registration time
+  // (mirrors search-docs.ts's build-index-once pattern). The MCP server runs
+  // against a fixed checkout, so caching is safe and avoids re-reading and
+  // re-parsing all ~40 Dart files plus categories.json on every invocation.
+  const categoriesPath = join(
+    import.meta.dirname,
+    "..",
+    "data",
+    "categories.json",
+  );
+  const categories: CategoryMap = JSON.parse(
+    readFileSync(categoriesPath, "utf-8"),
+  );
+  const components = parseAllComponents(repoRoot);
+  for (const component of components) {
+    for (const [cat, names] of Object.entries(categories)) {
+      if (names.includes(component.name)) {
+        component.category = cat;
+        break;
+      }
+    }
+  }
+
   server.tool(
     "lookup_component",
     "Look up a Designsystemet Flutter component by name. Returns properties, usage examples, and import statement.",
     { name: z.string().describe("Component name, e.g. 'DsButton' or 'button'") },
     async ({ name }) => {
-      const components = parseAllComponents(repoRoot);
-
-      // Load categories and assign them
-      const categoriesPath = join(
-        import.meta.dirname,
-        "..",
-        "data",
-        "categories.json",
-      );
-      const categories: CategoryMap = JSON.parse(
-        readFileSync(categoriesPath, "utf-8"),
-      );
-
-      for (const component of components) {
-        for (const [cat, names] of Object.entries(categories)) {
-          if (names.includes(component.name)) {
-            component.category = cat;
-            break;
-          }
-        }
-      }
-
       // Normalize the search term
       const searchTerm = name.trim();
       const searchLower = searchTerm.toLowerCase();
@@ -95,16 +96,23 @@ export function registerLookupComponent(
         };
       }
 
-      // Load documentation page if it exists
+      // Load documentation page if it exists. The doc files are ds-prefixed,
+      // e.g. site/nb/komponenter/ds-button.md, ds-error-summary.md. Some files
+      // collapse the name (DsTextField -> ds-textfield.md), so we also try a
+      // flat (no-hyphen) variant in addition to the kebab-case one.
       const docsDir = resolveComponentDocsPath(repoRoot);
-      const componentSlug = found.name
-        .replace(/^Ds/, "")
+      const baseSlug = found.name.replace(/^Ds/, ""); // "ErrorSummary"
+      const kebab = baseSlug
         .replace(/([a-z])([A-Z])/g, "$1-$2")
-        .toLowerCase();
+        .toLowerCase(); // "error-summary"
+      const flat = baseSlug.toLowerCase(); // "errorsummary" / "textfield"
 
       const possibleDocPaths = [
-        join(docsDir, componentSlug, "index.md"),
-        join(docsDir, `${componentSlug}.md`),
+        join(docsDir, `ds-${kebab}.md`), // ds-error-summary.md, ds-button.md
+        join(docsDir, `ds-${flat}.md`), // ds-textfield.md (no hyphen)
+        join(docsDir, `ds-${kebab}`, "index.md"),
+        join(docsDir, `${kebab}.md`), // legacy fallbacks
+        join(docsDir, kebab, "index.md"),
       ];
 
       for (const docPath of possibleDocPaths) {

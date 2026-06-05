@@ -5,6 +5,7 @@ import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../theme/ds_theme_data.dart';
+import '../../typography/ds_validation_message.dart';
 import '../../utils/ds_control_label.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_focus.dart';
@@ -218,34 +219,36 @@ class _DsRadioState extends State<DsRadio> {
       );
     }
 
+    // Mirror Flutter's RawRadio semantics so assistive technologies announce a
+    // radio button in a mutually-exclusive group. `inMutuallyExclusiveGroup` +
+    // `checked` carry the radio role and checked/unchecked state on all
+    // platforms (notably Android/TalkBack); `selected` is kept as the extra
+    // iOS/VoiceOver signal. The error is surfaced as a persistent hint (re-read
+    // on every focus), matching DsCheckbox, in addition to the one-shot
+    // live-region announcement below.
     Widget result = Semantics(
+      inMutuallyExclusiveGroup: true,
+      checked: widget.value,
       selected: widget.value,
       enabled: isInteractive,
+      hint: widget.error,
       child: interactive,
     );
 
-    // Show the validation message below the control. It is wrapped in a
-    // live-region Semantics node so assistive technologies announce it when it
-    // appears (#57).
+    // Show the validation message below the control via the shared
+    // DsValidationMessage (single source of truth for size/color/spacing,
+    // matching DsCheckbox and DsField). DsValidationMessage already wraps a
+    // danger message in its own live-region Semantics node, so assistive
+    // technologies announce it when it appears (#57) — wrapping it again here
+    // would emit a redundant second live region. DsValidationMessage supplies
+    // its own top:4 padding.
     if (hasError) {
-      final dangerScale = theme.colorScheme.danger;
       result = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           result,
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Semantics(
-              liveRegion: true,
-              child: Text(
-                widget.error!,
-                style: theme.typography.bodySm.copyWith(
-                  color: dangerScale.textDefault,
-                ),
-              ),
-            ),
-          ),
+          DsValidationMessage(message: widget.error!),
         ],
       );
     }

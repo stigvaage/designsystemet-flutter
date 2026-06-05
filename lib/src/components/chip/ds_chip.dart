@@ -216,7 +216,12 @@ class _DsChipState extends State<DsChip> {
               child: widget.child,
             ),
           ),
-          if (widget.removable)
+          // Only render the remove button when there is a handler to call.
+          // Without [onRemove] the icon would be a no-op on tap, Delete and
+          // Enter/Space, yet still announce an enabled "Fjern"-button to
+          // assistive technology — a dead control. Prefer [DsChip.removable],
+          // which requires [onRemove].
+          if (widget.removable && widget.onRemove != null)
             _buildRemoveButton(colorScale, fgColor, padding.right),
         ],
       ),

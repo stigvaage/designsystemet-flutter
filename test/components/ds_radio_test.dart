@@ -420,5 +420,66 @@ void main() {
       );
       expect(selected, findsWidgets);
     });
+
+    testWidgets(
+      'radio role is announced via inMutuallyExclusiveGroup + checked',
+      (tester) async {
+        await tester.pumpWidget(
+          wrapWithTheme(
+            DsRadio(value: true, onChanged: (_) {}, label: const Text('Valgt')),
+          ),
+        );
+        final radioRole = find.byWidgetPredicate(
+          (w) =>
+              w is Semantics &&
+              w.properties.inMutuallyExclusiveGroup == true &&
+              w.properties.checked == true,
+        );
+        expect(radioRole, findsWidgets);
+      },
+    );
+
+    testWidgets('unchecked radio reports checked: false in semantics', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(
+            value: false,
+            onChanged: (_) {},
+            label: const Text('Ikke valgt'),
+          ),
+        ),
+      );
+      final unchecked = find.byWidgetPredicate(
+        (w) =>
+            w is Semantics &&
+            w.properties.inMutuallyExclusiveGroup == true &&
+            w.properties.checked == false,
+      );
+      expect(unchecked, findsWidgets);
+    });
+
+    testWidgets('error is exposed as the control semantics hint', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsRadio(
+            value: false,
+            onChanged: (_) {},
+            error: 'Du må velge et alternativ',
+            label: const Text('Velg'),
+          ),
+        ),
+      );
+      final withHint = find.byWidgetPredicate(
+        (w) =>
+            w is Semantics &&
+            w.properties.inMutuallyExclusiveGroup == true &&
+            w.properties.hint == 'Du må velge et alternativ',
+      );
+      expect(withHint, findsWidgets);
+    });
   });
 }

@@ -1,16 +1,21 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../theme/ds_color_scale.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_focus.dart';
 import '../../utils/ds_icons.dart';
 import '../input/ds_input.dart';
 
-/// A search input field with a magnifying-glass icon prefix.
+/// Søkefelt med forstørrelsesglass-ikon som prefiks.
 ///
-/// Built on [DsInput] and forwards text change and submit callbacks. Mirrors
-/// the React `Search` composition (`Search.Input` + `Search.Clear`): set
-/// [clearable] to show a clear button as a suffix when the field has text.
+/// Bygget på [DsInput] og videresender tekstendrings- og innsendingstilbakekall.
+/// Speiler React-komposisjonen `Search` (`Search.Input` + `Search.Clear`): sett
+/// [clearable] for å vise en tøm-knapp som suffiks når feltet har tekst.
+/// Tøm-knappen er en fullverdig knapp som kan nås med Tab og aktiveres med
+/// Enter/Mellomrom, med synlig fokusring.
 class DsSearch extends StatefulWidget {
   const DsSearch({
     super.key,
@@ -24,41 +29,74 @@ class DsSearch extends StatefulWidget {
     this.clearable = false,
     this.onClear,
     this.clearLabel = 'Tøm',
+    this.error,
+    this.disabled = false,
+    this.readOnly = false,
+    this.autofocus = false,
+    this.keyboardType,
+    this.textInputAction,
+    this.inputFormatters,
   });
 
-  /// Controls the text being edited. A controller is created internally when
-  /// none is supplied.
+  /// Kontrollerer teksten som redigeres. En kontroller opprettes internt når
+  /// ingen er oppgitt.
   final TextEditingController? controller;
 
-  /// Called whenever the text changes.
+  /// Kalles hver gang teksten endres.
   final ValueChanged<String>? onChanged;
 
-  /// Called when the user submits the field (e.g. presses enter).
+  /// Kalles når brukeren sender inn feltet (f.eks. trykker enter).
   final ValueChanged<String>? onSubmitted;
 
-  /// Alias for [onSubmitted] matching the React `onSubmit` naming. When both
-  /// are provided, [onSubmitted] is called first, then [onSubmit].
+  /// Alias for [onSubmitted] som matcher React-navngivningen `onSubmit`. Når
+  /// begge er oppgitt kalles [onSubmitted] først, deretter [onSubmit].
   final ValueChanged<String>? onSubmit;
 
-  /// Sizing of the field. Falls back to the surrounding `DsSizeScope`.
+  /// Størrelse på feltet. Faller tilbake til omsluttende `DsSizeScope`.
   final DsSize? size;
 
-  /// Placeholder text shown when the field is empty.
+  /// Plassholdertekst som vises når feltet er tomt. Når ingen verdi oppgis er
+  /// standarden «Søk...», men en tom plassholder når [clearable] er `true` (i
+  /// tråd med offisiell anbefaling om tom plassholder ved tøm-knapp).
   final String? placeholder;
 
-  /// External focus node for the underlying input.
+  /// Eksternt fokusobjekt for det underliggende feltet.
   final FocusNode? focusNode;
 
-  /// When `true`, shows a clear button (an `x` icon) as a suffix while the
-  /// field contains text. Tapping it empties the field, calls [onChanged] with
-  /// an empty string, and calls [onClear].
+  /// Når `true` vises en tøm-knapp (et `x`-ikon) som suffiks mens feltet
+  /// inneholder tekst. Et trykk tømmer feltet, kaller [onChanged] med tom
+  /// streng, og kaller [onClear]. Knappen undertrykkes når feltet er [disabled]
+  /// eller [readOnly].
   final bool clearable;
 
-  /// Called after the field is cleared via the clear button.
+  /// Kalles etter at feltet er tømt via tøm-knappen.
   final VoidCallback? onClear;
 
-  /// Accessible label for the clear button. Defaults to «Tøm».
+  /// Tilgjengelig ledetekst for tøm-knappen. Standard er «Tøm».
   final String clearLabel;
+
+  /// Feilmelding som aktiverer feiltilstand (rød kantlinje) i det
+  /// underliggende [DsInput]. Faller tilbake til en omsluttende `DsField`.
+  final String? error;
+
+  /// Når `true` dempes feltet og det ignorerer all peker- og tastaturinput.
+  final bool disabled;
+
+  /// Når `true` er innholdet ikke redigerbart, men feltet kan fortsatt
+  /// fokuseres og teksten markeres.
+  final bool readOnly;
+
+  /// Når `true` får feltet fokus automatisk ved første visning.
+  final bool autofocus;
+
+  /// Tastaturtype for myktastatur (f.eks. tall eller e-post).
+  final TextInputType? keyboardType;
+
+  /// Handlingen som handlingstasten på tastaturet representerer.
+  final TextInputAction? textInputAction;
+
+  /// Inndatafiltere som transformerer eller begrenser teksten mens den skrives.
+  final List<TextInputFormatter>? inputFormatters;
 
   @override
   State<DsSearch> createState() => _DsSearchState();
@@ -127,27 +165,117 @@ class _DsSearchState extends State<DsSearch> {
     final theme = DsTheme.of(context);
     final colorScale = theme.colorScheme.resolve(DsColorScope.of(context));
 
-    final showClear = widget.clearable && _controller.text.isNotEmpty;
+    // En tom plassholder er offisiell anbefaling når en tøm-knapp er til stede;
+    // ellers brukes «Søk...». En eksplisitt verdi overstyrer alltid.
+    final placeholder =
+        widget.placeholder ?? (widget.clearable ? '' : 'Søk...');
+
+    // Et tomt felt har ingenting å tømme, og et deaktivert/skrivebeskyttet felt
+    // skal ikke kunne tømmes.
+    final showClear =
+        widget.clearable &&
+        !widget.disabled &&
+        !widget.readOnly &&
+        _controller.text.isNotEmpty;
 
     return DsInput(
       controller: _controller,
       size: widget.size,
+      error: widget.error,
+      disabled: widget.disabled,
+      readOnly: widget.readOnly,
+      autofocus: widget.autofocus,
+      keyboardType: widget.keyboardType,
+      textInputAction: widget.textInputAction,
+      inputFormatters: widget.inputFormatters,
       onChanged: widget.onChanged,
       onSubmitted: _handleSubmitted,
       focusNode: widget.focusNode,
-      placeholder: widget.placeholder ?? 'Søk...',
-      prefix: const Icon(DsIcons.search, size: 16),
+      placeholder: placeholder,
+      prefix: Icon(DsIcons.search, size: 16, color: colorScale.textSubtle),
       suffix: showClear
-          ? GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: _clear,
-              child: Semantics(
-                button: true,
-                label: widget.clearLabel,
-                child: Icon(DsIcons.x, size: 16, color: colorScale.textSubtle),
-              ),
+          ? _ClearButton(
+              colorScale: colorScale,
+              label: widget.clearLabel,
+              onClear: _clear,
             )
           : null,
+    );
+  }
+}
+
+/// Tøm-knapp (`x`-ikon) for [DsSearch].
+///
+/// En fullverdig, tastaturbetjenbar knapp som speiler `DsChip` sin
+/// fjern-knapp og `DsAlert` sin lukke-knapp: den kan nås med Tab, aktiveres med
+/// Enter/Mellomrom og via trykk, viser en reservert fokusring uten å forskyve
+/// oppsettet, og eksponerer knapp-semantikk med en tilgjengelig ledetekst og en
+/// `onTap`-handling for hjelpemiddelteknologi.
+class _ClearButton extends StatefulWidget {
+  const _ClearButton({
+    required this.colorScale,
+    required this.label,
+    required this.onClear,
+  });
+
+  final DsColorScale colorScale;
+  final String label;
+  final VoidCallback onClear;
+
+  @override
+  State<_ClearButton> createState() => _ClearButtonState();
+}
+
+class _ClearButtonState extends State<_ClearButton> {
+  bool _isFocused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    // Sentrert glyf inni et trykkmål på minst 24x24 logiske piksler
+    // (WCAG 2.2 SC 2.5.8). Tallet styrer treffareal/oppsett, ikke visuell
+    // stil, og er derfor ikke en hardkodet visuell verdi.
+    Widget icon = ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+      child: Center(
+        widthFactor: 1,
+        heightFactor: 1,
+        child: Icon(DsIcons.x, size: 16, color: widget.colorScale.textSubtle),
+      ),
+    );
+
+    // Reserver fokusringen alltid for å unngå at oppsettet forskyves.
+    icon = DsFocus.reserveRing(
+      focused: _isFocused,
+      radius: BorderRadius.circular(DsFocus.ringWidth),
+      scale: widget.colorScale,
+      child: icon,
+    );
+
+    return Semantics(
+      button: true,
+      enabled: true,
+      label: widget.label,
+      onTap: widget.onClear,
+      child: Focus(
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent &&
+              (event.logicalKey == LogicalKeyboardKey.enter ||
+                  event.logicalKey == LogicalKeyboardKey.space)) {
+            widget.onClear();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        onFocusChange: (focused) => setState(() => _isFocused = focused),
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: widget.onClear,
+            child: icon,
+          ),
+        ),
+      ),
     );
   }
 }

@@ -143,16 +143,17 @@ void main() {
           ),
         );
 
-        // Activate the first segment by tap (mouse/touch path).
-        await tester.tap(find.text('One'));
+        // Activate a non-selected segment by tap (mouse/touch path). Tapping a
+        // non-selected segment fires onChanged AND requests focus on it.
+        await tester.tap(find.text('Two'));
         await tester.pump();
-        expect(changes, [0]);
+        expect(changes, [1]);
 
-        // The first segment's focus node should now hold focus, so an
-        // ArrowRight moves selection to index 1.
+        // The tapped segment now holds focus, so an ArrowRight moves selection
+        // to index 2 — proving the tap requested focus.
         await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
         await tester.pump();
-        expect(changes, [0, 1]);
+        expect(changes, [1, 2]);
       },
     );
 
@@ -271,6 +272,64 @@ void main() {
       );
     });
 
+    testWidgets(
+      'selected segment is toggled, not selected (no contradiction)',
+      (tester) async {
+        // A button-role segment maps the active state to aria-pressed
+        // (SemanticsFlag.isToggled), not `selected`, mirroring DsChip.button.
+        await tester.pumpWidget(
+          wrapWithTheme(
+            DsToggleGroup(
+              items: const ['One', 'Two'],
+              selectedIndex: 0,
+              onChanged: (_) {},
+            ),
+          ),
+        );
+
+        final selected = tester.getSemantics(find.text('One')).flagsCollection;
+        expect(selected.isButton, isTrue);
+        expect(selected.isToggled, Tristate.isTrue);
+        // `selected` is reserved for radio roles, so it must not be set here.
+        expect(selected.isSelected, Tristate.none);
+
+        final unselected = tester
+            .getSemantics(find.text('Two'))
+            .flagsCollection;
+        expect(unselected.isToggled, Tristate.isFalse);
+        expect(unselected.isSelected, Tristate.none);
+      },
+    );
+
+    testWidgets(
+      'tapping the already-selected segment does not re-fire onChanged',
+      (tester) async {
+        // Selection is idempotent, matching DsRadio/DsChip.radio.
+        final changes = <int>[];
+        await tester.pumpWidget(
+          wrapWithTheme(
+            DsToggleGroup(
+              items: const ['One', 'Two', 'Three'],
+              selectedIndex: 1,
+              onChanged: changes.add,
+            ),
+          ),
+        );
+
+        // Tap the currently selected segment → no onChanged.
+        await tester.tap(find.text('Two'));
+        await tester.pump();
+        expect(changes, isEmpty);
+
+        // Arrowing back onto the current segment is also idempotent: from
+        // index 1, ArrowLeft lands on index 0 (fires), ArrowRight returns to
+        // index 1 — but selectedIndex is still 1, so it does not re-fire.
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+        await tester.pump();
+        expect(changes, [2]);
+      },
+    );
+
     testWidgets('growing items.length does not throw a RangeError', (
       tester,
     ) async {
@@ -305,7 +364,9 @@ void main() {
         wrapWithTheme(
           DsToggleGroup(
             items: const ['One', 'Two', 'Three', 'Four'],
-            selectedIndex: 0,
+            // 'Two' selected, so navigating to index 3 then 0 both fire
+            // onChanged (neither equals the selected index).
+            selectedIndex: 1,
             onChanged: changes.add,
           ),
         ),
@@ -335,8 +396,9 @@ void main() {
       await tester.pump();
       await tester.sendKeyEvent(LogicalKeyboardKey.home);
       await tester.pump();
-      // Tap reported index 2, Home jumps to index 0.
-      expect(changes, [2, 0]);
+      // Tapping the already-selected index 2 is idempotent (no onChanged),
+      // Home then jumps to index 0.
+      expect(changes, [0]);
     });
 
     testWidgets('End key jumps to the last segment', (tester) async {
@@ -355,8 +417,9 @@ void main() {
       await tester.pump();
       await tester.sendKeyEvent(LogicalKeyboardKey.end);
       await tester.pump();
-      // Tap reported index 0, End jumps to the last index 2.
-      expect(changes, [0, 2]);
+      // Tapping the already-selected index 0 is idempotent (no onChanged),
+      // End then jumps to the last index 2.
+      expect(changes, [2]);
     });
 
     testWidgets('disabled group does not call onChanged on tap', (
@@ -459,12 +522,14 @@ void main() {
         ),
       );
 
+      // Tapping the selected first segment focuses it without firing onChanged
+      // (idempotent selection).
       await tester.tap(find.text('One'));
       await tester.pump();
       // ArrowRight from index 0 skips disabled index 1 and lands on index 2.
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
       await tester.pump();
-      expect(changes, [0, 2]);
+      expect(changes, [2]);
     });
 
     testWidgets('external focusNode focuses the first segment', (tester) async {

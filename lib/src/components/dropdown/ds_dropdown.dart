@@ -1,3 +1,4 @@
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -8,6 +9,16 @@ import '../../theme/ds_size_tokens.dart';
 import '../../theme/ds_theme.dart';
 import '../../theme/ds_theme_data.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_overlay_anchors.dart';
+
+/// Standard maksimal høyde for nedtrekksmenyen før innholdet ruller. Brukes som
+/// øvre grense når den tilgjengelige plassen mot skjermkanten klemmes inn, og
+/// som fallback når trigger/visningsområde ikke kan måles.
+const double kDsDropdownMaxMenuHeight = 280;
+
+/// Minste bredde på nedtrekksmenyen, slik at korte etiketter ikke gir en
+/// uforholdsmessig smal meny.
+const double kDsDropdownMinMenuWidth = 160;
 
 /// An overlay-based dropdown menu that appears below a trigger widget.
 ///
@@ -96,6 +107,15 @@ class _DsDropdownState extends State<DsDropdown> {
   OverlayEntry? _entry;
   bool _isOpen = false;
 
+  /// Plasseringen av menyen i forhold til utløseren. Vippes over utløseren
+  /// ([DsPlacement.topStart]) når det er mer plass der enn under, slik at lange
+  /// menyer eller menyer nær skjermkanten ikke renner ut av visningsområdet.
+  DsPlacement _placement = DsPlacement.bottomStart;
+
+  /// Maksimal høyde på menyflaten, klemt inn mot avstanden fra utløseren til
+  /// relevant skjermkant. Faller tilbake til [kDsDropdownMaxMenuHeight].
+  double _maxHeight = kDsDropdownMaxMenuHeight;
+
   /// Index of the keyboard-highlighted item, or -1 when nothing is highlighted.
   /// Driven by ArrowUp/ArrowDown so a keyboard user can navigate and activate an
   /// item without a pointer.
@@ -116,6 +136,45 @@ class _DsDropdownState extends State<DsDropdown> {
     final capturedColor = widget.color ?? DsColorScope.of(context);
     final capturedSize = widget.size ?? DsSizeScope.of(context);
     _highlight = -1;
+
+    // Measure the trigger and viewport so the menu can flip above the trigger
+    // and clamp its height to the available room, never running off-screen.
+    final box = context.findRenderObject() as RenderBox?;
+    final rect = (box != null && box.hasSize)
+        ? box.localToGlobal(Offset.zero) & box.size
+        : null;
+    final media = MediaQuery.maybeOf(context);
+    final screen = media?.size;
+    // Only treat the viewport as measured when it has a real, positive size;
+    // otherwise (e.g. a zero-size MediaQuery in tests) skip both flipping and
+    // height-clamping and use the default cap.
+    final hasViewport = screen != null && screen.height > 0 && screen.width > 0;
+
+    // Flip above the trigger when there is more room there than below.
+    _placement = dsResolvePlacement(
+      placement: DsPlacement.bottomStart,
+      autoPlacement: true,
+      anchorRect: rect,
+      screen: hasViewport ? screen : null,
+    );
+
+    // Clamp the menu height to the space between the trigger and the relevant
+    // viewport edge (minus the soft keyboard inset below), so it never runs
+    // off-screen. Falls back to the default cap when measurements are
+    // unavailable or the computed room is non-positive.
+    if (rect != null && hasViewport) {
+      const gap = 4.0;
+      final bottomInset = media?.viewInsets.bottom ?? 0;
+      final roomBelow = screen.height - rect.bottom - bottomInset - gap;
+      final roomAbove = rect.top - gap;
+      final room = _placement == DsPlacement.topStart ? roomAbove : roomBelow;
+      _maxHeight = room > 0
+          ? room.clamp(0.0, kDsDropdownMaxMenuHeight)
+          : kDsDropdownMaxMenuHeight;
+    } else {
+      _maxHeight = kDsDropdownMaxMenuHeight;
+    }
+
     setState(() => _isOpen = true);
     _entry = OverlayEntry(
       builder: (overlayContext) => _buildMenuWithTheme(
@@ -178,6 +237,10 @@ class _DsDropdownState extends State<DsDropdown> {
       lg: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
     );
 
+    final (targetAnchor, followerAnchor, offset) = dsPlacementAnchors(
+      _placement,
+    );
+
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: _close,
@@ -185,26 +248,43 @@ class _DsDropdownState extends State<DsDropdown> {
         children: [
           CompositedTransformFollower(
             link: _layerLink,
-            targetAnchor: Alignment.bottomLeft,
-            followerAnchor: Alignment.topLeft,
-            offset: const Offset(0, 4),
-            child: Container(
-              constraints: const BoxConstraints(minWidth: 160),
-              decoration: BoxDecoration(
-                color: colorScale.backgroundDefault,
-                borderRadius: BorderRadius.circular(
-                  theme.borderRadius.defaultRadius,
+            targetAnchor: targetAnchor,
+            followerAnchor: followerAnchor,
+            offset: offset,
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: colorScale.backgroundDefault,
+                  borderRadius: BorderRadius.circular(
+                    theme.borderRadius.defaultRadius,
+                  ),
+                  border: Border.all(color: colorScale.borderSubtle, width: 1),
+                  boxShadow: theme.shadows.md,
                 ),
-                border: Border.all(color: colorScale.borderSubtle, width: 1),
-                boxShadow: theme.shadows.md,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  for (var i = 0; i < widget.items.length; i++)
-                    _itemRow(i, colorScale, fontSize, padding, theme),
-                ],
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: kDsDropdownMinMenuWidth,
+                    maxHeight: _maxHeight,
+                  ),
+                  child: SingleChildScrollView(
+                    // Group the item rows under a single semantics container
+                    // with the `menu` role so assistive technology announces
+                    // them as a cohesive menu rather than loose buttons.
+                    child: Semantics(
+                      container: true,
+                      role: SemanticsRole.menu,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (var i = 0; i < widget.items.length; i++)
+                            _itemRow(i, colorScale, fontSize, padding, theme),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
@@ -224,6 +304,7 @@ class _DsDropdownState extends State<DsDropdown> {
     final highlighted = _highlight == index;
     return Semantics(
       button: true,
+      role: SemanticsRole.menuItem,
       enabled: item.enabled,
       label: item.label,
       // A GestureDetector with a null onTap registers no tap recognizer, so a
@@ -290,8 +371,14 @@ class _DsDropdownState extends State<DsDropdown> {
     }
     if (key == LogicalKeyboardKey.arrowUp) {
       if (!_isOpen) {
+        // Opening with ArrowUp lands on the LAST enabled item, matching
+        // DsSelect. _open() resets _highlight to -1; seed it to 0 first so a
+        // single backward step wraps to the last enabled index (Dart's `%`
+        // returns a non-negative remainder, so stepping from -1 would land on
+        // the second-to-last item).
         _open();
-        _moveHighlight(1);
+        _highlight = 0;
+        _moveHighlight(-1);
       } else {
         _moveHighlight(-1);
       }

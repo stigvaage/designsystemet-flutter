@@ -97,6 +97,15 @@ DsPlacement _flip(DsPlacement p) => switch (p) {
 /// viewport of size [screen]. When [autoPlacement] is true, flips to the
 /// opposite side along the main axis if that side has more room. Returns
 /// [placement] unchanged when measurements are unavailable.
+///
+/// Begrensninger (avviker fra floating-ui): flip-avgjørelsen er basert
+/// utelukkende på rommet mellom ankerets kant og visningsportkanten — den tar
+/// ikke hensyn til overleggets egen målte innholdsstørrelse. Et `top`-overlegg
+/// med rikelig absolutt plass over ankeret, men med innhold som er høyere enn
+/// den plassen, vil derfor ikke flippe. Funksjonen utfører heller ingen
+/// «shift»/klipping mot visningsporten, så `DsPopover`/`DsTooltip` kan tegnes
+/// delvis utenfor skjermen. (`DsSelect`/`DsSuggestion` begrenser i stedet
+/// nedtrekkshøyden mot tilgjengelig plass.)
 DsPlacement dsResolvePlacement({
   required DsPlacement placement,
   required bool autoPlacement,

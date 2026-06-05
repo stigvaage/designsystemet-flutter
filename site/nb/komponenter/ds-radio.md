@@ -25,12 +25,15 @@ Radioknapp for enkeltvalg i en gruppe med gjensidig utelukkende alternativer.
 
 ```dart
 DsRadio(
-  value: true,
-  groupValue: valgtVerdi == 'alternativ1',
+  value: valgtVerdi == 'alternativ1',
   onChanged: (_) => setState(() => valgtVerdi = 'alternativ1'),
-  label: Text('Alternativ 1'),
+  label: const Text('Alternativ 1'),
 )
 ```
+
+`value` er en `bool` som angir om denne radioknappen er valgt. Du styrer
+gruppen ved å sammenligne en delt tilstand mot hvert alternativ. `onChanged`
+kalles kun når knappen blir valgt (aldri med `false`), så bruk `(_) => ...`.
 
 ### Radiogruppe
 
@@ -38,22 +41,19 @@ DsRadio(
 Column(
   children: [
     DsRadio(
-      value: true,
-      groupValue: valgt == 'a',
+      value: valgt == 'a',
       onChanged: (_) => setState(() => valgt = 'a'),
-      label: Text('Alternativ A'),
+      label: const Text('Alternativ A'),
     ),
     DsRadio(
-      value: true,
-      groupValue: valgt == 'b',
+      value: valgt == 'b',
       onChanged: (_) => setState(() => valgt = 'b'),
-      label: Text('Alternativ B'),
+      label: const Text('Alternativ B'),
     ),
     DsRadio(
-      value: true,
-      groupValue: valgt == 'c',
+      value: valgt == 'c',
       onChanged: (_) => setState(() => valgt = 'c'),
-      label: Text('Alternativ C'),
+      label: const Text('Alternativ C'),
     ),
   ],
 )
@@ -75,16 +75,18 @@ Column(
 
 | Egenskap | Type | Standard | Beskrivelse |
 | --- | --- | --- | --- |
-| value | `bool` | påkrevd | Verdien denne radioknappen representerer. |
-| groupValue | `bool` | påkrevd | Den valgte verdien i gruppen. |
-| onChanged | `ValueChanged<bool>?` | påkrevd | Tilbakeringing ved endring. |
+| value | `bool` | påkrevd | Om denne radioknappen er valgt i gruppen. |
+| onChanged | `ValueChanged<bool>?` | påkrevd | Kalles når knappen blir valgt. Aldri kalt med `false` (valg er idempotent). `null` gjør kontrollen ikke-interaktiv. |
 | label | `Widget?` | `null` | Etikett som vises ved siden av knappen. |
 | description | `Widget?` | `null` | Hjelpetekst som vises under etiketten. |
-| size | `DsSize?` | `null` | Størrelse på radioknappen. |
-| color | `DsColor?` | `null` | Fargetema. |
-| error | `String?` | `null` | Feilmelding. |
-| readOnly | `bool` | `false` | Om knappen er skrivebeskyttet. |
+| size | `DsSize?` | `null` | Størrelse på radioknappen. Faller tilbake til `DsSizeScope`. |
+| color | `DsColor?` | `null` | Fargetema for valgt tilstand. Faller tilbake til `DsColorScope`. |
+| error | `String?` | `null` | Feilmelding som vises under kontrollen. |
+| disabled | `bool` | `false` | Om knappen er deaktivert og dempet. |
+| readOnly | `bool` | `false` | Om knappen er skrivebeskyttet (full opasitet, ingen interaksjon). |
+| autofocus | `bool` | `false` | Om knappen ber om fokus når den bygges. |
 | focusNode | `FocusNode?` | `null` | Valgfri fokusnode for fokushåndtering. |
+| variant | `DsSelectionVariant` | `DsSelectionVariant.default_` | Visuell variant. `outline` legger kontrollen i en kantlinjeboks. |
 
 ## Import
 

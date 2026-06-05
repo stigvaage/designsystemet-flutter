@@ -23,22 +23,27 @@ Valideringsmelding for feilvisning under skjemaelementer.
 <WidgetbookEmbed component="Typografi/DsValidationMessage/Standard" />
 
 ```dart
-DsValidationMessage(text: 'Feltet er påkrevd')
+DsValidationMessage(message: 'Feltet er påkrevd')
 ```
 
-### Med størrelse
+### Alvorlighetsgrad
 
 ```dart
 DsValidationMessage(
-  text: 'E-postadressen er ugyldig',
-  size: DsSize.sm,
+  message: 'E-postadressen er ugyldig',
+  severity: DsSeverity.danger,
+)
+
+DsValidationMessage(
+  message: 'Feltet er gyldig',
+  severity: DsSeverity.success,
 )
 ```
 
 ## Retningslinjer
 - Plasser valideringsmeldingen direkte under det feltet den tilhører.
 - Vis meldingen først etter at brukeren har forsøkt å sende inn skjemaet eller forlatt feltet.
-- Bruk samme størrelse som det tilhørende skjemafeltet for visuell konsistens.
+- Bruk `severity` for å skille mellom feil (danger), advarsel (warning), informasjon (info) og suksess (success).
 
 ## Tekst
 - Skriv konkrete og handlingsrettede feilmeldinger, f.eks. «Feltet er påkrevd» eller «E-postadressen er ugyldig».
@@ -51,21 +56,24 @@ DsValidationMessage(
 
 | Egenskap | Type | Standard | Beskrivelse |
 | --- | --- | --- | --- |
-| text | `String` | påkrevd | Valideringsmeldingen som vises. |
-| size | `DsSize?` | `null` | Størrelse på valideringsmeldingen. |
+| message | `String` | påkrevd | Valideringsmeldingen som vises. |
+| severity | `DsSeverity?` | `null` (effektivt `danger`) | Alvorlighetsgrad som styrer farge og ikon (danger/warning/info/success). |
+| isError | `bool` | `true` | Eldre API for bakoverkompatibilitet — foretrekk `severity`. `true` tilsvarer `danger`, `false` tilsvarer `success`. Brukes kun når `severity` er `null`. |
 
 ## Import
 
 ```dart
-import 'package:designsystemet_flutter/components.dart';
+import 'package:designsystemet_flutter/typography.dart';
 ```
 
 </template>
 <template #tilgjengelighet>
 
 ## Semantikk
-- Markert som feilmelding for skjermlesere slik at feilmeldingen annonseres automatisk.
-- Kobles til feltet via DsField for programmatisk tilknytning.
+- Feil- og advarselsmeldinger (`danger`/`warning`) pakkes i et `Semantics`-liveRegion slik at skjermlesere annonserer dem automatisk når de dukker opp.
+- Suksess- og informasjonsmeldinger (`success`/`info`) annonseres ikke automatisk, slik at de ikke avbryter skjermleseren.
+- Et alvorlighetsikon vises foran teksten i samme farge som meldingen.
+- Når komponenten brukes inni `DsField`, kobles meldingen til feltet via feltets semantikk (`hint`).
 
 ## Tastaturinteraksjon
 

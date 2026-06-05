@@ -21,10 +21,24 @@ class DsCard extends StatefulWidget {
     this.variant = DsCardVariant.default_,
   });
 
+  /// Innholdet som vises inne i kortet.
   final Widget child;
+
+  /// Fargetemaet som brukes på kortet.
+  ///
+  /// Faller tilbake til omkringliggende [DsColorScope] når den er `null`.
   final DsColor? color;
+
+  /// Om kortet bruker en skygge i stedet for en ramme.
   final bool elevated;
+
+  /// Kalles når kortet trykkes eller aktiveres via tastatur.
+  ///
+  /// Når denne er satt blir kortet interaktivt med hover-, trykk- og
+  /// fokustilstand.
   final VoidCallback? onTap;
+
+  /// Valgfri fokusnode for det interaktive kortet.
   final FocusNode? focusNode;
 
   /// The visual fill variant of the card.
@@ -40,6 +54,7 @@ class DsCard extends StatefulWidget {
 class _DsCardState extends State<DsCard> {
   bool _isHovered = false;
   bool _isFocused = false;
+  bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +69,9 @@ class _DsCardState extends State<DsCard> {
       DsCardVariant.default_ => colorScale.surfaceDefault,
       DsCardVariant.tinted => colorScale.surfaceTinted,
     };
-    if (isClickable && _isHovered) {
+    if (isClickable && _isPressed) {
+      bgColor = colorScale.surfaceActive;
+    } else if (isClickable && _isHovered) {
       bgColor = colorScale.surfaceHover;
     }
 
@@ -106,10 +123,18 @@ class _DsCardState extends State<DsCard> {
         child: MouseRegion(
           cursor: SystemMouseCursors.click,
           onEnter: (_) => setState(() => _isHovered = true),
-          onExit: (_) => setState(() => _isHovered = false),
+          onExit: (_) => setState(() {
+            _isHovered = false;
+            _isPressed = false;
+          }),
           child: GestureDetector(
-            onTap: widget.onTap,
             behavior: HitTestBehavior.opaque,
+            onTapDown: (_) => setState(() => _isPressed = true),
+            onTapUp: (_) {
+              setState(() => _isPressed = false);
+              widget.onTap?.call();
+            },
+            onTapCancel: () => setState(() => _isPressed = false),
             child: card,
           ),
         ),

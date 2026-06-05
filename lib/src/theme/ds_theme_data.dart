@@ -1,5 +1,4 @@
 import 'dart:ui' show Brightness, Color, lerpDouble;
-import 'package:flutter/material.dart' show ThemeExtension;
 import 'package:flutter/painting.dart' show BoxShadow;
 
 import 'ds_border_radius_tokens.dart';
@@ -13,13 +12,26 @@ import 'ds_typography.dart';
 ///
 /// Contains color scheme, typography, size tokens, border radii, and shadows.
 /// Use [DsTheme.of] to access the active instance from the widget tree.
-class DsThemeData extends ThemeExtension<DsThemeData> {
+class DsThemeData {
+  /// Om temaet er for lyst (`Brightness.light`) eller mørkt (`Brightness.dark`).
   final Brightness brightness;
+
+  /// Fargesett (alle semantiske og merke-fargeskalaer).
   final DsColorScheme colorScheme;
+
+  /// Størrelses-/avstandstokens (spacing og dimensjoner).
   final DsSizeTokens sizeTokens;
+
+  /// Typografisett (overskrifts- og brødtekststiler).
   final DsTypography typography;
+
+  /// Hjørneradius-tokens for komponenter.
   final DsBorderRadiusTokens borderRadius;
+
+  /// Skygge-tokens for elevasjon (tomt sett i mørk modus).
   final DsShadowTokens shadows;
+
+  /// Opasitet brukt på deaktiverte komponenter (standard 0.3).
   final double disabledOpacity;
 
   const DsThemeData({
@@ -32,7 +44,7 @@ class DsThemeData extends ThemeExtension<DsThemeData> {
     this.disabledOpacity = 0.3,
   });
 
-  @override
+  /// Returnerer en kopi der angitte felter er erstattet.
   DsThemeData copyWith({
     Brightness? brightness,
     DsColorScheme? colorScheme,
@@ -53,14 +65,20 @@ class DsThemeData extends ThemeExtension<DsThemeData> {
     );
   }
 
-  @override
+  /// Interpolerer mellom dette temaet og [other] med faktor [t] (0..1).
+  ///
+  /// Kontinuerlige tokens (farger, skygger) tweenes jevnt, slik at en animert
+  /// temaovergang gir en reell fargeovergang. Diskrete tokens (brightness,
+  /// størrelser, typografi, hjørneradius) kan ikke interpoleres meningsfullt
+  /// og byttes ved midtpunktet (t >= 0.5).
   DsThemeData lerp(DsThemeData? other, double t) {
     if (other == null) return this;
     if (identical(this, other)) return this;
-    // Continuous tokens (colors, shadows) tween smoothly so that AnimatedTheme
-    // produces a real color transition. Discrete tokens (brightness, size
-    // tokens, typography, border radii) cannot be interpolated meaningfully,
-    // so they snap at the midpoint (t >= 0.5).
+    // Standard lerp contract: the endpoints must compare exactly equal to the
+    // inputs. Returning `this`/`other` directly avoids floating-point drift
+    // from re-interpolating every color at t == 0 or t == 1.
+    if (t <= 0) return this;
+    if (t >= 1) return other;
     final discrete = t < 0.5 ? this : other;
     return DsThemeData(
       brightness: discrete.brightness,
@@ -100,7 +118,7 @@ class DsThemeData extends ThemeExtension<DsThemeData> {
 
   static DsColorScale _lerpScale(DsColorScale a, DsColorScale b, double t) {
     if (identical(a, b)) return a;
-    Color c(Color x, Color y) => Color.lerp(x, y, t) ?? (t < 0.5 ? x : y);
+    Color c(Color x, Color y) => Color.lerp(x, y, t)!;
     return DsColorScale(
       backgroundDefault: c(a.backgroundDefault, b.backgroundDefault),
       backgroundTinted: c(a.backgroundTinted, b.backgroundTinted),
@@ -128,7 +146,7 @@ class DsThemeData extends ThemeExtension<DsThemeData> {
   ) {
     if (identical(a, b)) return a;
     List<BoxShadow> l(List<BoxShadow> x, List<BoxShadow> y) =>
-        BoxShadow.lerpList(x, y, t) ?? (t < 0.5 ? x : y);
+        BoxShadow.lerpList(x, y, t)!;
     return DsShadowTokens(
       xs: l(a.xs, b.xs),
       sm: l(a.sm, b.sm),

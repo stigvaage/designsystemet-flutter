@@ -52,6 +52,19 @@ void main() {
       expect(scale.hashCode, equals(other.hashCode));
     });
 
+    test('differs when a single token changes', () {
+      expect(
+        scale,
+        isNot(equals(scale.copyWith(baseDefault: const Color(0xFFFF0000)))),
+      );
+      expect(
+        scale,
+        isNot(
+          equals(scale.copyWith(backgroundDefault: const Color(0xFF000000))),
+        ),
+      );
+    });
+
     test('copyWith returns modified copy', () {
       final modified = scale.copyWith(baseDefault: const Color(0xFFFF0000));
       expect(modified.baseDefault, const Color(0xFFFF0000));

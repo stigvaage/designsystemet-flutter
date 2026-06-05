@@ -1,5 +1,6 @@
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -177,17 +178,28 @@ void main() {
       expect(semanticsWidget.properties.button, isTrue);
     });
 
-    testWidgets('error state renders with DsSelect', (tester) async {
-      await tester.pumpWidget(
-        wrapWithOverlay(
-          const DsSelect<String>(
-            options: [DsSelectOption<String>(value: 'a', label: 'A')],
-            error: 'Required',
+    testWidgets(
+      'error state promotes the trigger border to the danger colour',
+      (tester) async {
+        final danger = DsThemeDigdir.light().colorScheme.danger;
+        await tester.pumpWidget(
+          wrapWithOverlay(
+            const DsSelect<String>(
+              options: [DsSelectOption<String>(value: 'a', label: 'A')],
+              error: 'Required',
+            ),
           ),
-        ),
-      );
-      expect(find.byType(DsSelect<String>), findsOneWidget);
-    });
+        );
+
+        final container = tester.widget<AnimatedContainer>(
+          find.byType(AnimatedContainer),
+        );
+        final decoration = container.decoration! as BoxDecoration;
+        // The error state colours the trigger border with the danger scale,
+        // proving the `error` branch actually drives a visible change.
+        expect(decoration.border!.top.color, danger.borderDefault);
+      },
+    );
 
     testWidgets('Enter key opens the dropdown', (tester) async {
       await tester.pumpWidget(
@@ -363,6 +375,50 @@ void main() {
       expect(
         find.byWidgetPredicate((w) => w is Semantics && w.container == true),
         findsWidgets,
+      );
+    });
+
+    testWidgets('option list container carries the list role', (tester) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsSelect<String>(options: _fruit, placeholder: 'Choose'),
+        ),
+      );
+
+      await tester.tap(find.text('Choose'));
+      await tester.pumpAndSettle();
+
+      // The option container exposes the listbox role to assistive technology.
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.role == SemanticsRole.list,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('each option is marked as mutually exclusive (single-select)', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          const DsSelect<String>(options: _fruit, placeholder: 'Choose'),
+        ),
+      );
+
+      await tester.tap(find.text('Choose'));
+      await tester.pumpAndSettle();
+
+      // Both option rows convey single-select exclusivity so screen readers
+      // announce them as mutually exclusive (radio/listbox) options.
+      expect(
+        find.byWidgetPredicate(
+          (w) =>
+              w is Semantics &&
+              w.properties.inMutuallyExclusiveGroup == true &&
+              (w.properties.label == 'Apple' || w.properties.label == 'Banana'),
+        ),
+        findsNWidgets(2),
       );
     });
 
@@ -543,9 +599,10 @@ void main() {
       await tester.tap(find.text('Choose'));
       await tester.pumpAndSettle();
 
-      // The scrollable dropdown is constrained and never taller than the cap.
+      // The scrollable dropdown is constrained and never taller than the cap,
+      // asserted against the single shared constant rather than a magic literal.
       final box = tester.getSize(find.byType(SingleChildScrollView));
-      expect(box.height, lessThanOrEqualTo(280));
+      expect(box.height, lessThanOrEqualTo(kDsSelectMaxDropdownHeight));
     });
   });
 }

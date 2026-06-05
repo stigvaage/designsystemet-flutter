@@ -8,10 +8,19 @@ import '../src/theme/ds_size_tokens.dart';
 import '../src/theme/ds_theme_data.dart';
 import '../src/theme/ds_typography.dart';
 
-/// Built-in Digdir theme with colors from designsystemet.no.
+/// Innebygd standardtema for designsystemet_flutter, strukturert etter
+/// Designsystemet (designsystemet.no).
 ///
-/// These values are sourced from the official Digdir theme.
-/// For custom themes, use the code generator:
+/// Accent-/brand-basefargen er Helse Vest sin mørkeblå (#003087); hele
+/// 16-stegs skalaen er avledet fra den og oppfyller WCAG 2.1 AA. Dette er
+/// IKKE den offisielle Digdir-accentfargen.
+///
+/// Merk: denne filen er håndvedlikeholdt og håndoptimalisert (mørke skalaer
+/// kan dele konstanter, f.eks. `_darkBrand1 = _darkAccent`), og er derfor ikke
+/// byte-for-byte reproduserbar av kodegeneratoren, som alltid inlinjer fulle
+/// `DsColorScale`-literaler. Verdiene er likevel ekvivalente.
+///
+/// For andre brand-farger, bruk kodegeneratoren:
 /// `dart run designsystemet_flutter:generate`
 class DsThemeDigdir {
   DsThemeDigdir._();

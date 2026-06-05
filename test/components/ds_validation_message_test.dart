@@ -27,18 +27,72 @@ void main() {
       await tester.pumpWidget(
         wrapWithTheme(const DsValidationMessage(message: 'Feil')),
       );
+      // Offisiell .ds-validation-message bruker *-text-subtle, ikke text-default.
       expect(
         tester.widget<Text>(find.text('Feil')).style?.color,
-        scheme.danger.textDefault,
+        scheme.danger.textSubtle,
       );
 
       await tester.pumpWidget(
-        wrapWithTheme(const DsValidationMessage(message: 'OK', isError: false)),
+        wrapWithTheme(
+          const DsValidationMessage(
+            message: 'OK',
+            severity: DsSeverity.success,
+          ),
+        ),
       );
       expect(
         tester.widget<Text>(find.text('OK')).style?.color,
-        scheme.success.textDefault,
+        scheme.success.textSubtle,
       );
+    });
+
+    testWidgets('maps each severity to its color and icon', (tester) async {
+      final scheme = DsThemeDigdir.light().colorScheme;
+
+      for (final (severity, color) in <(DsSeverity, DsColorScale)>[
+        (DsSeverity.danger, scheme.danger),
+        (DsSeverity.warning, scheme.warning),
+        (DsSeverity.info, scheme.info),
+        (DsSeverity.success, scheme.success),
+      ]) {
+        await tester.pumpWidget(
+          wrapWithTheme(
+            DsValidationMessage(message: 'Melding', severity: severity),
+          ),
+        );
+        expect(
+          tester.widget<Text>(find.text('Melding')).style?.color,
+          color.textSubtle,
+        );
+        // Hver variant rendrer et ikon foran teksten.
+        expect(find.byType(Icon), findsOneWidget);
+      }
+    });
+
+    testWidgets('wraps errors and warnings in a live region', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsValidationMessage(message: 'Feil')),
+      );
+      final hasLiveRegion = tester
+          .widgetList<Semantics>(find.byType(Semantics))
+          .any((s) => s.properties.liveRegion == true);
+      expect(hasLiveRegion, isTrue);
+    });
+
+    testWidgets('does not announce success messages', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsValidationMessage(
+            message: 'OK',
+            severity: DsSeverity.success,
+          ),
+        ),
+      );
+      final hasLiveRegion = tester
+          .widgetList<Semantics>(find.byType(Semantics))
+          .any((s) => s.properties.liveRegion == true);
+      expect(hasLiveRegion, isFalse);
     });
   });
 }

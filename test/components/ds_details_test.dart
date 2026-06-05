@@ -53,10 +53,13 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Content'), findsOneWidget);
 
-      // A second Enter collapses it again.
+      // A second Enter collapses it again. The expanded/collapsed state lives
+      // on the focusable summary button node (merged with its label), not on
+      // the outer container.
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pumpAndSettle();
-      final semantics = tester.getSemantics(find.byType(DsDetails));
+      final semantics = tester.getSemantics(find.bySemanticsLabel('Summary'));
+      expect(semantics.flagsCollection.isButton, isTrue);
       expect(semantics.flagsCollection.isExpanded, Tristate.isFalse);
     });
 
@@ -73,8 +76,10 @@ void main() {
 
       await tester.sendKeyEvent(LogicalKeyboardKey.space);
       await tester.pumpAndSettle();
-      final semantics = tester.getSemantics(find.byType(DsDetails));
-      expect(semantics.flagsCollection.isExpanded, isNot(Tristate.none));
+      // The expanded state is exposed on the focusable summary button node.
+      final semantics = tester.getSemantics(find.bySemanticsLabel('Summary'));
+      expect(semantics.flagsCollection.isButton, isTrue);
+      expect(semantics.flagsCollection.isExpanded, Tristate.isTrue);
     });
 
     testWidgets('forwards an external focusNode to the summary', (
@@ -144,7 +149,9 @@ void main() {
       expect(find.text('Content'), findsOneWidget);
     });
 
-    testWidgets('has expanded semantics', (tester) async {
+    testWidgets('button and expanded state live on the same node', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         wrapWithTheme(
           const DsDetails(
@@ -154,8 +161,12 @@ void main() {
           ),
         ),
       );
-      final semantics = tester.getSemantics(find.byType(DsDetails));
-      expect(semantics.flagsCollection.isExpanded, isNot(Tristate.none));
+      // The disclosure role (button) and the expanded flag must be exposed on
+      // ONE node — the focusable summary trigger — matching the ARIA
+      // disclosure pattern and DsDropdown.
+      final semantics = tester.getSemantics(find.bySemanticsLabel('S'));
+      expect(semantics.flagsCollection.isButton, isTrue);
+      expect(semantics.flagsCollection.isExpanded, Tristate.isTrue);
     });
 
     testWidgets('collapsed content is excluded from semantics', (tester) async {

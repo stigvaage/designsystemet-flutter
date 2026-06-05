@@ -104,21 +104,26 @@ DsTheme(
 > border → text → base/contrast) er avledet fra denne og oppfyller WCAG 2.1 AA.
 > Vil du bruke en annen merkevarefarge, se [Egendefinert tema](#egendefinert-tema).
 
-### Material-integrasjon (valgfritt)
+### Bruk sammen med MaterialApp (valgfritt)
 
-Dersom applikasjonen din allerede bruker `MaterialApp`, kan du integrere via `ThemeExtension`:
+Selve biblioteket har ingen avhengighet til Material. Dersom applikasjonen din
+likevel allerede bruker `MaterialApp` (eller `CupertinoApp`), pakker du bare
+innholdet inn med `DsTheme`. `DsTheme` er en `InheritedTheme` og fungerer side om
+side med et hvilket som helst Flutter-app-skall:
 
 ```dart
 MaterialApp(
-  theme: ThemeData(
-    extensions: [DsThemeDigdir.light()],
-  ),
   home: DsTheme(
     data: DsThemeDigdir.light(),
     child: const MinApp(),
   ),
 )
 ```
+
+> [!NOTE]
+> `DsThemeDigdir.light()`/`.dark()` returnerer en `DsThemeData` og leses
+> utelukkende via `DsTheme.of(context)` — den er bevisst frikoblet fra
+> `ThemeData`/`ThemeExtension`, slik at biblioteket forblir Material-fritt.
 
 ## Fargestyring
 

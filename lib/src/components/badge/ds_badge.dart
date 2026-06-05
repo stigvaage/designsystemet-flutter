@@ -76,12 +76,15 @@ class DsBadge extends StatelessWidget {
         border: border,
       ),
       child: Center(
-        child: Text(
-          currentCount > maxCount ? '$maxCount+' : currentCount.toString(),
-          style: TextStyle(
-            color: textColor,
-            fontSize: fontSize,
-            fontWeight: FontWeight.w600,
+        child: ExcludeSemantics(
+          child: Text(
+            currentCount > maxCount ? '$maxCount+' : currentCount.toString(),
+            style: TextStyle(
+              fontFamily: theme.typography.fontFamily,
+              color: textColor,
+              fontSize: fontSize,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),

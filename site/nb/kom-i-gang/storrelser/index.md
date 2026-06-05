@@ -15,18 +15,20 @@ Størrelsessystemet gir tre moduser som styrer dimensjonene til alle komponenter
 `DsSizeTokens` inneholder 31 nummererte verdier, fra `size0` til `size30`. Hver verdi beregnes med formelen:
 
 ```
-verdi = base + (trinn * 4px)
+sizeN = N * trinn   (trinn = 4px)
 ```
 
-Eksempler for `DsSize.md` (base 18px):
+`size0` er alltid `0px`. Avstandsverdiene er like for alle tre størrelsesmodusene — `base` (16/18/21px) er kontroll-/skriftstørrelse-grunnverdien som lagres på tokenet, men den inngår **ikke** i utregningen av `sizeN`.
+
+Eksempler:
 
 | Token | Verdi |
 |---|---|
-| `size0` | 18px |
-| `size1` | 22px |
-| `size2` | 26px |
-| `size5` | 38px |
-| `size10` | 58px |
+| `size0` | 0px |
+| `size1` | 4px |
+| `size2` | 8px |
+| `size5` | 20px |
+| `size10` | 40px |
 
 ## DsSizeScope
 
@@ -42,8 +44,9 @@ DsSizeScope(
         onPressed: () {},
         child: Text('Kompakt knapp'),
       ),
-      DsTextfield(
+      DsField(
         label: 'Kompakt felt',
+        child: DsTextfield(),
       ),
     ],
   ),

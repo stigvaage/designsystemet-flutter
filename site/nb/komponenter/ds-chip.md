@@ -17,6 +17,17 @@ Kompakt element for filtrering eller valg med veksle-funksjonalitet.
 - For enkeltvalg mellom gjensidig utelukkende alternativer — bruk `DsRadio`.
 - For primærhandlinger — bruk `DsButton`.
 
+## Navngitte konstruktører
+
+`DsChip` speiler delene fra React-utgaven av Designsystemet og tilbyr fire navngitte konstruktører:
+
+- `DsChip.button` — klikkbar handlingschip (`Chip.Button`). Kaller `onTap`.
+- `DsChip.removable` — chip med fjern-ikon (`Chip.Removable`). Krever `onRemove`.
+- `DsChip.checkbox` — vekslbar flervalgschip (`Chip.Checkbox`). Krever `selected` og `onChanged` av typen `ValueChanged<bool>`.
+- `DsChip.radio` — enkeltvalgschip (`Chip.Radio`). Krever `selected` og `onChanged` av typen `VoidCallback`.
+
+Standardkonstruktøren `DsChip(...)` lager en generisk chip og styres med `onTap`.
+
 ## Eksempler
 
 ### Grunnleggende chip
@@ -24,9 +35,9 @@ Kompakt element for filtrering eller valg med veksle-funksjonalitet.
 <WidgetbookEmbed component="Kjernekomponenter/DsChip/Standard" />
 
 ```dart
-DsChip(
+DsChip.checkbox(
   selected: erValgt,
-  onSelected: (valgt) => setState(() => erValgt = valgt),
+  onChanged: (valgt) => setState(() => erValgt = valgt),
   child: Text('Flutter'),
 )
 ```
@@ -37,22 +48,50 @@ DsChip(
 Wrap(
   spacing: 8,
   children: [
-    DsChip(
+    DsChip.checkbox(
       selected: filtre.contains('dart'),
-      onSelected: (v) => oppdaterFilter('dart', v),
+      onChanged: (v) => oppdaterFilter('dart', v),
       child: Text('Dart'),
     ),
-    DsChip(
+    DsChip.checkbox(
       selected: filtre.contains('flutter'),
-      onSelected: (v) => oppdaterFilter('flutter', v),
+      onChanged: (v) => oppdaterFilter('flutter', v),
       child: Text('Flutter'),
     ),
-    DsChip(
+    DsChip.checkbox(
       selected: filtre.contains('web'),
-      onSelected: (v) => oppdaterFilter('web', v),
+      onChanged: (v) => oppdaterFilter('web', v),
       child: Text('Web'),
     ),
   ],
+)
+```
+
+### Fjernbar chip
+
+```dart
+DsChip.removable(
+  onRemove: () => fjernEmne('flutter'),
+  child: Text('Flutter'),
+)
+```
+
+### Enkeltvalg (radio)
+
+```dart
+DsChip.radio(
+  selected: valgtSpråk == 'nynorsk',
+  onChanged: () => setState(() => valgtSpråk = 'nynorsk'),
+  child: Text('Nynorsk'),
+)
+```
+
+### Handlingschip
+
+```dart
+DsChip.button(
+  onTap: () => utførHandling(),
+  child: Text('Legg til'),
 )
 ```
 
@@ -73,10 +112,16 @@ Wrap(
 | Egenskap | Type | Standard | Beskrivelse |
 | --- | --- | --- | --- |
 | child | `Widget` | påkrevd | Innholdet i chip-elementet. |
-| selected | `bool` | `false` | Om elementet er valgt. |
-| onSelected | `ValueChanged<bool>?` | `null` | Tilbakeringing ved valg/fravalg. |
+| selected | `bool` | `false` | Om elementet er valgt/aktivt. |
+| onTap | `VoidCallback?` | `null` | Kalles når selve chipen aktiveres (trykk, Enter eller Space). |
+| onRemove | `VoidCallback?` | `null` | Kalles når fjern-ikonet aktiveres (eller Delete trykkes). |
+| removable | `bool` | `false` | Om chipen viser et fjern-ikon. Krever `onRemove`. |
+| disabled | `bool` | `false` | Om chipen er deaktivert (nedtonet, ingen interaksjon). |
 | size | `DsSize?` | `null` | Størrelse på elementet. |
 | color | `DsColor?` | `null` | Fargetema. |
+| focusNode | `FocusNode?` | `null` | Valgfri fokusnode for chip-kroppen. |
+
+For de navngitte konstruktørene `DsChip.checkbox` og `DsChip.radio` styres valget i stedet med `onChanged` (`ValueChanged<bool>` for checkbox, `VoidCallback` for radio).
 
 ## Import
 

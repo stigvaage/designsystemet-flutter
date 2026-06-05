@@ -33,7 +33,7 @@ Brødtekst med fem størrelser og tre varianter som styrer linjehøyde.
 
 ### Størrelser
 
-`DsParagraphSize.xs`, `DsParagraphSize.sm`, `DsParagraphSize.md`, `DsParagraphSize.lg`, `DsParagraphSize.xl`
+`DsBodySize.xs`, `DsBodySize.sm`, `DsBodySize.md`, `DsBodySize.lg`, `DsBodySize.xl`
 
 ### Varianter
 
@@ -48,8 +48,8 @@ Brødtekst med fem størrelser og tre varianter som styrer linjehøyde.
 ```dart
 DsParagraph(
   text: 'Dette er en avsnittekst med god lesbarhet.',
-  size: DsParagraphSize.md,
-  variant: DsParagraphVariant.long,
+  bodySize: DsBodySize.md,
+  variant: DsBodyVariant.long,
 )
 ```
 

@@ -38,14 +38,62 @@ void main() {
       expect(find.text('Fix these'), findsOneWidget);
     });
 
-    // Regression (#35): the default heading is the official Designsystemet
-    // Norwegian ErrorSummary heading, not the English "Errors".
+    // Regression (#35): the default heading is the Norwegian ErrorSummary
+    // heading, not the English "Errors".
     testWidgets('defaults to the Norwegian heading', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(const DsErrorSummary(errors: ['E1'])),
       );
       expect(find.text('Du må rette opp følgende'), findsOneWidget);
       expect(find.text('Errors'), findsNothing);
+    });
+
+    // The decorative bullet is excluded from semantics so the accessible name
+    // of each error is just the message, never "• message" (WCAG 1.3.1/1.1.1).
+    testWidgets('decorative bullet is excluded from the accessible name', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsErrorSummary(errors: ['Navn er påkrevd'])),
+      );
+      // The visible bullet exists as a separate text node.
+      expect(find.text('•'), findsOneWidget);
+      // The error message is its own text node, not concatenated with a bullet.
+      expect(find.text('Navn er påkrevd'), findsOneWidget);
+      expect(find.text('• Navn er påkrevd'), findsNothing);
+    });
+
+    // Official Designsystemet pattern: focus can be moved to the summary after
+    // a failed submit via a supplied focusNode.
+    testWidgets('focusNode can move focus to the summary', (tester) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsErrorSummary(errors: const ['E1'], focusNode: focusNode),
+        ),
+      );
+      expect(focusNode.hasFocus, isFalse);
+      focusNode.requestFocus();
+      await tester.pump();
+      expect(focusNode.hasFocus, isTrue);
+    });
+
+    // autofocus moves focus to the summary as soon as it appears.
+    testWidgets('autofocus focuses the summary on appearance', (tester) async {
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsErrorSummary(
+            errors: const ['E1'],
+            focusNode: focusNode,
+            autofocus: true,
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(focusNode.hasFocus, isTrue);
     });
 
     testWidgets('calls onErrorTap when error tapped', (tester) async {

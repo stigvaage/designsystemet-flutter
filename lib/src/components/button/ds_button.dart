@@ -32,15 +32,38 @@ class DsButton extends StatefulWidget {
     this.autofocus = false,
   });
 
+  /// Innholdet i knappen, vanligvis en [DsParagraph] eller [Text].
   final Widget child;
+
+  /// Kalles når knappen trykkes eller aktiveres med Enter/Mellomrom. Når
+  /// `null`, vises knappen som deaktivert.
   final VoidCallback? onPressed;
+
+  /// Visuell variant: primær (fylt), sekundær (omriss) eller tertiær.
   final DsButtonVariant variant;
+
+  /// Størrelse på knappen. Faller tilbake til omgivende [DsSizeScope] når
+  /// `null`.
   final DsSize? size;
+
+  /// Fargetema for knappen. Faller tilbake til omgivende [DsColorScope] når
+  /// `null`.
   final DsColor? color;
+
+  /// Om knappen er deaktivert (ikke-interaktiv og nedtonet).
   final bool disabled;
+
+  /// Om knappen viser en spinner i stedet for innholdet og blokkerer
+  /// interaksjon.
   final bool loading;
+
+  /// Valgfritt ikon som vises sammen med [child].
   final Widget? icon;
+
+  /// Om [icon] plasseres før eller etter [child]. Standard er til venstre.
   final DsIconPosition iconPosition;
+
+  /// Valgfri fokusnode for å styre knappens fokus eksternt.
   final FocusNode? focusNode;
 
   /// Whether this button should request focus when it is first inserted into

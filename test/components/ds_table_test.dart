@@ -172,6 +172,39 @@ void main() {
       expect(find.text('Sum'), findsOneWidget);
     });
 
+    testWidgets('caption is grouped with the table in one semantics node', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        host(
+          const DsTable(
+            columns: [Text('Name')],
+            rows: [
+              [Text('Alice')],
+            ],
+            caption: Text('Brukere'),
+          ),
+        ),
+      );
+
+      // The caption and the table share a single container semantics node so
+      // assistive technology announces them as one unit (mirrors <caption>).
+      final grouped = find.byWidgetPredicate(
+        (w) => w is Semantics && w.container && w.explicitChildNodes,
+      );
+      expect(grouped, findsOneWidget);
+      expect(
+        find.descendant(of: grouped, matching: find.text('Brukere')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: grouped, matching: find.text('Alice')),
+        findsOneWidget,
+      );
+      handle.dispose();
+    });
+
     testWidgets('stickyHeader uses a CustomScrollView when height is bounded', (
       tester,
     ) async {

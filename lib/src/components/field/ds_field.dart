@@ -50,6 +50,11 @@ class DsField extends StatelessWidget {
     // any user text scaling so accessibility settings are still respected.
     final validationScale = sizeMode.pick(sm: 1.0, md: 1.125, lg: 1.25);
 
+    // Compose the field's hint from the description and the error so a focused
+    // input announces help text and the validation problem together. Both are
+    // optional, so the hint is null when neither is present.
+    final hint = [description, error].whereType<String>().join('. ').trim();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -57,19 +62,47 @@ class DsField extends StatelessWidget {
         if (label != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
-            child: DsLabel(text: label!, size: sizeMode),
+            // The visible label is decorative for assistive tech: its content is
+            // re-exposed programmatically as the input's accessible name via the
+            // [Semantics] wrapper below, so it is hidden here to avoid a
+            // duplicate, detached announcement.
+            child: ExcludeSemantics(
+              child: DsLabel(text: label!, size: sizeMode),
+            ),
           ),
         if (description != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
-            child: Text(
-              description!,
-              style: bodyStyle.copyWith(
-                color: theme.colorScheme.neutral.textSubtle,
+            // Likewise excluded: the description is surfaced as part of the
+            // input's hint below instead of as a separate text node.
+            child: ExcludeSemantics(
+              child: Text(
+                description!,
+                style: bodyStyle.copyWith(
+                  color: theme.colorScheme.neutral.textSubtle,
+                ),
               ),
             ),
           ),
-        DsFieldScope(error: error, child: child),
+        // Associate the label, description and error with the input for
+        // assistive technologies. [MergeSemantics] folds this name/hint into the
+        // wrapped input's own semantics node (e.g. [DsInput]'s `textField`
+        // node), so a screen reader announces "label, value, help. error" as a
+        // single field instead of disconnected siblings. [DsFieldScope] also
+        // forwards the same values down so input components can refine their own
+        // semantics if needed.
+        MergeSemantics(
+          child: Semantics(
+            label: label,
+            hint: hint.isEmpty ? null : hint,
+            child: DsFieldScope(
+              label: label,
+              description: description,
+              error: error,
+              child: child,
+            ),
+          ),
+        ),
         if (error != null)
           MediaQuery(
             // Compose the field size factor with the user's current text
@@ -81,7 +114,13 @@ class DsField extends StatelessWidget {
                 validationScale,
               ),
             ),
-            child: DsValidationMessage(message: error!),
+            // Announce valid → invalid transitions to assistive technologies the
+            // moment the message appears. The [DsValidationMessage] itself
+            // carries the danger styling.
+            child: Semantics(
+              liveRegion: true,
+              child: DsValidationMessage(message: error!),
+            ),
           ),
       ],
     );
@@ -117,14 +156,45 @@ class _ScaledTextScaler extends TextScaler {
   int get hashCode => Object.hash(inner, factor);
 }
 
+/// Eksponerer den omsluttende [DsField]-tilstanden ([label], [description] og
+/// [error]) for inndata-widgets lenger ned i treet.
+///
+/// Inndatakomponenter (f.eks. [DsInput]/[DsTextfield], [DsCheckbox]) leser
+/// [DsFieldScope.of] for å gjengi feiltilstand (rød kantlinje) i takt med
+/// feltets valideringsmelding, og kan i tillegg forbedre sin egen semantikk med
+/// feltets etikett og beskrivelse. Returnerer `null` når det ikke finnes en
+/// omsluttende [DsField].
 class DsFieldScope extends InheritedWidget {
-  const DsFieldScope({super.key, required this.error, required super.child});
+  /// Oppretter et scope som videreformidler [label], [description] og [error]
+  /// til etterkommere. Bare [error] er påkrevd av hensyn til bakoverkompatible
+  /// kallsteder; [label] og [description] er valgfrie og `null` som standard.
+  const DsFieldScope({
+    super.key,
+    required this.error,
+    this.label,
+    this.description,
+    required super.child,
+  });
 
+  /// Feltets etikett, eller `null` når feltet ikke har en etikett. Inndatafelt
+  /// kan bruke denne som sitt tilgjengelige navn (accessible name).
+  final String? label;
+
+  /// Feltets hjelpetekst, eller `null` når feltet ikke har beskrivelse.
+  /// Inndatafelt kan eksponere denne som en del av sitt hint.
+  final String? description;
+
+  /// Gjeldende valideringsfeil, eller `null` når feltet er gyldig.
   final String? error;
 
+  /// Returnerer nærmeste omsluttende [DsFieldScope], eller `null` hvis ingen
+  /// finnes.
   static DsFieldScope? of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<DsFieldScope>();
 
   @override
-  bool updateShouldNotify(DsFieldScope oldWidget) => error != oldWidget.error;
+  bool updateShouldNotify(DsFieldScope oldWidget) =>
+      error != oldWidget.error ||
+      label != oldWidget.label ||
+      description != oldWidget.description;
 }

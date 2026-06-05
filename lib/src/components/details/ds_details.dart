@@ -49,6 +49,7 @@ class _DsDetailsState extends State<DsDetails>
   late bool _isExpanded;
   late final AnimationController _controller;
   bool _isFocused = false;
+  bool _isHovered = false;
 
   @override
   void initState() {
@@ -94,10 +95,22 @@ class _DsDetailsState extends State<DsDetails>
     final colorScale = theme.colorScheme.resolve(activeColor);
 
     final radius = BorderRadius.circular(theme.borderRadius.defaultRadius);
+    final hoverDuration = DsAnimation.resolveDuration(
+      context,
+      DsAnimation.fast,
+    );
 
-    final summaryRow = Container(
+    // The hover highlight is confined to the summary row only, never the
+    // expanded content area, and uses the surfaceHover token.
+    final summaryRow = AnimatedContainer(
+      duration: hoverDuration,
+      curve: DsAnimation.defaultCurve,
       width: double.infinity,
       padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: _isHovered ? colorScale.surfaceHover : null,
+        borderRadius: radius,
+      ),
       child: Row(
         children: [
           Icon(
@@ -111,73 +124,82 @@ class _DsDetailsState extends State<DsDetails>
       ),
     );
 
-    final summary = Semantics(
-      button: true,
-      onTap: _toggle,
-      child: Focus(
-        focusNode: widget.focusNode,
-        onKeyEvent: (node, event) {
-          if (event is KeyDownEvent &&
-              (event.logicalKey == LogicalKeyboardKey.enter ||
-                  event.logicalKey == LogicalKeyboardKey.space)) {
-            _toggle();
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
-        onFocusChange: (focused) => setState(() => _isFocused = focused),
-        child: GestureDetector(
-          // Opaque so a tap anywhere across the full-width summary row
-          // (including the 12px padding) toggles the disclosure.
-          behavior: HitTestBehavior.opaque,
-          onTap: _toggle,
-          // Always reserves focus ring space to prevent layout shift, and only
-          // paints the visible ring while the summary holds keyboard focus.
-          child: DsFocus.reserveRing(
-            focused: _isFocused,
-            radius: radius,
-            scale: colorScale,
-            child: summaryRow,
+    // The button role and its expanded/collapsed state live on the SAME
+    // node as the focusable trigger, and [MergeSemantics] coalesces the
+    // summary's own label onto that node, so a screen reader announces
+    // "<summary>, button, expanded/collapsed" when focus lands here.
+    final summary = MergeSemantics(
+      child: Semantics(
+        button: true,
+        expanded: _isExpanded,
+        onTap: _toggle,
+        child: Focus(
+          focusNode: widget.focusNode,
+          onKeyEvent: (node, event) {
+            if (event is KeyDownEvent &&
+                (event.logicalKey == LogicalKeyboardKey.enter ||
+                    event.logicalKey == LogicalKeyboardKey.space)) {
+              _toggle();
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          onFocusChange: (focused) => setState(() => _isFocused = focused),
+          child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            onEnter: (_) => setState(() => _isHovered = true),
+            onExit: (_) => setState(() => _isHovered = false),
+            child: GestureDetector(
+              // Opaque so a tap anywhere across the full-width summary row
+              // (including the 12px padding) toggles the disclosure.
+              behavior: HitTestBehavior.opaque,
+              onTap: _toggle,
+              // Always reserves focus ring space to prevent layout shift, and
+              // only paints the visible ring while the summary holds focus.
+              child: DsFocus.reserveRing(
+                focused: _isFocused,
+                radius: radius,
+                scale: colorScale,
+                child: summaryRow,
+              ),
+            ),
           ),
         ),
       ),
     );
 
-    return Semantics(
-      expanded: _isExpanded,
-      child: Container(
-        decoration: BoxDecoration(
-          color: switch (widget.variant) {
-            DsDetailsVariant.default_ => null,
-            DsDetailsVariant.tinted => colorScale.surfaceTinted,
-          },
-          border: Border.all(color: colorScale.borderSubtle, width: 1),
-          borderRadius: radius,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            summary,
-            SizeTransition(
-              sizeFactor: _controller,
-              // While collapsed, gate the child out of the accessibility tree
-              // and focus traversal so screen readers and Tab do not reach
-              // hidden content that the node reports as expanded:false. The
-              // SizeTransition still drives the visual collapse animation.
-              child: ExcludeSemantics(
+    return Container(
+      decoration: BoxDecoration(
+        color: switch (widget.variant) {
+          DsDetailsVariant.default_ => null,
+          DsDetailsVariant.tinted => colorScale.surfaceTinted,
+        },
+        border: Border.all(color: colorScale.borderSubtle, width: 1),
+        borderRadius: radius,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          summary,
+          SizeTransition(
+            sizeFactor: _controller,
+            // While collapsed, gate the child out of the accessibility tree
+            // and focus traversal so screen readers and Tab do not reach
+            // hidden content that the node reports as expanded:false. The
+            // SizeTransition still drives the visual collapse animation.
+            child: ExcludeSemantics(
+              excluding: !_isExpanded,
+              child: ExcludeFocus(
                 excluding: !_isExpanded,
-                child: ExcludeFocus(
-                  excluding: !_isExpanded,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                    child: widget.child,
-                  ),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                  child: widget.child,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

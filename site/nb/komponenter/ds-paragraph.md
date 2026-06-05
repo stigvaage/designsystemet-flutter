@@ -58,13 +58,15 @@ DsParagraph(
 | text | `String` | påkrevd | Avsnittsteksten. |
 | bodySize | `DsBodySize` | `md` | Størrelse på brødteksten. |
 | variant | `DsBodyVariant` | `standard` | Visuell variant av brødteksten. |
-| size | `DsSize?` | `null` | Overordnet størrelse. |
 | color | `DsColor?` | `null` | Fargetema for teksten. |
+| textAlign | `TextAlign?` | `null` | Horisontal justering av teksten. |
+| maxLines | `int?` | `null` | Maksimalt antall linjer før avkorting. |
+| overflow | `TextOverflow?` | `null` | Hvordan tekst som ikke får plass håndteres. |
 
 ## Import
 
 ```dart
-import 'package:designsystemet_flutter/components.dart';
+import 'package:designsystemet_flutter/typography.dart';
 ```
 
 </template>

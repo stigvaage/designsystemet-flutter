@@ -1,5 +1,6 @@
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -326,6 +327,155 @@ void main() {
       await tester.pump();
       expect(find.byType(DsCheckbox), findsOneWidget);
     });
+
+    testWidgets('null onChanged reports disabled semantics', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsCheckbox(value: false, onChanged: null, label: Text('Inert')),
+        ),
+      );
+
+      // A null handler is folded into the enabled flag (like disabled/readOnly),
+      // so assistive tech must announce the control as disabled.
+      final hasDisabledSemantics = tester
+          .widgetList<Semantics>(find.byType(Semantics))
+          .any((s) => s.properties.enabled == false);
+      expect(hasDisabledSemantics, isTrue);
+    });
+
+    testWidgets('readOnly reports disabled semantics', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (_) {},
+            readOnly: true,
+            label: const Text('RO'),
+          ),
+        ),
+      );
+
+      final hasDisabledSemantics = tester
+          .widgetList<Semantics>(find.byType(Semantics))
+          .any((s) => s.properties.enabled == false);
+      expect(hasDisabledSemantics, isTrue);
+    });
+
+    testWidgets('pressing Space toggles the checkbox', (tester) async {
+      bool? newValue;
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (v) => newValue = v,
+            focusNode: focusNode,
+            label: const Text('Godta'),
+          ),
+        ),
+      );
+      focusNode.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(newValue, isTrue);
+    });
+
+    testWidgets('pressing Enter does NOT toggle the checkbox', (tester) async {
+      bool? newValue;
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (v) => newValue = v,
+            focusNode: focusNode,
+            label: const Text('Godta'),
+          ),
+        ),
+      );
+      focusNode.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      // The handler is deliberately Space-only; Enter must be ignored.
+      expect(newValue, isNull);
+    });
+
+    testWidgets('pressing Space is a no-op when readOnly', (tester) async {
+      var called = false;
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsCheckbox(
+            value: false,
+            onChanged: (_) => called = true,
+            readOnly: true,
+            focusNode: focusNode,
+            label: const Text('RO'),
+          ),
+        ),
+      );
+      focusNode.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(called, isFalse);
+    });
+
+    testWidgets(
+      'disabled/readOnly/null-handler checkbox cannot request focus',
+      (tester) async {
+        final disabledNode = FocusNode();
+        final readOnlyNode = FocusNode();
+        final nullNode = FocusNode();
+        addTearDown(disabledNode.dispose);
+        addTearDown(readOnlyNode.dispose);
+        addTearDown(nullNode.dispose);
+
+        await tester.pumpWidget(
+          wrapWithTheme(
+            Column(
+              children: [
+                DsCheckbox(
+                  value: false,
+                  onChanged: (_) {},
+                  disabled: true,
+                  focusNode: disabledNode,
+                  label: const Text('Disabled'),
+                ),
+                DsCheckbox(
+                  value: false,
+                  onChanged: (_) {},
+                  readOnly: true,
+                  focusNode: readOnlyNode,
+                  label: const Text('ReadOnly'),
+                ),
+                DsCheckbox(
+                  value: false,
+                  onChanged: null,
+                  focusNode: nullNode,
+                  label: const Text('Null'),
+                ),
+              ],
+            ),
+          ),
+        );
+
+        // Non-interactive checkboxes are gated out of the Tab order via
+        // canRequestFocus, mirroring DsRadio/DsSwitch.
+        disabledNode.requestFocus();
+        readOnlyNode.requestFocus();
+        nullNode.requestFocus();
+        await tester.pump();
+        expect(disabledNode.hasFocus, isFalse);
+        expect(readOnlyNode.hasFocus, isFalse);
+        expect(nullNode.hasFocus, isFalse);
+      },
+    );
 
     testWidgets('autofocus focuses the control on first build', (tester) async {
       final focusNode = FocusNode();

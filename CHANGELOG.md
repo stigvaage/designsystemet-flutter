@@ -70,7 +70,7 @@ Designsystemet-troskap:
 
 ### Tester
 
-- 202 → 511 tester. `flutter analyze` uten merknader; MCP-server 16 tester grønne.
+- 202 → 577 Dart-tester. `flutter analyze` uten merknader; MCP-server 16 tester grønne.
 
 ## 0.2.1
 

@@ -1,6 +1,7 @@
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:designsystemet_flutter/src/components/switch/ds_switch.dart';
 import 'package:designsystemet_flutter/theme.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -290,6 +291,111 @@ void main() {
             .first,
       );
       expect(region.cursor, SystemMouseCursors.basic);
+    });
+
+    testWidgets('Space toggles the switch when focused (WCAG 2.1.1)', (
+      tester,
+    ) async {
+      bool? newValue;
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsSwitch(
+            value: false,
+            onChanged: (v) => newValue = v,
+            autofocus: true,
+            focusNode: focusNode,
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(focusNode.hasFocus, isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      expect(newValue, isTrue);
+    });
+
+    testWidgets('Space does nothing when disabled', (tester) async {
+      var called = false;
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsSwitch(
+            value: false,
+            disabled: true,
+            onChanged: (_) => called = true,
+            autofocus: true,
+            focusNode: focusNode,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      expect(called, isFalse);
+    });
+
+    testWidgets('Space does nothing when readOnly', (tester) async {
+      var called = false;
+      final focusNode = FocusNode();
+      addTearDown(focusNode.dispose);
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsSwitch(
+            value: false,
+            readOnly: true,
+            onChanged: (_) => called = true,
+            autofocus: true,
+            focusNode: focusNode,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      expect(called, isFalse);
+    });
+
+    testWidgets('toggled semantics tracks value (false then true)', (
+      tester,
+    ) async {
+      Semantics switchSemantics() {
+        return tester.widget<Semantics>(
+          find
+              .descendant(
+                of: find.byType(DsSwitch),
+                matching: find.byType(Semantics),
+              )
+              .first,
+        );
+      }
+
+      await tester.pumpWidget(
+        wrapWithTheme(DsSwitch(value: false, onChanged: (_) {})),
+      );
+      expect(switchSemantics().properties.toggled, isFalse);
+
+      await tester.pumpWidget(
+        wrapWithTheme(DsSwitch(value: true, onChanged: (_) {})),
+      );
+      expect(switchSemantics().properties.toggled, isTrue);
+    });
+
+    testWidgets('default variant honors a 44x44 minimum tap target at sm', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          Center(
+            child: DsSwitch(value: false, size: DsSize.sm, onChanged: (_) {}),
+          ),
+        ),
+      );
+      final size = tester.getSize(find.byType(DsSwitch));
+      expect(size.width, greaterThanOrEqualTo(44.0));
+      expect(size.height, greaterThanOrEqualTo(44.0));
     });
   });
 }

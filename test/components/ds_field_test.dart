@@ -72,6 +72,103 @@ void main() {
       expect(capturedError, 'Field error');
     });
 
+    testWidgets(
+      'DsFieldScope propagates label and description to descendants',
+      (tester) async {
+        String? capturedLabel;
+        String? capturedDescription;
+        await tester.pumpWidget(
+          wrapWithTheme(
+            DsField(
+              label: 'E-post',
+              description: 'Vi sender bekreftelse hit',
+              child: Builder(
+                builder: (context) {
+                  final scope = DsFieldScope.of(context);
+                  capturedLabel = scope?.label;
+                  capturedDescription = scope?.description;
+                  return const Text('input');
+                },
+              ),
+            ),
+          ),
+        );
+        expect(capturedLabel, 'E-post');
+        expect(capturedDescription, 'Vi sender bekreftelse hit');
+      },
+    );
+
+    testWidgets('exposes label as the input semantics name', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsField(label: 'E-post', child: Text('input'))),
+      );
+      // The label is re-exposed programmatically via Semantics and merged into
+      // the input node; the visible DsLabel itself is excluded from semantics.
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == 'E-post',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('exposes description and error as the input semantics hint', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsField(
+            label: 'E-post',
+            description: 'Hjelpetekst',
+            error: 'Ugyldig e-post',
+            child: Text('input'),
+          ),
+        ),
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) =>
+              w is Semantics &&
+              w.properties.hint == 'Hjelpetekst. Ugyldig e-post',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('no semantics hint when neither description nor error set', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsField(label: 'E-post', child: Text('input'))),
+      );
+      // The label-bearing Semantics node carries no hint.
+      final semantics = tester.widget<Semantics>(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == 'E-post',
+        ),
+      );
+      expect(semantics.properties.hint, isNull);
+    });
+
+    testWidgets('validation message sits in a live region', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsField(error: 'Påkrevd felt', child: Text('input')),
+        ),
+      );
+      final liveRegion = tester.widget<Semantics>(
+        find
+            .ancestor(
+              of: find.byType(DsValidationMessage),
+              matching: find.byWidgetPredicate(
+                (w) => w is Semantics && w.properties.liveRegion == true,
+              ),
+            )
+            .first,
+      );
+      expect(liveRegion.properties.liveRegion, isTrue);
+    });
+
     // Finding #25: description text must scale with `size` instead of being
     // pinned to bodyMd. Mapping mirrors DsLabel: sm→bodyMd (16), md→bodyLg
     // (18), lg→bodyXl (20) at the reference theme scale.

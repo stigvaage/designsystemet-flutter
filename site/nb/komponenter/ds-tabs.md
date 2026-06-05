@@ -24,10 +24,8 @@ Fanenavigasjon med tastaturstøtte og roving focus.
 
 ```dart
 DsTabs(
-  tabs: [
-    DsTab(label: Text('Oversikt'), child: OversiktInnhold()),
-    DsTab(label: Text('Innstillinger'), child: InnstillingerInnhold()),
-  ],
+  tabs: const ['Oversikt', 'Innstillinger'],
+  children: const [OversiktInnhold(), InnstillingerInnhold()],
   onChanged: (indeks) => print('Fane $indeks valgt'),
 )
 ```
@@ -37,11 +35,22 @@ DsTabs(
 ```dart
 DsTabs(
   initialIndex: 1,
-  tabs: [
-    DsTab(label: Text('Profil'), child: ProfilInnhold()),
-    DsTab(label: Text('Aktivitet'), child: AktivitetInnhold()),
-    DsTab(label: Text('Varsler'), child: VarslerInnhold()),
-  ],
+  tabs: const ['Profil', 'Aktivitet', 'Varsler'],
+  children: const [ProfilInnhold(), AktivitetInnhold(), VarslerInnhold()],
+)
+```
+
+### Kontrollert
+
+I kontrollert modus styrer forelderen den valgte fanen via `value` og holder den
+oppdatert i `onChanged`.
+
+```dart
+DsTabs(
+  value: valgtIndeks,
+  tabs: const ['Profil', 'Aktivitet'],
+  children: const [ProfilInnhold(), AktivitetInnhold()],
+  onChanged: (indeks) => setState(() => valgtIndeks = indeks),
 )
 ```
 
@@ -61,10 +70,13 @@ DsTabs(
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| tabs | List\<DsTab\> | påkrevd | Liste over faner med innhold |
-| initialIndex | int | 0 | Indeksen til den først valgte fanen |
+| tabs | List\<String\> | påkrevd | Liste over faneetiketter |
+| children | List\<Widget\> | påkrevd | Innholdspanel for hver fane, parallelt med `tabs` |
+| initialIndex | int | 0 | Indeksen til den først valgte fanen (ukontrollert modus) |
+| value | int? | null | Valgt faneindeks i kontrollert modus; har forrang over intern tilstand |
 | onChanged | ValueChanged\<int\>? | null | Kalles når valgt fane endres |
 | size | DsSize? | null | Størrelse på fanekomponenten |
+| color | DsColor? | null | Fargevariant for fanekomponenten |
 
 ## Import
 

@@ -173,43 +173,48 @@ class _DsSwitchState extends State<DsSwitch> {
     Widget result = Semantics(
       toggled: widget.value,
       enabled: _isInteractive,
-      child: Focus(
-        focusNode: widget.focusNode,
-        autofocus: widget.autofocus,
-        canRequestFocus: _isInteractive,
-        descendantsAreFocusable: _isInteractive,
-        onKeyEvent: (node, event) {
-          if (_isInteractive &&
-              event is KeyDownEvent &&
-              event.logicalKey == LogicalKeyboardKey.space) {
-            widget.onChanged?.call(!widget.value);
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
-        onFocusChange: (f) => setState(() => _isFocused = f),
-        child: MouseRegion(
-          cursor: _isInteractive
-              ? SystemMouseCursors.click
-              : SystemMouseCursors.basic,
-          onEnter: (_) {
-            if (_isInteractive) setState(() => _isHovered = true);
+      // Guarantee a 44x44 minimum tap target so the bare default-variant
+      // control stays operable, matching DsCheckbox/DsRadio/DsButton.
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
+        child: Focus(
+          focusNode: widget.focusNode,
+          autofocus: widget.autofocus,
+          canRequestFocus: _isInteractive,
+          onKeyEvent: (node, event) {
+            if (_isInteractive &&
+                event is KeyDownEvent &&
+                event.logicalKey == LogicalKeyboardKey.space) {
+              widget.onChanged?.call(!widget.value);
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
           },
-          onExit: (_) {
-            if (_isInteractive) setState(() => _isHovered = false);
-          },
-          child: GestureDetector(
-            // Opaque so a tap anywhere in the control area (including the label
-            // and the outline padding/border zone) toggles the switch.
-            behavior: HitTestBehavior.opaque,
-            onTap: _isInteractive
-                ? () => widget.onChanged?.call(!widget.value)
-                : null,
-            // The outline wrapper is the GestureDetector's CHILD so its
-            // padding/border zone is inside the hit-test area (no dead tap-zone).
-            child: widget.variant == DsSelectionVariant.outline
-                ? _wrapInOutline(inner, theme, colorScale)
-                : inner,
+          onFocusChange: (f) => setState(() => _isFocused = f),
+          child: MouseRegion(
+            cursor: _isInteractive
+                ? SystemMouseCursors.click
+                : SystemMouseCursors.basic,
+            onEnter: (_) {
+              if (_isInteractive) setState(() => _isHovered = true);
+            },
+            onExit: (_) {
+              if (_isInteractive) setState(() => _isHovered = false);
+            },
+            child: GestureDetector(
+              // Opaque so a tap anywhere in the control area (including the
+              // label and the outline padding/border zone) toggles the switch.
+              behavior: HitTestBehavior.opaque,
+              onTap: _isInteractive
+                  ? () => widget.onChanged?.call(!widget.value)
+                  : null,
+              // The outline wrapper is the GestureDetector's CHILD so its
+              // padding/border zone is inside the hit-test area (no dead
+              // tap-zone).
+              child: widget.variant == DsSelectionVariant.outline
+                  ? _wrapInOutline(inner, theme, colorScale)
+                  : inner,
+            ),
           ),
         ),
       ),

@@ -43,6 +43,10 @@ class DsToggleGroup extends StatefulWidget {
   final int selectedIndex;
 
   /// Called with the new index when a segment is activated.
+  ///
+  /// Selection is idempotent: activating the already-selected segment (via tap,
+  /// arrow keys, Home or End) does not re-fire [onChanged] — only an actual
+  /// change of selection emits, matching [DsRadio] and `DsChip.radio`.
   final ValueChanged<int> onChanged;
 
   /// The size of the control. Falls back to the ambient [DsSizeScope].
@@ -155,8 +159,11 @@ class _DsToggleGroupState extends State<DsToggleGroup> {
 
   void _moveTo(int? next) {
     if (next == null) return;
-    widget.onChanged(next);
+    // Always move focus (so arrow/Home/End reposition the roving focus), but
+    // only emit onChanged when the selection actually changes — selection is
+    // idempotent, matching DsRadio and DsChip.radio.
     _focusNodes[next].requestFocus();
+    if (next != widget.selectedIndex) widget.onChanged(next);
   }
 
   KeyEventResult _handleKey(KeyEvent event, int index) {
@@ -239,7 +246,9 @@ class _DsToggleGroupState extends State<DsToggleGroup> {
               // Request focus so subsequent arrow-key navigation works even
               // when the segment was activated by mouse/touch.
               _focusNodes[i].requestFocus();
-              widget.onChanged(i);
+              // Selection is idempotent: tapping the already-selected segment
+              // does not re-fire onChanged (matching DsRadio/DsChip.radio).
+              if (i != widget.selectedIndex) widget.onChanged(i);
             },
             onKey: (event) => _handleKey(event, i),
           );
@@ -382,7 +391,11 @@ class _DsToggleSegmentState extends State<_DsToggleSegment> {
 
     return Semantics(
       button: true,
-      selected: widget.selected,
+      // A selected button-role segment is a toggled (pressed) button —
+      // mirroring the official ToggleGroup ARIA pattern (<button aria-pressed>,
+      // which maps to Flutter's SemanticsFlag.isToggled) and the DsChip
+      // convention. Exposing `selected` here would contradict the button role.
+      toggled: widget.selected,
       enabled: isInteractive,
       child: Focus(
         focusNode: widget.focusNode,

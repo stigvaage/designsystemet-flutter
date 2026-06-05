@@ -85,7 +85,7 @@ DsAlert(
 | closable | `bool` | `false` | Om varselboksen kan lukkes. |
 | onClose | `VoidCallback?` | `null` | Tilbakeringing når varselboksen lukkes. |
 | color | `DsColor?` | `null` | Fargetema. |
-| size | `DsSize?` | `null` | Størrelse på varselboksen. |
+| size | `DsSize?` | `null` | Størrelse (`sm`/`md`/`lg`) som styrer polstring, ikonstørrelse og typografi. Faller tilbake til nærmeste `DsSizeScope` (standard `md`). |
 
 ## Import
 
@@ -97,24 +97,25 @@ import 'package:designsystemet_flutter/components.dart';
 <template #tilgjengelighet>
 
 ## Semantikk
-- Bruker riktig semantikk for alvorlighetsgrad (`info`, `warning`, `danger`, `success`).
-- Skjermlesere annonserer alvorlighetsgraden sammen med innholdet.
+- Alvorlighetsikonet har en norsk etikett (Informasjon, Advarsel, Vellykket, Feil) som skjermlesere annonserer sammen med innholdet.
+- Varselboksen er en `liveRegion`, slik at endringer leses opp automatisk.
 
 ## Tastaturinteraksjon
 
 | Tast | Handling |
 | --- | --- |
-| `Tab` | Flytter fokus til lukkeknappen (hvis `closable`) |
+| `Tab` | Flytter fokus til lukkeknappen (når `onClose` er satt) |
 | `Enter` | Lukker varselboksen (på lukkeknappen) |
 | `Space` | Lukker varselboksen (på lukkeknappen) |
-| `Escape` | Lukker varselboksen (hvis `closable`) |
+| `Escape` | Lukker varselboksen (på lukkeknappen) |
 
 ## Fokusindikator
-- Lukkeknappen har synlig fokusindikator ved tastaturnavigasjon.
+- Lukkeknappen har synlig fokusindikator ved tastaturnavigasjon (kun når `onClose` er satt).
 
 ## Fargekontrast
-- Alle alvorlighetsgrader oppfyller WCAG 2.1 AA kontrastkrav (minimum 4.5:1).
-- Ikon og farge brukes sammen for å unngå avhengighet av farge alene.
+- Tekst og tittel oppfyller WCAG 2.1 AA kontrastkrav (minimum 4.5:1) for alle alvorlighetsgrader.
+- Alvorlighetsikonet tegnes med tekstfargen, slik at det også oppfyller WCAG 1.4.11 (minimum 3:1 for grafiske objekter).
+- Ikon, form og farge brukes sammen, og ikonet har en alvorlighetsetikett som skjermlesere annonserer, slik at informasjon ikke formidles via farge alene.
 
 </template>
 </ComponentTabs>

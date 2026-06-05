@@ -32,7 +32,7 @@ class DsAvatar extends StatelessWidget {
   /// The size of the avatar. Falls back to [DsSizeScope.of] when null.
   final DsSize? size;
 
-  /// The color used for the avatar surface, border and text. Falls back to
+  /// The color used for the avatar fill and text. Falls back to
   /// [DsColorScope.of] when null.
   final DsColor? color;
 
@@ -80,7 +80,18 @@ class DsAvatar extends StatelessWidget {
     final isSquare = variant == DsAvatarVariant.square;
     final shape = isSquare ? BoxShape.rectangle : BoxShape.circle;
     final borderRadius = isSquare
-        ? BorderRadius.circular(theme.borderRadius.defaultRadius)
+        ? BorderRadius.circular(theme.borderRadius.sm)
+        : null;
+
+    // Det offisielle Designsystemet tegner kun en kant i forced-colors-modus
+    // (høykontrast); i normal modus er avataren en solid, fylt brikke.
+    final highContrast = MediaQuery.maybeHighContrastOf(context) ?? false;
+    final foregroundDecoration = highContrast
+        ? BoxDecoration(
+            shape: shape,
+            borderRadius: borderRadius,
+            border: Border.all(color: colorScale.borderStrong, width: 1),
+          )
         : null;
 
     Widget initialsWidget() => Text(
@@ -89,7 +100,7 @@ class DsAvatar extends StatelessWidget {
         fontFamily: theme.typography.fontFamily,
         fontSize: fontSize,
         fontWeight: FontWeight.w500,
-        color: colorScale.textDefault,
+        color: colorScale.baseContrastDefault,
       ),
     );
 
@@ -102,13 +113,9 @@ class DsAvatar extends StatelessWidget {
         decoration: BoxDecoration(
           shape: shape,
           borderRadius: borderRadius,
-          color: colorScale.surfaceTinted,
+          color: colorScale.baseDefault,
         ),
-        foregroundDecoration: BoxDecoration(
-          shape: shape,
-          borderRadius: borderRadius,
-          border: Border.all(color: colorScale.borderSubtle, width: 1),
-        ),
+        foregroundDecoration: foregroundDecoration,
         alignment: Alignment.center,
         child: imageUrl != null
             ? ClipRRect(

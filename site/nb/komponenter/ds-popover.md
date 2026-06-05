@@ -29,7 +29,7 @@ DsPopover(
     onPressed: () {},
     child: Text('Mer info'),
   ),
-  child: DsParagraph(text: 'Detaljert informasjon her.'),
+  content: DsParagraph(text: 'Detaljert informasjon her.'),
 )
 ```
 
@@ -42,7 +42,7 @@ DsPopover(
     onPressed: () {},
     child: Text('Innstillinger'),
   ),
-  child: Column(
+  content: Column(
     children: [
       DsButton(onPressed: () => redigerProfil(), child: Text('Rediger profil')),
       DsButton(onPressed: () => loggUt(), child: Text('Logg ut')),
@@ -68,8 +68,14 @@ DsPopover(
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | trigger | Widget | påkrevd | Widgeten som åpner popoveren |
-| child | Widget | påkrevd | Innholdet i popoveren |
-| size | DsSize? | null | Størrelse på popoveren |
+| content | Widget | påkrevd | Innholdet i popoveren |
+| color | DsColor? | null | Fargetema for popoveren (overstyrer omkringliggende DsColorScope) |
+| placement | DsPlacement | DsPlacement.top | Siden av utløseren popoveren forankres til |
+| variant | DsPopoverVariant | DsPopoverVariant.default_ | Visuell variant; `tinted` bruker tonet flate |
+| autoPlacement | bool | true | Snur popoveren til motsatt side hvis foretrukket plassering mangler plass |
+| open | bool? | null | Kontrollert synlighet; foreldreelementet eier åpen-tilstand |
+| onOpen | VoidCallback? | null | Kalles når popoveren vil åpnes |
+| onClose | VoidCallback? | null | Kalles når popoveren vil lukkes |
 
 ## Import
 

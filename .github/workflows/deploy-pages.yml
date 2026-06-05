@@ -12,7 +12,8 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  # Avbryt ikke en pågående utrulling — la produksjonsdeploy fullføre.
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -23,6 +24,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          cache: true
 
       - uses: actions/setup-node@v6
         with:

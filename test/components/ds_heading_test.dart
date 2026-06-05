@@ -35,6 +35,20 @@ void main() {
       expect(semantics.flagsCollection.isHeader, isTrue);
     });
 
+    testWidgets('emits the semantic heading level', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsHeading(text: 'Title', semanticLevel: 3)),
+      );
+      final node = tester.widget<Semantics>(find.byType(Semantics));
+      expect(node.properties.headingLevel, 3);
+    });
+
+    testWidgets('defaults the semantic heading level to 2', (tester) async {
+      await tester.pumpWidget(wrapWithTheme(const DsHeading(text: 'Title')));
+      final node = tester.widget<Semantics>(find.byType(Semantics));
+      expect(node.properties.headingLevel, 2);
+    });
+
     testWidgets('inherits color from DsColorScope', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(

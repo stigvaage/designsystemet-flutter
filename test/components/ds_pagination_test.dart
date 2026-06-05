@@ -49,8 +49,10 @@ void main() {
           DsPagination(currentPage: 2, totalPages: 3, onPageChanged: (_) {}),
         ),
       );
+      // The current page conveys its state through a Norwegian status hint in
+      // the label and stays announced as selected (closest to aria-current).
       final semanticsWidget = tester.widget<Semantics>(
-        _semanticsWithLabel('Side 2'),
+        _semanticsWithLabel('Side 2, gjeldende side'),
       );
       expect(semanticsWidget.properties.selected, isTrue);
     });
@@ -70,19 +72,23 @@ void main() {
       expect(changedTo, 3);
     });
 
-    testWidgets('tapping current page does not fire callback', (tester) async {
-      var called = false;
+    testWidgets('current page stays interactive and fires onPageChanged', (
+      tester,
+    ) async {
+      // The official component keeps the current page a real, clickable button
+      // (usePagination only adds aria-current; it never demotes it to a span).
+      var changedTo = -1;
       await tester.pumpWidget(
         wrapWithTheme(
           DsPagination(
             currentPage: 2,
             totalPages: 3,
-            onPageChanged: (_) => called = true,
+            onPageChanged: (p) => changedTo = p,
           ),
         ),
       );
       await tester.tap(find.text('2'));
-      expect(called, isFalse);
+      expect(changedTo, 2);
     });
 
     testWidgets('previous button calls onPageChanged(currentPage-1)', (
@@ -255,23 +261,67 @@ void main() {
       expect(Focus.maybeOf(context), isNull);
     });
 
-    testWidgets('active page is not announced as a button', (tester) async {
+    testWidgets('active page stays a button and is announced as selected', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         wrapWithTheme(
           DsPagination(currentPage: 2, totalPages: 3, onPageChanged: (_) {}),
         ),
       );
+      // The current page remains a real button (official parity) and conveys
+      // current-page state via selected + a Norwegian label hint.
       final activeSemantics = tester.widget<Semantics>(
-        _semanticsWithLabel('Side 2'),
+        _semanticsWithLabel('Side 2, gjeldende side'),
       );
-      expect(activeSemantics.properties.button, isFalse);
+      expect(activeSemantics.properties.button, isTrue);
       expect(activeSemantics.properties.selected, isTrue);
 
-      // A non-active page remains a button.
+      // A non-active page is also a button, without the current-page hint.
       final inactiveSemantics = tester.widget<Semantics>(
         _semanticsWithLabel('Side 1'),
       );
       expect(inactiveSemantics.properties.button, isTrue);
+      expect(inactiveSemantics.properties.selected, isFalse);
+    });
+
+    testWidgets('current page stays focusable', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsPagination(currentPage: 2, totalPages: 3, onPageChanged: (_) {}),
+        ),
+      );
+      // The current page is not demoted to an inert indicator: it has a
+      // focusable ancestor like every other interactive page button.
+      final context = tester.element(find.text('2'));
+      expect(Focus.maybeOf(context), isNotNull);
+    });
+
+    testWidgets('wraps the control in a navigation landmark with a label', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsPagination(currentPage: 1, totalPages: 3, onPageChanged: (_) {}),
+        ),
+      );
+      // Default Norwegian landmark label, matching the official
+      // `--dsc-pagination-label` ('Bla i sider').
+      expect(_semanticsWithLabel('Bla i sider'), findsOneWidget);
+    });
+
+    testWidgets('navigation landmark label is overridable', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsPagination(
+            currentPage: 1,
+            totalPages: 3,
+            onPageChanged: (_) {},
+            ariaLabel: 'Sidenavigering',
+          ),
+        ),
+      );
+      expect(_semanticsWithLabel('Sidenavigering'), findsOneWidget);
     });
   });
 

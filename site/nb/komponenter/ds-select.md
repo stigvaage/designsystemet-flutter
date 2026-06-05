@@ -23,34 +23,62 @@ Velger med nedtrekksliste.
 <WidgetbookEmbed component="Navigasjon og layout/DsSelect/Standard" />
 
 ```dart
-DsSelect(
-  items: ['Oslo', 'Vestland', 'Trøndelag'],
-  selectedIndex: valgtIndeks,
+DsSelect<String>(
+  options: const [
+    DsSelectOption(value: 'oslo', label: 'Oslo'),
+    DsSelectOption(value: 'vestland', label: 'Vestland'),
+    DsSelectOption(value: 'trondelag', label: 'Trøndelag'),
+  ],
+  value: valgtFylke,
   placeholder: 'Velg fylke',
-  onChanged: (indeks) => setState(() => valgtIndeks = indeks),
+  onChanged: (verdi) => setState(() => valgtFylke = verdi),
 )
 ```
 
 ### Med feilmelding
 
 ```dart
-DsSelect(
-  items: ['Administrator', 'Bruker', 'Gjest'],
-  selectedIndex: null,
+DsSelect<String>(
+  options: const [
+    DsSelectOption(value: 'administrator', label: 'Administrator'),
+    DsSelectOption(value: 'bruker', label: 'Bruker'),
+    DsSelectOption(value: 'gjest', label: 'Gjest'),
+  ],
+  value: null,
   placeholder: 'Velg rolle',
   error: 'Du må velge en rolle.',
-  onChanged: (indeks) => setState(() => valgtRolle = indeks),
+  onChanged: (verdi) => setState(() => valgtRolle = verdi),
+)
+```
+
+### Med grupperte alternativer
+
+```dart
+DsSelect<String>(
+  options: const [],
+  groups: const [
+    DsSelectOptgroup(
+      label: 'Norge',
+      options: [
+        DsSelectOption(value: 'oslo', label: 'Oslo'),
+        DsSelectOption(value: 'bergen', label: 'Bergen'),
+      ],
+    ),
+  ],
+  value: valgtBy,
+  placeholder: 'Velg by',
+  onChanged: (verdi) => setState(() => valgtBy = verdi),
 )
 ```
 
 ## Retningslinjer
-- Bruk alltid en ledetekst (`label`) for å forklare hva brukeren skal velge.
+- Beskriv alltid hva brukeren skal velge, enten via `placeholder` eller en synlig ledetekst over velgeren, og sett `semanticsLabel` slik at skjermlesere annonserer feltet.
 - Sorter alternativene i en logisk rekkefølge (f.eks. alfabetisk eller etter relevans).
-- Vis en tydelig feilmelding under velgeren når valideringen feiler.
+- `error` markerer feiltilstanden med rød kantlinje, men viser ingen feiltekst. Vis en egen, synlig feilmelding under velgeren når valideringen feiler.
 
 ## Tekst
-- Ledeteksten bør være kort og beskrivende (f.eks. «Velg fylke»).
-- Alternativtekstene bør være fullstendige og entydige.
+- Plassholderteksten bør være kort og beskrivende (f.eks. «Velg fylke»).
+- Alternativtekstene (`label`) bør være fullstendige og entydige.
 
 </template>
 <template #kode>
@@ -59,15 +87,18 @@ DsSelect(
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| items | `List<String>` | påkrevd | Valgalternativene i listen |
-| selectedIndex | `int?` | `null` | Indeks for valgt alternativ |
-| onChanged | `ValueChanged<int>?` | `null` | Kalles med indeks når valgt verdi endres |
+| options | `List<DsSelectOption<T>>` | påkrevd | Valgalternativene i listen |
+| groups | `List<DsSelectOptgroup<T>>?` | `null` | Grupperte alternativer med egen overskrift |
+| value | `T?` | `null` | Valgt verdi (`null` viser plassholderen) |
+| onChanged | `ValueChanged<T?>?` | `null` | Kalles med valgt verdi når valget endres |
 | placeholder | `String?` | `null` | Plassholdertekst når ingen verdi er valgt |
 | size | `DsSize?` | `null` | Størrelse på velgeren |
 | color | `DsColor?` | `null` | Fargetema |
-| error | `String?` | `null` | Feilmelding som vises under velgeren |
+| error | `String?` | `null` | Når satt, gjør velgerens kantlinje rød (feiltilstand) |
 | disabled | `bool` | `false` | Om velgeren er deaktivert (dimmet) |
 | readOnly | `bool` | `false` | Om velgeren er skrivebeskyttet (synlig men ikke redigerbar) |
+| focusNode | `FocusNode?` | `null` | Egendefinert fokusnode for velgeren |
+| semanticsLabel | `String` | `'Velg'` | Tilgjengelighetsetikett som annonseres for velgeren |
 
 ## Import
 
@@ -79,9 +110,9 @@ import 'package:designsystemet_flutter/components.dart';
 <template #tilgjengelighet>
 
 ## Semantikk
-- Har combobox-semantikk slik at skjermlesere forstår komponentens rolle.
-- Ledeteksten er programmatisk knyttet til velgeren.
-- Feilmeldinger annonseres til skjermlesere.
+- Velgeren annonseres som en knapp med `semanticsLabel` som etikett, valgt verdi som verdi, og åpen/lukket-tilstand (`expanded`).
+- Nedtrekkslisten har listerolle, og hvert alternativ inngår i en gjensidig utelukkende gruppe slik at skjermlesere forstår at bare ett valg er aktivt om gangen.
+- `error` markeres kun visuelt med rød kantlinje. Knytt en egen, synlig feilmelding til velgeren når valideringen feiler.
 
 ## Tastaturinteraksjon
 

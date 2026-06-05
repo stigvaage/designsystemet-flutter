@@ -34,12 +34,45 @@ void main() {
       expect(find.text('Details'), findsOneWidget);
     });
 
-    testWidgets('renders slash separators between items', (tester) async {
+    testWidgets('renders chevron separators between items', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(const DsBreadcrumbs(items: ['A', 'B', 'C'])),
       );
-      // 3 items → 2 separators
-      expect(find.text('/'), findsNWidgets(2));
+      // 3 items → 2 chevron separators (matching the official chevron icon).
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Icon && w.icon == DsIcons.chevronRight,
+        ),
+        findsNWidgets(2),
+      );
+      // No literal slash separators remain.
+      expect(find.text('/'), findsNothing);
+    });
+
+    // Regression (overflow): a long trail in a constrained width must wrap
+    // (official `<ol>` uses flex-wrap: wrap) rather than throw a RenderFlex
+    // overflow.
+    testWidgets('wraps long trail in a narrow width without overflowing', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const Center(
+            child: SizedBox(
+              width: 200,
+              child: DsBreadcrumbs(
+                items: [
+                  'Hjemmeside',
+                  'Komponentbibliotek',
+                  'Navigasjonskomponenter',
+                  'Brødsmulesti detaljer',
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('last item is not underlined', (tester) async {
@@ -66,13 +99,13 @@ void main() {
       expect(tappedIndex, 1);
     });
 
-    testWidgets('has "Brødsmulenavigasjon" semantics label', (tester) async {
+    testWidgets('has "Du er her:" semantics label by default', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(const DsBreadcrumbs(items: ['Home', 'Page'])),
       );
       expect(
         find.byWidgetPredicate(
-          (w) => w is Semantics && w.properties.label == 'Brødsmulenavigasjon',
+          (w) => w is Semantics && w.properties.label == 'Du er her:',
         ),
         findsOneWidget,
       );
@@ -83,12 +116,15 @@ void main() {
     ) async {
       await tester.pumpWidget(
         wrapWithTheme(
-          const DsBreadcrumbs(items: ['A', 'B'], ariaLabel: 'Du er her:'),
+          const DsBreadcrumbs(
+            items: ['A', 'B'],
+            ariaLabel: 'Brødsmulenavigasjon',
+          ),
         ),
       );
       expect(
         find.byWidgetPredicate(
-          (w) => w is Semantics && w.properties.label == 'Du er her:',
+          (w) => w is Semantics && w.properties.label == 'Brødsmulenavigasjon',
         ),
         findsOneWidget,
       );
@@ -100,40 +136,63 @@ void main() {
       await tester.pumpWidget(
         wrapWithTheme(const DsBreadcrumbs(items: ['Home', 'Current'])),
       );
+      // The current page is still a link (aria-current="page") with the
+      // "Gjeldende side" hint, matching the official focusable last crumb.
       expect(
         find.byWidgetPredicate(
           (w) =>
               w is Semantics &&
-              w.properties.label == 'Current' &&
+              w.properties.link == true &&
               w.properties.hint == 'Gjeldende side',
         ),
         findsOneWidget,
       );
     });
 
-    // Regression: the '/' separator must use the bodySm typography token
-    // (fontFamily/height/letterSpacing/weight), not a raw TextStyle(fontSize).
-    testWidgets('slash separator uses the bodySm typography token', (
+    // Regression: the current (last) crumb is a focusable link in the tab
+    // order and activates on Enter, matching the official `<a aria-current>`.
+    testWidgets('Enter activates the focused current (last) crumb', (
       tester,
     ) async {
-      late DsTypography typography;
+      var tappedIndex = -1;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          DsBreadcrumbs(
+            items: const ['Home', 'Current'],
+            onItemTap: (i) => tappedIndex = i,
+          ),
+        ),
+      );
+      await focusEnclosing(tester, find.text('Current'));
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      expect(tappedIndex, 1);
+    });
+
+    // Regression: the chevron separator must use the theme size token
+    // (--ds-size-6) and the text-subtle color, matching the official
+    // --dsc-breadcrumbs-icon-size / --dsc-breadcrumbs-color.
+    testWidgets('chevron separator uses the size-6 token and text-subtle', (
+      tester,
+    ) async {
+      late DsThemeData themeData;
       await tester.pumpWidget(
         wrapWithTheme(
           Builder(
             builder: (context) {
-              typography = DsTheme.of(context).typography;
+              themeData = DsTheme.of(context);
               return const DsBreadcrumbs(items: ['A', 'B']);
             },
           ),
         ),
       );
-      final separator = tester.widget<Text>(find.text('/'));
-      final expected = typography.bodySm;
-      expect(separator.style?.fontSize, expected.fontSize);
-      expect(separator.style?.fontFamily, expected.fontFamily);
-      expect(separator.style?.height, expected.height);
-      expect(separator.style?.letterSpacing, expected.letterSpacing);
-      expect(separator.style?.fontWeight, expected.fontWeight);
+      final colorScale = themeData.colorScheme.resolve(DsColor.accent);
+      final chevron = tester.widget<Icon>(
+        find.byWidgetPredicate(
+          (w) => w is Icon && w.icon == DsIcons.chevronRight,
+        ),
+      );
+      expect(chevron.size, themeData.sizeTokens.size6);
+      expect(chevron.color, colorScale.textSubtle);
     });
 
     // Regression: the navigation landmark must form a single grouped
@@ -146,7 +205,7 @@ void main() {
         find.byWidgetPredicate(
           (w) =>
               w is Semantics &&
-              w.properties.label == 'Brødsmulenavigasjon' &&
+              w.properties.label == 'Du er her:' &&
               w.container == true,
         ),
         findsOneWidget,

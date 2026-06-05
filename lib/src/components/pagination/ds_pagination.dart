@@ -10,8 +10,17 @@ import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_focus.dart';
 
-/// A page navigation control with numbered page buttons and prev/next arrows.
+/// En pagineringskontroll (sidenavigasjon) med nummererte sideknapper og
+/// forrige/neste-piler.
+///
+/// Hele kontrollen pakkes inn i et navigasjonslandemerke med en norsk etikett
+/// ([ariaLabel]), i tråd med det offisielle Designsystemet der pagineringen er
+/// et `<nav aria-label>`. Gjeldende side forblir en fokuserbar, aktiverbar
+/// knapp som annonseres som valgt (nærmeste tilgjengelige ekvivalent til
+/// `aria-current` i Flutter), slik den offisielle komponenten gjør — den
+/// fjernes aldri fra tastaturnavigasjonen.
 class DsPagination extends StatelessWidget {
+  /// Oppretter en pagineringskontroll.
   const DsPagination({
     super.key,
     required this.currentPage,
@@ -20,18 +29,35 @@ class DsPagination extends StatelessWidget {
     this.size,
     this.color,
     this.showPages = 7,
+    this.ariaLabel = 'Bla i sider',
   });
 
+  /// Gjeldende side (1-basert).
   final int currentPage;
+
+  /// Totalt antall sider.
   final int totalPages;
+
+  /// Kalles med sidetallet når brukeren navigerer til en annen side.
   final ValueChanged<int> onPageChanged;
+
+  /// Størrelse på pagineringskomponenten. Arver fra nærmeste [DsSizeScope]
+  /// hvis utelatt.
   final DsSize? size;
+
+  /// Fargetema. Arver fra nærmeste [DsColorScope] hvis utelatt.
   final DsColor? color;
 
   /// Maximum number of page buttons to show before collapsing the middle of
   /// the range into an ellipsis ("…"). Mirrors the React `showPages` (default
   /// 7). Ranges with `totalPages <= showPages` render every page.
   final int showPages;
+
+  /// Tilgjengelig etikett for navigasjonslandemerket (React Pagination
+  /// `aria-label`). Standard er `'Bla i sider'`, i tråd med den offisielle
+  /// norske standardverdien (`--dsc-pagination-label`). Kan overstyres, f.eks.
+  /// til `'Sidenavigering'`.
+  final String ariaLabel;
 
   /// Computes the visible page steps for [currentPage]/[totalPages], inserting
   /// `0` markers where an ellipsis should appear. Ported verbatim from the
@@ -70,6 +96,12 @@ class DsPagination extends StatelessWidget {
       DsSize.md => 36.0,
       DsSize.lg => 44.0,
     };
+    // Bevisst kompakt fontskala (12/14/16 for sm/md/lg) som er mindre enn den
+    // kanoniske [DsSizeValues.fontSize] (14/16/18) fordi sideknappene er små,
+    // kvadratiske kontroller. Verdiene holdes uendret for å bevare visuell
+    // paritet med det offisielle Designsystemet og eksisterende golden-tester.
+    // En sentralisert «kompakt» hjelpefunksjon i DsSizeValues kan vurderes på
+    // tvers av komponenter (badge/tag/tabell), men eies ikke av denne filen.
     final fontSize = switch (sizeMode) {
       DsSize.sm => 12.0,
       DsSize.md => 14.0,
@@ -81,12 +113,14 @@ class DsPagination extends StatelessWidget {
     Widget pageButton(int page) {
       final isActive = page == currentPage;
       final content = Semantics(
-        // The active page is rendered as a non-interactive current-page
-        // indicator (no [onTap]), so it is announced as selected but not as a
-        // button. The other pages remain reachable buttons.
-        button: !isActive,
+        // Hver side — inkludert gjeldende side — forblir en fokuserbar knapp,
+        // slik det offisielle Designsystemet gjør (gjeldende side demoteres
+        // aldri til en inert tekst). Gjeldende side annonseres i tillegg som
+        // valgt (nærmeste tilgjengelige ekvivalent til `aria-current` i
+        // Flutter) og får et norsk statushint i etiketten.
+        button: true,
         selected: isActive,
-        label: 'Side $page',
+        label: isActive ? 'Side $page, gjeldende side' : 'Side $page',
         child: Container(
           width: buttonSize,
           height: buttonSize,
@@ -108,12 +142,9 @@ class DsPagination extends StatelessWidget {
         ),
       );
 
-      // The active page is not interactive; render it without a focus wrapper
-      // so it is skipped during keyboard navigation.
-      if (isActive) {
-        return content;
-      }
-
+      // Gjeldende side forblir fokuserbar og aktiverbar. Aktivering kaller
+      // [onPageChanged] (som offisiell `handleClick`); konsumenten kan
+      // kortslutte navigasjon til samme side.
       return _PaginationItem(
         colorScale: colorScale,
         borderRadius: pageRadius,
@@ -184,31 +215,40 @@ class DsPagination extends StatelessWidget {
     final hasPrev = currentPage > 1;
     final hasNext = currentPage < totalPages;
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Previous
-        arrow(
-          glyph: '‹',
-          label: 'Forrige side',
-          enabled: hasPrev,
-          onActivate: () => onPageChanged(currentPage - 1),
-        ),
-        // Pages (windowed with ellipsis for large ranges)
-        for (final page in computeSteps(
-          currentPage,
-          totalPages,
-          show: showPages,
-        ))
-          if (page == 0) ellipsis() else pageButton(page),
-        // Next
-        arrow(
-          glyph: '›',
-          label: 'Neste side',
-          enabled: hasNext,
-          onActivate: () => onPageChanged(currentPage + 1),
-        ),
-      ],
+    // Grupper kontrollen som ett navigasjonslandemerke med en norsk etikett,
+    // i tråd med det offisielle `<nav aria-label>` og samme mønster som
+    // [DsBreadcrumbs]. `explicitChildNodes: true` bevarer per-element-semantikk
+    // (knapp/valgt) som distinkte underordnede noder.
+    return Semantics(
+      label: ariaLabel,
+      container: true,
+      explicitChildNodes: true,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Previous
+          arrow(
+            glyph: '‹',
+            label: 'Forrige side',
+            enabled: hasPrev,
+            onActivate: () => onPageChanged(currentPage - 1),
+          ),
+          // Pages (windowed with ellipsis for large ranges)
+          for (final page in computeSteps(
+            currentPage,
+            totalPages,
+            show: showPages,
+          ))
+            if (page == 0) ellipsis() else pageButton(page),
+          // Next
+          arrow(
+            glyph: '›',
+            label: 'Neste side',
+            enabled: hasNext,
+            onActivate: () => onPageChanged(currentPage + 1),
+          ),
+        ],
+      ),
     );
   }
 }

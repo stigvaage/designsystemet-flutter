@@ -5,6 +5,7 @@ import '../../theme/ds_color_scale.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../theme/ds_theme_data.dart';
+import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_overlay_anchors.dart';
 import '../chip/ds_chip.dart';
@@ -12,9 +13,13 @@ import '../input/ds_input.dart';
 
 /// A single selectable option in a [DsSuggestion].
 class DsSuggestionOption<T> {
+  /// Creates an option with a [value] of type [T] and a display [label].
   const DsSuggestionOption({required this.value, required this.label});
 
+  /// The value reported through [DsSuggestion.onSelectedChanged] when chosen.
   final T value;
+
+  /// The text rendered for this option in the overlay list.
   final String label;
 }
 
@@ -23,8 +28,9 @@ class DsSuggestionOption<T> {
 /// Supports [multiple] selection (rendered as removable chips), type-ahead
 /// [filter]ing, [creatable] options, an empty state, and keyboard navigation
 /// (Arrow keys, Enter, Escape, and Backspace to remove the last chip). Mirrors
-/// the React Suggestion component (`Suggestion.Input/List/Option/Empty/Clear`
-/// are covered by this single composable widget).
+/// the React Suggestion component (`Suggestion.Input/List/Option/Empty` are
+/// covered by this single composable widget; a `Suggestion.Clear` control is
+/// not yet implemented).
 class DsSuggestion<T> extends StatefulWidget {
   const DsSuggestion({
     super.key,
@@ -71,12 +77,17 @@ class DsSuggestion<T> extends StatefulWidget {
   /// the Norwegian `Opprett "$query"`. Only used when [creatable] is true.
   final String Function(String query)? createLabel;
 
+  /// Placeholder text shown in the text field when nothing is typed.
   final String? placeholder;
 
   /// Shown when no options match and nothing can be created.
   final String emptyText;
 
+  /// The size scope for the field; falls back to the ambient [DsSize] when null.
   final DsSize? size;
+
+  /// The colour scope for the field; falls back to the ambient [DsColor] when
+  /// null.
   final DsColor? color;
 
   /// Optional external focus node for the underlying text field. When null the
@@ -136,7 +147,16 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
   }
 
   void _handleFocusChange() {
-    if (_focusNode.hasFocus) _open();
+    if (_focusNode.hasFocus) {
+      _open();
+    } else {
+      // Close the overlay when keyboard focus leaves the combobox (e.g. Tab
+      // away). The overlay rows are non-focusable [GestureDetector]s, so focus
+      // can never move *into* the list; this only fires when focus genuinely
+      // leaves the field. Leaving the orphaned list open would keep its
+      // full-screen barrier painting over other content (WCAG 2.1 AA, 4.1.2).
+      _close();
+    }
   }
 
   @override
@@ -355,11 +375,15 @@ class _DsSuggestionState<T> extends State<DsSuggestion<T>> {
     if (_highlight < 0 || _highlight >= _rowKeys.length) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final ctx = _rowKeys[_highlight].currentContext;
-      if (ctx == null) return;
+      if (ctx == null || !ctx.mounted) return;
       Scrollable.ensureVisible(
         ctx,
         alignment: 0.5,
-        duration: const Duration(milliseconds: 100),
+        // Collapses to Duration.zero under MediaQuery.disableAnimations so the
+        // scroll respects reduced motion, matching DsSelect. DsAnimation.fast is
+        // 100ms, so behaviour is unchanged for users without reduced motion.
+        duration: DsAnimation.resolveDuration(ctx, DsAnimation.fast),
+        curve: DsAnimation.defaultCurve,
       );
     });
   }

@@ -26,13 +26,14 @@ Etikett for skjemaelementer.
 DsLabel(text: 'Fornavn')
 ```
 
-### Med farge og størrelse
+### Med farge, størrelse og vekt
 
 ```dart
 DsLabel(
   text: 'E-postadresse',
   size: DsSize.lg,
   color: DsColor.accent,
+  weight: DsFontWeight.semibold,
 )
 ```
 
@@ -53,20 +54,21 @@ DsLabel(
 | Egenskap | Type | Standard | Beskrivelse |
 | --- | --- | --- | --- |
 | text | `String` | påkrevd | Etiketteksten. |
-| size | `DsSize?` | `null` | Størrelse på etiketten. |
+| size | `DsSize?` | `null` (effektivt `md`) | Størrelse på etiketten. |
 | color | `DsColor?` | `null` | Fargetema for etiketten. |
+| weight | `DsFontWeight?` | `null` (effektivt `medium`) | Skriftvekt på etiketten (`regular`/`medium`/`semibold`). |
 
 ## Import
 
 ```dart
-import 'package:designsystemet_flutter/components.dart';
+import 'package:designsystemet_flutter/typography.dart';
 ```
 
 </template>
 <template #tilgjengelighet>
 
 ## Semantikk
-- Kobles til tilhørende skjemaelement via semantikk slik at skjermlesere leser etiketten når feltet får fokus.
+- DsLabel rendrer ren tekst og kobles ikke automatisk til et skjemafelt. For programmatisk kobling må du selv pakke etiketten og feltet i en `Semantics`-widget, eller bruke en skjemakomponent (f.eks. DsInput/DsField) som håndterer etikettkoblingen.
 
 ## Tastaturinteraksjon
 

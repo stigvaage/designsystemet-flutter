@@ -8,6 +8,12 @@ final cardComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
+        final variant = context.knobs.object.dropdown(
+          label: 'Variant',
+          options: DsCardVariant.values,
+          initialOption: DsCardVariant.default_,
+          labelBuilder: (v) => v.name,
+        );
         final elevated = context.knobs.boolean(
           label: 'Opphøyd',
           initialValue: false,
@@ -20,6 +26,7 @@ final cardComponent = WidgetbookComponent(
         return Padding(
           padding: const EdgeInsets.all(16),
           child: DsCard(
+            variant: variant,
             elevated: elevated,
             onTap: clickable ? () {} : null,
             child: const Column(

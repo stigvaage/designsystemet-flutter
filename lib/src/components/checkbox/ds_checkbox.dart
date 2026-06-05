@@ -189,6 +189,10 @@ class _DsCheckboxState extends State<DsCheckbox> {
       child: Focus(
         focusNode: widget.focusNode,
         autofocus: widget.autofocus,
+        // Gate keyboard focus by interactivity so disabled/read-only/null-
+        // handler checkboxes are removed from the Tab order, matching
+        // DsRadio/DsSwitch and the official Designsystemet.
+        canRequestFocus: _isInteractive,
         onKeyEvent: (node, event) {
           if (_isInteractive &&
               event is KeyDownEvent &&
@@ -254,7 +258,10 @@ class _DsCheckboxState extends State<DsCheckbox> {
       // assistive technologies do not also report a checked/unchecked state.
       mixed: widget.indeterminate,
       checked: widget.indeterminate ? null : widget.value,
-      enabled: !widget.disabled && !widget.readOnly,
+      // Fold onChanged == null into the enabled flag (alongside disabled and
+      // readOnly) so a null-handler checkbox is announced as disabled, matching
+      // DsRadio/DsSwitch and the control's own _isInteractive interaction gate.
+      enabled: _isInteractive,
       // Surface the error to assistive technologies as the control's hint.
       hint: widget.error,
       child: result,

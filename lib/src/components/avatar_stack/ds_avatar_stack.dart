@@ -7,9 +7,11 @@ import '../../utils/ds_enums.dart';
 
 /// Displays a horizontal stack of overlapping avatar widgets.
 ///
-/// Renders up to [maxVisible] children with a configurable [overlap] offset.
-/// When the number of [children] exceeds [max], the remaining avatars collapse
-/// into a circular «+N» overflow indicator that is appended to the stack.
+/// Renders the [children] with a configurable [overlap] offset. The effective
+/// limit on visible avatars is [max] when set, otherwise [maxVisible]. When the
+/// number of [children] exceeds that effective limit, the surplus avatars
+/// collapse into a circular «+N» overflow indicator that is appended to the
+/// stack, so the rendered avatars plus chip always summarize the full group.
 ///
 /// The [size] controls the per-avatar dimension (matching [DsSize]: sm = 32,
 /// md = 40, lg = 48) and drives both the stack height and the horizontal step
@@ -31,16 +33,20 @@ class DsAvatarStack extends StatelessWidget {
   /// The avatar widgets to display in the stack.
   final List<Widget> children;
 
-  /// The maximum number of avatar widgets to render before truncating.
+  /// The default limit on visible avatars when [max] is not set.
+  ///
+  /// When the number of [children] exceeds this limit the first [maxVisible]
+  /// avatars are shown followed by a «+N» chip counting the hidden avatars, so
+  /// no avatars are silently dropped.
   final int maxVisible;
 
-  /// The maximum number of avatars to show before collapsing the rest into a
-  /// «+N» overflow indicator.
+  /// An explicit override for the maximum number of avatars to show before
+  /// collapsing the rest into a «+N» overflow indicator.
   ///
-  /// When null, [maxVisible] is used as the effective limit and no overflow
-  /// indicator is rendered. When set and the number of [children] exceeds
-  /// [max], the first [max] avatars are shown followed by a «+N» chip counting
-  /// the hidden avatars.
+  /// When null, [maxVisible] is used as the effective limit. When set, [max]
+  /// takes precedence over [maxVisible]; the first [max] avatars are shown
+  /// followed by a «+N» chip counting the hidden avatars whenever the number of
+  /// [children] exceeds [max].
   final int? max;
 
   /// The number of logical pixels each avatar overlaps the previous one.
@@ -57,13 +63,14 @@ class DsAvatarStack extends StatelessWidget {
     final step = dimension - overlap;
 
     // Determine how many avatars to render and whether an overflow chip is
-    // needed. [max] (when set) takes precedence and reserves a slot for the
-    // «+N» indicator; otherwise [maxVisible] caps the list without overflow.
+    // needed. The effective limit is [max] when set, otherwise [maxVisible].
+    // Whenever the total exceeds that limit the surplus collapses into a «+N»
+    // indicator, so avatars are never silently dropped and the rendered count
+    // plus chip always matches the announced group total.
     final total = children.length;
-    final hasOverflow = max != null && total > max!;
-    final visibleCount = hasOverflow
-        ? max!
-        : (total < maxVisible ? total : maxVisible);
+    final effectiveLimit = max ?? maxVisible;
+    final hasOverflow = total > effectiveLimit;
+    final visibleCount = hasOverflow ? effectiveLimit : total;
     final visible = children.take(visibleCount).toList();
     final overflowCount = total - visibleCount;
 

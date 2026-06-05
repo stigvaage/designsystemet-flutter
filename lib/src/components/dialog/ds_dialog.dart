@@ -1,34 +1,94 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../theme/ds_color_scale.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_theme.dart';
+import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_focus.dart';
 import '../../utils/ds_icons.dart';
 
-/// Modal dialog with title, optional close button, and focus-trap management.
+/// Plassering av en [DsDialog].
 ///
-/// Show with [DsDialog.show]. The dialog traps focus, closes on Escape,
-/// and fires [onClose] even when dismissed via barrier tap or back navigation.
+/// Speiler `data-placement` i offisiell Designsystemet: [center] (standard)
+/// viser en sentrert dialog, mens [left], [right], [top] og [bottom] viser
+/// dialogen som en «skuff» (drawer) forankret til den aktuelle skjermkanten.
+enum DsDialogPlacement {
+  /// Sentrert dialog med maks bredde og avrundede hjørner (standard).
+  center,
+
+  /// Skuff forankret til venstre kant, full høyde.
+  left,
+
+  /// Skuff forankret til høyre kant, full høyde.
+  right,
+
+  /// Skuff forankret til toppen, full bredde.
+  top,
+
+  /// Skuff forankret til bunnen, full bredde.
+  bottom,
+}
+
+/// Modalt dialogvindu med tittel, valgfri lukkeknapp og fokusfelle.
+///
+/// Vis dialogen med [DsDialog.show]. Dialogen fanger fokus, lukkes med
+/// `Escape`, og kaller [onClose] også når den avvises via klikk utenfor
+/// dialogen eller tilbakenavigasjon.
+///
+/// Lukkeknappen vises som standard (i tråd med offisiell Designsystemet) og
+/// kan skjules ved å sette [closeButton] til `false`.
 class DsDialog extends StatefulWidget {
+  /// Oppretter en [DsDialog].
   const DsDialog({
     super.key,
     required this.child,
     this.title,
     this.onClose,
     this.color,
+    this.closeButton = true,
+    this.placement = DsDialogPlacement.center,
   });
 
+  /// Innholdet i dialogen.
   final Widget child;
+
+  /// Valgfri tittel som vises øverst i dialogen.
   final Widget? title;
+
+  /// Kalles når dialogen lukkes (via lukkeknapp, `Escape`, klikk utenfor eller
+  /// tilbakenavigasjon).
   final VoidCallback? onClose;
+
+  /// Fargeskala for dialogen. Faller tilbake til [DsColorScope] når `null`.
   final DsColor? color;
 
+  /// Om lukkeknappen (X) skal vises. Standard `true`.
+  final bool closeButton;
+
+  /// Hvor dialogen plasseres på skjermen. Standard [DsDialogPlacement.center].
+  final DsDialogPlacement placement;
+
+  /// Viser [DsDialog] som en modal rute over gjeldende skjerm.
+  ///
+  /// [closeOnBarrierTap] styrer om et klikk utenfor dialogen lukker den.
+  /// Standard er `false`, i tråd med offisiell Designsystemet der en modal
+  /// dialog uten `closedby` kun lukkes med `Escape` eller en eksplisitt
+  /// handling. [placement] styrer plasseringen på skjermen.
   static Future<T?> show<T>({
     required BuildContext context,
     required WidgetBuilder builder,
+    bool closeOnBarrierTap = false,
+    DsDialogPlacement placement = DsDialogPlacement.center,
   }) {
-    return Navigator.of(context).push<T>(_DsDialogRoute<T>(builder: builder));
+    return Navigator.of(context).push<T>(
+      _DsDialogRoute<T>(
+        builder: builder,
+        closeOnBarrierTap: closeOnBarrierTap,
+        placement: placement,
+      ),
+    );
   }
 
   @override
@@ -37,13 +97,11 @@ class DsDialog extends StatefulWidget {
 
 class _DsDialogState extends State<DsDialog> {
   late final FocusNode _focusNode;
-  late final FocusNode _closeFocusNode;
 
   @override
   void initState() {
     super.initState();
     _focusNode = FocusNode();
-    _closeFocusNode = FocusNode();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
     });
@@ -55,7 +113,6 @@ class _DsDialogState extends State<DsDialog> {
     // navigation, which bypass _handleClose.
     _fireOnCloseIfNeeded();
     _focusNode.dispose();
-    _closeFocusNode.dispose();
     super.dispose();
   }
 
@@ -74,6 +131,34 @@ class _DsDialogState extends State<DsDialog> {
       _closeFired = true;
       widget.onClose?.call();
     }
+  }
+
+  /// Hjørneradius som passer til [DsDialog.placement].
+  ///
+  /// Skuff-plasseringer dropper radien på de to hjørnene som ligger mot
+  /// skjermkanten, slik det offisielle systemet gjør for drawer-varianten.
+  BorderRadius _resolveBorderRadius(double radius) {
+    final r = Radius.circular(radius);
+    return switch (widget.placement) {
+      DsDialogPlacement.center => BorderRadius.all(r),
+      DsDialogPlacement.left => BorderRadius.only(topRight: r, bottomRight: r),
+      DsDialogPlacement.right => BorderRadius.only(topLeft: r, bottomLeft: r),
+      DsDialogPlacement.top => BorderRadius.only(bottomLeft: r, bottomRight: r),
+      DsDialogPlacement.bottom => BorderRadius.only(topLeft: r, topRight: r),
+    };
+  }
+
+  BoxConstraints _resolveConstraints() {
+    return switch (widget.placement) {
+      DsDialogPlacement.center => const BoxConstraints(maxWidth: 560),
+      DsDialogPlacement.left || DsDialogPlacement.right => const BoxConstraints(
+        maxWidth: 560,
+        minHeight: double.infinity,
+      ),
+      DsDialogPlacement.top || DsDialogPlacement.bottom => const BoxConstraints(
+        minWidth: double.infinity,
+      ),
+    };
   }
 
   @override
@@ -97,10 +182,10 @@ class _DsDialogState extends State<DsDialog> {
           namesRoute: true,
           explicitChildNodes: true,
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 560),
+            constraints: _resolveConstraints(),
             decoration: BoxDecoration(
               color: colorScale.backgroundDefault,
-              borderRadius: BorderRadius.circular(theme.borderRadius.lg),
+              borderRadius: _resolveBorderRadius(theme.borderRadius.lg),
               boxShadow: theme.shadows.xl,
             ),
             padding: const EdgeInsets.all(24),
@@ -108,7 +193,7 @@ class _DsDialogState extends State<DsDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (widget.title != null || widget.onClose != null)
+                if (widget.title != null || widget.closeButton)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -119,36 +204,10 @@ class _DsDialogState extends State<DsDialog> {
                           ),
                           child: widget.title!,
                         ),
-                      if (widget.onClose != null)
-                        Semantics(
-                          button: true,
-                          label: 'Lukk dialog',
-                          child: SizedBox(
-                            width: 44,
-                            height: 44,
-                            child: KeyboardListener(
-                              focusNode: _closeFocusNode,
-                              onKeyEvent: (event) {
-                                if (event is KeyDownEvent &&
-                                    (event.logicalKey ==
-                                            LogicalKeyboardKey.enter ||
-                                        event.logicalKey ==
-                                            LogicalKeyboardKey.space)) {
-                                  _handleClose();
-                                }
-                              },
-                              child: GestureDetector(
-                                onTap: _handleClose,
-                                child: Center(
-                                  child: Icon(
-                                    DsIcons.x,
-                                    size: 20,
-                                    color: colorScale.textSubtle,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                      if (widget.closeButton)
+                        _DsDialogCloseButton(
+                          colorScale: colorScale,
+                          onClose: _handleClose,
                         ),
                     ],
                   ),
@@ -168,21 +227,107 @@ class _DsDialogState extends State<DsDialog> {
   }
 }
 
+/// Lukkeknappen (X) som vises når [DsDialog.closeButton] er `true`.
+///
+/// Sporer egen fokustilstand slik at en synlig fokusring kan reserveres og
+/// tegnes (via [DsFocus.reserveRing]) uten at layouten flytter seg, og viser
+/// klikk-markøren ved peking. Aktiveres ved tap og med `Enter`/`Space`.
+class _DsDialogCloseButton extends StatefulWidget {
+  const _DsDialogCloseButton({required this.colorScale, required this.onClose});
+
+  final DsColorScale colorScale;
+  final VoidCallback onClose;
+
+  @override
+  State<_DsDialogCloseButton> createState() => _DsDialogCloseButtonState();
+}
+
+class _DsDialogCloseButtonState extends State<_DsDialogCloseButton> {
+  bool _isFocused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget button = SizedBox(
+      width: 44,
+      height: 44,
+      child: Center(
+        child: Icon(DsIcons.x, size: 20, color: widget.colorScale.textSubtle),
+      ),
+    );
+
+    // Always reserve focus ring space to prevent layout shift.
+    button = DsFocus.reserveRing(
+      focused: _isFocused,
+      radius: BorderRadius.zero,
+      scale: widget.colorScale,
+      child: button,
+    );
+
+    return Semantics(
+      button: true,
+      label: 'Lukk dialogvindu',
+      child: Focus(
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent &&
+              (event.logicalKey == LogicalKeyboardKey.enter ||
+                  event.logicalKey == LogicalKeyboardKey.space)) {
+            widget.onClose();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        onFocusChange: (focused) {
+          setState(() => _isFocused = focused);
+        },
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: widget.onClose,
+            child: button,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _DsDialogRoute<T> extends PopupRoute<T> {
-  _DsDialogRoute({required this.builder});
+  _DsDialogRoute({
+    required this.builder,
+    required this.closeOnBarrierTap,
+    required this.placement,
+  });
+
   final WidgetBuilder builder;
+  final bool closeOnBarrierTap;
+  final DsDialogPlacement placement;
 
   @override
-  Color? get barrierColor => const Color(0x60000000);
+  Color? get barrierColor => const Color(0x80000000);
 
   @override
-  bool get barrierDismissible => true;
+  bool get barrierDismissible => closeOnBarrierTap;
 
   @override
   String? get barrierLabel => 'Lukk';
 
   @override
-  Duration get transitionDuration => const Duration(milliseconds: 200);
+  Duration get transitionDuration {
+    final context = navigator?.context;
+    final disableAnimations = context == null
+        ? false
+        : (MediaQuery.maybeOf(context)?.disableAnimations ?? false);
+    return disableAnimations ? Duration.zero : DsAnimation.normal;
+  }
+
+  Alignment get _alignment => switch (placement) {
+    DsDialogPlacement.center => Alignment.center,
+    DsDialogPlacement.left => Alignment.centerLeft,
+    DsDialogPlacement.right => Alignment.centerRight,
+    DsDialogPlacement.top => Alignment.topCenter,
+    DsDialogPlacement.bottom => Alignment.bottomCenter,
+  };
 
   @override
   Widget buildPage(
@@ -190,6 +335,38 @@ class _DsDialogRoute<T> extends PopupRoute<T> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
-    return Center(child: builder(context));
+    return Align(alignment: _alignment, child: builder(context));
+  }
+
+  @override
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    if (!DsAnimation.shouldAnimate(context)) {
+      return child;
+    }
+    final curved = CurvedAnimation(
+      parent: animation,
+      curve: DsAnimation.defaultCurve,
+    );
+    final fade = FadeTransition(opacity: curved, child: child);
+    if (placement == DsDialogPlacement.center) {
+      return fade;
+    }
+    // Skuff-plasseringer glir inn fra sin kant.
+    final begin = switch (placement) {
+      DsDialogPlacement.left => const Offset(-1, 0),
+      DsDialogPlacement.right => const Offset(1, 0),
+      DsDialogPlacement.top => const Offset(0, -1),
+      DsDialogPlacement.bottom => const Offset(0, 1),
+      DsDialogPlacement.center => Offset.zero,
+    };
+    return SlideTransition(
+      position: Tween<Offset>(begin: begin, end: Offset.zero).animate(curved),
+      child: fade,
+    );
   }
 }

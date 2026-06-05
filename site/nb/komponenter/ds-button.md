@@ -67,8 +67,8 @@ DsButton(
 
 | Egenskap | Type | Standard | Beskrivelse |
 | --- | --- | --- | --- |
-| onPressed | `VoidCallback?` | påkrevd | Tilbakeringing når knappen trykkes. |
 | child | `Widget` | påkrevd | Innholdet i knappen. |
+| onPressed | `VoidCallback?` | `null` | Tilbakeringing når knappen trykkes. Når `null`, vises knappen som deaktivert. |
 | variant | `DsButtonVariant` | `primary` | Visuell variant av knappen. |
 | size | `DsSize?` | `null` | Størrelse på knappen. |
 | color | `DsColor?` | `null` | Fargetema for knappen. |
@@ -77,6 +77,7 @@ DsButton(
 | icon | `Widget?` | `null` | Valgfritt ikon. |
 | iconPosition | `DsIconPosition` | `left` | Plassering av ikonet. |
 | focusNode | `FocusNode?` | `null` | Valgfri fokusnode for fokushåndtering. |
+| autofocus | `bool` | `false` | Om knappen skal be om fokus når den settes inn i treet. |
 
 ## Import
 
@@ -103,7 +104,7 @@ import 'package:designsystemet_flutter/components.dart';
 
 ## Fargekontrast
 - Alle varianter oppfyller WCAG 2.1 AA kontrastkrav (minimum 4.5:1).
-- Deaktiverte knapper markeres med `enabled: false`.
+- Deaktiverte knapper markeres med `disabled: true` (eller `onPressed: null`).
 
 </template>
 </ComponentTabs>

@@ -8,9 +8,9 @@ Komponentene er organisert i fire hovedkategorier:
 
 | Kategori | Eksempler |
 |---|---|
-| **Knapper og handlinger** | `DsButton`, `DsIconButton`, `DsToggleButton`, `DsChip` m.fl. |
-| **Skjema og inndata** | `DsTextField`, `DsTextArea`, `DsCheckbox`, `DsRadio`, `DsSwitch`, `DsSelect` m.fl. |
-| **Navigasjon og struktur** | `DsTabs`, `DsBreadcrumbs`, `DsPagination`, `DsAccordion`, `DsCard` m.fl. |
+| **Knapper og handlinger** | `DsButton`, `DsToggleGroup`, `DsChip` m.fl. |
+| **Skjema og inndata** | `DsTextfield`, `DsTextarea`, `DsCheckbox`, `DsRadio`, `DsSwitch`, `DsSelect`, `DsField` m.fl. |
+| **Navigasjon og struktur** | `DsTabs`, `DsBreadcrumbs`, `DsPagination`, `DsDetails`, `DsCard` m.fl. |
 | **Tilbakemelding og informasjon** | `DsAlert`, `DsTag`, `DsBadge`, `DsTooltip`, `DsSpinner`, `DsDialog` m.fl. |
 
 ## Tokendrevet temaarkitektur
@@ -31,14 +31,14 @@ DsTheme(
 )
 ```
 
-## Innebygd Digdir-tema
+## Innebygd tema
 
-Biblioteket leveres med Digitaliseringsdirektoratets offisielle tema i to varianter:
+Biblioteket leveres med et innebygd tema i to varianter:
 
 - **`DsThemeDigdir.light()`** — Lyst modus
 - **`DsThemeDigdir.dark()`** — Mørkt modus
 
-Temaene er generert direkte fra de offisielle designtokens og er alltid oppdatert med siste versjon av Designsystemet.
+Temaet bruker Designsystemets token-arkitektur, men standard accent-basefarge er Helse Vest sin mørkeblå `#003087` (se [Tema-siden](../kom-i-gang/tema/)). Vil du bruke Digitaliseringsdirektoratets offisielle accent eller en annen merkevarefarge, genererer du egne tokens med kodegeneratoren.
 
 ## Egendefinerte temaer
 
@@ -53,8 +53,11 @@ For tilfeller der deler av grensesnittet trenger avvikende farger eller størrel
 
 ```dart
 DsColorScope(
-  colorScale: DsColorScales.blue,
-  child: DsButton(label: 'Blå knapp'),
+  color: DsColor.brand1,
+  child: DsButton(
+    onPressed: () {},
+    child: Text('Knapp med merkevarefarge'),
+  ),
 )
 ```
 

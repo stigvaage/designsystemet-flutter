@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -12,6 +13,13 @@ import '../../utils/ds_enums.dart';
 import '../../utils/ds_focus.dart';
 import '../../utils/ds_icons.dart';
 import '../../utils/ds_overlay_anchors.dart';
+
+/// The maximum height the [DsSelect] dropdown may occupy.
+///
+/// Defined once and shared between the initial cap and the per-open clamp so the
+/// value is never duplicated. On open the dropdown is clamped to the smaller of
+/// this cap and the room available between the trigger and the viewport edge.
+const double kDsSelectMaxDropdownHeight = 280;
 
 /// A single selectable option within a [DsSelect].
 ///
@@ -145,7 +153,7 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
 
   /// Maximum height the dropdown may occupy, clamped to the available viewport
   /// space on each open so it never overflows off-screen.
-  double _maxHeight = 280;
+  double _maxHeight = kDsSelectMaxDropdownHeight;
 
   /// Index of the keyboard-highlighted option within [_flatOptions], or -1 when
   /// nothing is highlighted. Driven by ArrowUp/ArrowDown so a keyboard user can
@@ -243,7 +251,6 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
     // relevant viewport edge (minus the soft keyboard inset below), so it never
     // runs off-screen. Falls back to the default cap when measurements are
     // unavailable or the computed room is non-positive.
-    const defaultMaxHeight = 280.0;
     if (rect != null && hasViewport) {
       const gap = 4.0;
       final bottomInset = media?.viewInsets.bottom ?? 0;
@@ -251,10 +258,10 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
       final roomAbove = rect.top - gap;
       final room = _placement == DsPlacement.topStart ? roomAbove : roomBelow;
       _maxHeight = room > 0
-          ? room.clamp(0.0, defaultMaxHeight)
-          : defaultMaxHeight;
+          ? room.clamp(0.0, kDsSelectMaxDropdownHeight)
+          : kDsSelectMaxDropdownHeight;
     } else {
-      _maxHeight = defaultMaxHeight;
+      _maxHeight = kDsSelectMaxDropdownHeight;
     }
 
     _entry = OverlayEntry(builder: _buildOverlay);
@@ -546,10 +553,13 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
                       ),
                       child: SingleChildScrollView(
                         // Group the option rows under a single semantics
-                        // container so assistive technology announces them as a
-                        // cohesive listbox of options rather than loose buttons.
+                        // container with the `list` role so assistive technology
+                        // announces them as a cohesive listbox of options rather
+                        // than loose buttons. The `list` role requires no parent
+                        // role, so it is safe to apply directly here.
                         child: Semantics(
                           container: true,
+                          role: SemanticsRole.list,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -628,6 +638,11 @@ class _DsSelectState<T> extends State<DsSelect<T>> {
     );
     return Semantics(
       button: true,
+      // Single-select exclusivity: marking each option as part of a mutually
+      // exclusive group tells assistive technology that picking one option
+      // deselects the others, matching the native listbox/radio behaviour of
+      // Designsystemet's `Select` rather than a group of independent buttons.
+      inMutuallyExclusiveGroup: true,
       selected: selected,
       label: option.label,
       child: GestureDetector(

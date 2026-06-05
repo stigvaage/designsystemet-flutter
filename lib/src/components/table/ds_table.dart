@@ -195,22 +195,26 @@ class DsTable extends StatelessWidget {
     );
 
     if (caption == null) return table;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Semantics(
-          container: true,
-          child: Padding(
+    // Group the caption and table under a single semantics node so assistive
+    // technology announces them as one unit — mirroring how the HTML
+    // `<caption>` element names its parent `<table>`.
+    return Semantics(
+      container: true,
+      explicitChildNodes: true,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
             padding: EdgeInsets.only(bottom: cellPadding.vertical / 2),
             child: DefaultTextStyle(
               style: bodyStyle.copyWith(color: colorScale.textSubtle),
               child: caption!,
             ),
           ),
-        ),
-        table,
-      ],
+          table,
+        ],
+      ),
     );
   }
 

@@ -53,6 +53,48 @@ void main() {
         ),
       );
     });
+
+    testWidgets('updateShouldNotify rebuilds dependents on data change', (
+      tester,
+    ) async {
+      var buildCount = 0;
+      Brightness? seen;
+      late StateSetter setData;
+      var data = DsThemeDigdir.light();
+
+      // The dependent is a separate widget whose element only rebuilds via the
+      // InheritedWidget dependency, not via the StatefulBuilder's setState.
+      final dependent = Builder(
+        builder: (context) {
+          buildCount++;
+          seen = DsTheme.of(context).brightness;
+          return const SizedBox();
+        },
+      );
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, setState) {
+            setData = setState;
+            return DsTheme(data: data, child: dependent);
+          },
+        ),
+      );
+
+      expect(buildCount, 1);
+      expect(seen, Brightness.light);
+
+      // Swap to a different (dark) theme: dependent must rebuild with new value.
+      setData(() => data = DsThemeDigdir.dark());
+      await tester.pump();
+      expect(buildCount, 2);
+      expect(seen, Brightness.dark);
+
+      // Swap to a value-equal theme: updateShouldNotify is false, no rebuild.
+      setData(() => data = DsThemeDigdir.dark());
+      await tester.pump();
+      expect(buildCount, 2);
+    });
   });
 
   group('DsColorScope', () {

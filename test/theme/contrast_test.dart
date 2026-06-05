@@ -55,17 +55,35 @@ void main() {
           );
         });
 
-        // base-contrast carries bold/large button & badge labels, so the WCAG
-        // AA "large text / UI component" floor (3:1) applies here. The accent
-        // (primary actions) is held to the strict 4.5 below; lifting the
-        // semantic scales (success 4.35, info 3.77) to a strict 4.5 is a
-        // Track C follow-up via the official color-scale algorithm.
+        // baseContrastDefault bærer etiketten til fylte knapper og badges, som
+        // bruker normal-vekt (w500/w600) på 14/16/18px — dette er IKKE «stor
+        // tekst» etter WCAG, så det strenge kravet er egentlig 4.5:1
+        // (WCAG 1.4.3). Det strenge 4.5-kravet håndheves nedenfor for hver
+        // skala SOM ALLEREDE oppfyller det; lys-modus info (~3.77) og success
+        // (~4.35) faller fortsatt under AA fordi base-fargene genereres i
+        // lib/generated/ds_theme_digdir.dart (utenfor denne agentens filer).
+        // De må mørknes via fargeskala-generatoren før gulvet kan heves for
+        // ALLE skalaer. Inntil da holder vi et hardt 3:1-gulv her, og et
+        // separat strengt 4.5-krav på de skalaene som skal bære etiketttekst.
         test('$mode/$name: baseContrastDefault vs baseDefault >= 3:1', () {
           expect(
             contrastRatio(scale.baseContrastDefault, scale.baseDefault),
             greaterThanOrEqualTo(3.0),
           );
         });
+
+        // Strengt AA-krav (4.5:1) for skalaer som bærer normal-vekt
+        // etiketttekst og allerede oppfyller kravet. Dette låser regresjoner
+        // for de samsvarende skalaene uten å feile på de to kjente avvikene
+        // (lys info/success) som krever en fargeendring i den genererte filen.
+        if (!((mode == 'light') && (name == 'info' || name == 'success'))) {
+          test('$mode/$name: baseContrastDefault vs baseDefault >= 4.5:1', () {
+            expect(
+              contrastRatio(scale.baseContrastDefault, scale.baseDefault),
+              greaterThanOrEqualTo(4.5),
+            );
+          });
+        }
       }
     });
 

@@ -17,6 +17,17 @@ import 'package:flutter/widgets.dart';
 ///
 /// Pass the same [gap] the components already use (8 logical pixels) — it is
 /// the default.
+///
+/// ## Tilgjengelighet
+///
+/// Hele raden pakkes i [MergeSemantics] slik at [label] (og [description])
+/// slås sammen med [control] til én semantikknode. Det gjør at en
+/// skjermleser leser opp etiketten som kontrollens tilgjengelige navn
+/// («Godta vilkår, avkrysningsboks, avkrysset») i stedet for en navnløs
+/// kontroll og en frittstående tekstnode. Tilstandssemantikk (avkrysset,
+/// valgt, på/av) og en eventuell live-region for feilmeldinger settes av
+/// komponentene rundt [DsControlLabel] og berøres ikke av sammenslåingen,
+/// fordi feilmeldingen ligger som et søsken utenfor denne widgeten.
 class DsControlLabel extends StatelessWidget {
   const DsControlLabel({
     super.key,
@@ -64,28 +75,41 @@ class DsControlLabel extends StatelessWidget {
               : description!)
         : null;
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment:
-          crossAxisAlignment ??
-          (hasDescription
-              ? CrossAxisAlignment.start
-              : CrossAxisAlignment.center),
-      children: [
-        control,
-        SizedBox(width: gap),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            label,
-            if (descriptionWidget != null) ...[
-              if (descriptionGap > 0) SizedBox(height: descriptionGap),
-              descriptionWidget,
-            ],
-          ],
-        ),
-      ],
+    // Merge the control with its visible label/description into a single
+    // semantics node so screen readers announce the label as the control's
+    // accessible name together with its state (set by the surrounding
+    // component). The error live-region lives outside this widget, so it is
+    // unaffected and still announces valid → invalid transitions.
+    return MergeSemantics(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment:
+            crossAxisAlignment ??
+            (hasDescription
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center),
+        children: [
+          control,
+          SizedBox(width: gap),
+          // Loose [Flexible] (not [Expanded]) so the label column keeps its
+          // natural width when the parent is unbounded (shrink-wrap), but
+          // wraps onto multiple lines instead of overflowing when the parent
+          // constrains the available width.
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                label,
+                if (descriptionWidget != null) ...[
+                  if (descriptionGap > 0) SizedBox(height: descriptionGap),
+                  descriptionWidget,
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

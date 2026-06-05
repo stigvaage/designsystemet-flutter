@@ -47,6 +47,45 @@ DsTable(
 )
 ```
 
+### Med sorterbare kolonner og trykkbare rader
+
+```dart
+DsTable(
+  columns: [Text('Navn'), Text('Alder')],
+  rows: [
+    [Text('Alice'), Text('30')],
+    [Text('Bob'), Text('25')],
+  ],
+  sortColumn: 0,
+  sortDirection: DsSortDirection.ascending,
+  onSort: (kolonneIndeks) => sorter(kolonneIndeks),
+  onRowTap: (radIndeks) => velgRad(radIndeks),
+)
+```
+
+### Med festet overskriftsrad og bunntekst
+
+Festet overskriftsrad krever en avgrenset høyde, for eksempel inne i en
+`SizedBox` eller `Expanded`.
+
+```dart
+SizedBox(
+  height: 240,
+  child: DsTable(
+    stickyHeader: true,
+    caption: Text('Utgifter per måned'),
+    columns: [Text('Måned'), Text('Beløp')],
+    rows: [
+      [Text('Januar'), Text('1 200')],
+      [Text('Februar'), Text('980')],
+    ],
+    footerRows: [
+      [Text('Sum'), Text('2 180')],
+    ],
+  ),
+)
+```
+
 ## Retningslinjer
 - Bruk tydelige kolonneoverskrifter som beskriver innholdet i kolonnen.
 - Juster tekst til venstre og tall til høyre for bedre lesbarhet.
@@ -69,7 +108,14 @@ DsTable(
 | color | `DsColor?` | `null` | Fargetema |
 | zebra | `bool` | `false` | Vekslende bakgrunnsfarge på annenhver rad |
 | hover | `bool` | `false` | Utheving av rad ved musepeker |
-| stickyHeader | `bool` | `false` | Om overskriftsraden skal festes ved rulling (ikke implementert ennå) |
+| stickyHeader | `bool` | `false` | Fester overskriftsraden ved rulling. Aktiv kun når tabellen har en avgrenset høyde (f.eks. i en `SizedBox`/`Expanded`); ellers vises tabellen uten rulling. |
+| border | `bool` | `true` | Tegner den avrundede ytre kantlinjen |
+| caption | `Widget?` | `null` | Tabelltekst vist over tabellen og eksponert for skjermlesere |
+| footerRows | `List<List<Widget>>?` | `null` | Bunntekstrader med overskriftslignende stil |
+| sortColumn | `int?` | `null` | Indeks for kolonnen som er sortert |
+| sortDirection | `DsSortDirection?` | `null` | Sorteringsretning for `sortColumn` |
+| onSort | `void Function(int)?` | `null` | Gjør kolonneoverskrifter til sorteringsknapper, kalles med kolonneindeks |
+| onRowTap | `void Function(int)?` | `null` | Gjør rader trykkbare og aktiverbare med tastatur, kalles med radindeks |
 
 ## Import
 
@@ -83,13 +129,16 @@ import 'package:designsystemet_flutter/components.dart';
 ## Semantikk
 - Bruker riktig tabellsemantikk med header-celler slik at skjermlesere kan navigere og forstå datastrukturen.
 - Kolonneoverskrifter er markert som header-celler (`th`) for riktig rad/kolonne-annonsering.
+- Sorterbare kolonneoverskrifter (`onSort`) eksponeres som knapper med sorteringsretningen som tilstand (speiler `aria-sort`).
+- Når `caption` er satt, grupperes tekst og tabell i én semantikknode slik at skjermlesere annonserer dem som én enhet (speiler HTML-elementet `<caption>`).
 
 ## Tastaturinteraksjon
 
 | Tast | Handling |
 | --- | --- |
-| `Tab` | Flytter fokus til neste fokuserbare element i tabellen (f.eks. lenker eller knapper i celler). |
+| `Tab` | Flytter fokus til neste fokuserbare element i tabellen (f.eks. sorterbare overskrifter, trykkbare rader, lenker eller knapper i celler). |
 | `Pil ned` / `Pil opp` | Navigerer mellom rader når tabellen har fokuserbare celler. |
+| `Enter` / `Mellomrom` | Aktiverer den fokuserte sorterbare overskriften (`onSort`) eller den trykkbare raden (`onRowTap`). |
 
 ## Fokusindikator
 - Synlig fokusindikator ved tastaturnavigasjon for interaktive elementer i tabellcellene.
