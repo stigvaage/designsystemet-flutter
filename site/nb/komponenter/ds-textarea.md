@@ -62,7 +62,7 @@ DsTextarea(
 | disabled | `bool` | `false` | Om tekstområdet er deaktivert. |
 | readOnly | `bool` | `false` | Om tekstområdet er skrivebeskyttet. |
 | maxLength | `int?` | `null` | Maksimalt antall tegn. |
-| rows | `int` | `3` | Antall synlige rader. |
+| rows | `int` | `4` | Antall synlige rader. |
 | onChanged | `ValueChanged<String>?` | `null` | Tilbakeringing ved tekstendring. |
 
 ## Import

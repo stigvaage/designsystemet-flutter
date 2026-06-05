@@ -11,7 +11,7 @@ Avledet fra plan: full API-paritet med Designsystemet (React-referanse `digdir/d
 
 ## STATUS (sluttført på branchen)
 
-**Levert og verifisert:** `flutter analyze` = 0 issues, **360 tester grønne**, `dart format` rent (CI-gate), MCP `npm run build` + 11 tester grønne. Versjon **0.3.0** (pubspec ↔ mcp), CHANGELOG oppdatert.
+**Levert og verifisert:** `flutter analyze` = 0 issues, **644 tester grønne**, `dart format` rent (CI-gate), MCP `npm run build` + 16 tester grønne. Versjon **0.3.0** (pubspec ↔ mcp), CHANGELOG oppdatert.
 
 - ✅ **Track 0** — variant-enums (mot v1.15.0-kilde) + `DsPlacement`/`DsSortDirection`; `DsCard.block/.header/.footer` compound-aliaser. *(Avgrensning: `DsSize` beholdt sm/md/lg = React `data-size`.)*
 - ✅ **Track A** — varianter (outline/tinted/circle-square/primary-secondary) + a11y (aria-current, aria-hidden, ariaLabel, tooltip-fokus) + tap-target-fikser.

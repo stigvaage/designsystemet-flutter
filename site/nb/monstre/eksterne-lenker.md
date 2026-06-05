@@ -8,18 +8,32 @@ Eksterne lenker fører brukeren bort fra tjenesten. Marker dem tydelig slik at b
 - **Skriv ut målet** i lenketeksten der det er nyttig («Les mer på helsenorge.no»).
 - Vær varsom med å åpne i ny fane — det kan forvirre og bryter «tilbake»-knappen. Hvis du gjør det, **informer** brukeren.
 
+`DsLink` tar selve lenketeksten via `text` og en `onTap`-handling. Marker at lenken er ekstern både i selve teksten og for skjermlesere ved å pakke lenken inn i `Semantics`:
+
 ```dart
-DsLink(
-  onTap: () => åpne('https://helsenorge.no'),
-  child: Row(
-    mainAxisSize: MainAxisSize.min,
-    children: const [
-      Text('Les mer på helsenorge.no'),
-      SizedBox(width: 4),
-      // Marker som ekstern; skjul ikonet for skjermlesere og forklar i teksten.
-      Icon(DsIcons.arrowRight, size: 16),
-    ],
+Semantics(
+  label: 'Les mer på helsenorge.no (ekstern lenke)',
+  child: DsLink(
+    text: 'Les mer på helsenorge.no',
+    onTap: () => åpne('https://helsenorge.no'),
   ),
+)
+```
+
+Trenger du et eksternt ikon ved siden av lenken, plasser det utenfor `DsLink` og skjul det for skjermlesere (lenketeksten beskriver allerede målet):
+
+```dart
+Row(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    DsLink(
+      text: 'Les mer på helsenorge.no',
+      onTap: () => åpne('https://helsenorge.no'),
+    ),
+    const SizedBox(width: 4),
+    // Rent dekorativt ikon; skjules for skjermlesere.
+    const ExcludeSemantics(child: Icon(DsIcons.externalLink, size: 16)),
+  ],
 )
 ```
 

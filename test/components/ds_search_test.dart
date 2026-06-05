@@ -1,6 +1,7 @@
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Widget _host(Widget child) => DsTheme(
@@ -157,6 +158,79 @@ void main() {
         ),
         findsNothing,
       );
+    });
+
+    testWidgets('clearable: clear button is keyboard-operable with Enter '
+        '(focus + LogicalKeyboardKey.enter clears and fires onClear)', (
+      tester,
+    ) async {
+      final controller = TextEditingController(text: 'hello');
+      addTearDown(controller.dispose);
+      var cleared = false;
+      String? lastChange;
+
+      await tester.pumpWidget(
+        _host(
+          DsSearch(
+            controller: controller,
+            clearable: true,
+            onChanged: (v) => lastChange = v,
+            onClear: () => cleared = true,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      // The clear button shows because the field already has text.
+      expect(_clearIcon(), findsOneWidget);
+
+      // Focus the clear button (the Focus node wrapping the x icon) and
+      // activate it with Enter — no pointer involved (WCAG 2.1.1).
+      final focus = Focus.of(tester.element(_clearIcon()));
+      focus.requestFocus();
+      await tester.pump();
+      expect(focus.hasFocus, isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+
+      expect(controller.text, isEmpty);
+      expect(lastChange, '');
+      expect(cleared, isTrue);
+      expect(_clearIcon(), findsNothing);
+    });
+
+    testWidgets('clearable: clear button is keyboard-operable with Space '
+        '(focus + LogicalKeyboardKey.space clears and fires onClear)', (
+      tester,
+    ) async {
+      final controller = TextEditingController(text: 'world');
+      addTearDown(controller.dispose);
+      var cleared = false;
+
+      await tester.pumpWidget(
+        _host(
+          DsSearch(
+            controller: controller,
+            clearable: true,
+            onClear: () => cleared = true,
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(_clearIcon(), findsOneWidget);
+
+      final focus = Focus.of(tester.element(_clearIcon()));
+      focus.requestFocus();
+      await tester.pump();
+      expect(focus.hasFocus, isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+
+      expect(controller.text, isEmpty);
+      expect(cleared, isTrue);
+      expect(_clearIcon(), findsNothing);
     });
 
     testWidgets('onSubmit alias fires alongside onSubmitted', (tester) async {

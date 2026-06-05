@@ -2,6 +2,7 @@ import 'dart:ui' show PointerDeviceKind;
 
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -152,6 +153,31 @@ void main() {
       expect(find.text('Tip'), findsNothing);
 
       await gesture.removePointer();
+    });
+
+    testWidgets('Escape dismisses a focus-shown tooltip without moving focus '
+        '(WCAG 1.4.13 dismissible)', (tester) async {
+      final node = FocusNode();
+      addTearDown(node.dispose);
+      await tester.pumpWidget(
+        wrapWithOverlay(
+          DsTooltip(
+            message: 'Tip',
+            child: Focus(focusNode: node, child: const Text('Target')),
+          ),
+        ),
+      );
+
+      node.requestFocus();
+      await tester.pump();
+      await tester.pump();
+      expect(find.text('Tip'), findsOneWidget);
+
+      // Escape hides the tooltip while focus stays on the trigger.
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pump();
+      expect(find.text('Tip'), findsNothing);
+      expect(node.hasFocus, isTrue);
     });
 
     testWidgets('shows tooltip with a non-default placement', (tester) async {

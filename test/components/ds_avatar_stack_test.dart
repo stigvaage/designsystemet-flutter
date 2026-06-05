@@ -188,6 +188,76 @@ void main() {
       expect(positioned.last.left, 64);
     });
 
+    testWidgets(
+      'collapses overflow into +N indicator when maxVisible exceeded',
+      (tester) async {
+        await tester.pumpWidget(
+          wrapWithTheme(
+            const DsAvatarStack(
+              maxVisible: 3,
+              children: [
+                DsAvatar(name: 'A'),
+                DsAvatar(name: 'B'),
+                DsAvatar(name: 'C'),
+                DsAvatar(name: 'D'),
+                DsAvatar(name: 'E'),
+              ],
+            ),
+          ),
+        );
+        // maxVisible is the effective limit when max is unset.
+        expect(find.byType(DsAvatar), findsNWidgets(3));
+        expect(find.text('+2'), findsOneWidget);
+      },
+    );
+
+    testWidgets('max takes precedence over maxVisible for the overflow cut', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsAvatarStack(
+            maxVisible: 5,
+            max: 2,
+            children: [
+              DsAvatar(name: 'A'),
+              DsAvatar(name: 'B'),
+              DsAvatar(name: 'C'),
+              DsAvatar(name: 'D'),
+            ],
+          ),
+        ),
+      );
+      // Even though maxVisible would allow all 4, max=2 wins.
+      expect(find.byType(DsAvatar), findsNWidgets(2));
+      expect(find.text('+2'), findsOneWidget);
+    });
+
+    testWidgets('overflow indicator exposes a Norwegian «+N flere» label', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsAvatarStack(
+            max: 2,
+            children: [
+              DsAvatar(name: 'A'),
+              DsAvatar(name: 'B'),
+              DsAvatar(name: 'C'),
+              DsAvatar(name: 'D'),
+              DsAvatar(name: 'E'),
+            ],
+          ),
+        ),
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == '+3 flere',
+        ),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('exposes a Norwegian group summary («N brukere»)', (
       tester,
     ) async {

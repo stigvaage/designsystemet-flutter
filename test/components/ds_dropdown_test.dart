@@ -266,6 +266,79 @@ void main() {
       expect(selectedIndex, 1);
     });
 
+    testWidgets(
+      'ArrowUp on a closed dropdown opens onto the LAST enabled item',
+      (tester) async {
+        var selectedIndex = -1;
+        await tester.pumpWidget(
+          wrapWithOverlay(
+            DsDropdown(
+              trigger: const Text('Open'),
+              onSelected: (i) => selectedIndex = i,
+              items: const [
+                DsDropdownItem(label: 'A'),
+                DsDropdownItem(label: 'B'),
+                DsDropdownItem(label: 'C'),
+              ],
+            ),
+          ),
+        );
+
+        // Closed initially.
+        expect(find.text('A'), findsNothing);
+
+        Focus.of(tester.element(find.text('Open'))).requestFocus();
+        await tester.pump();
+
+        // A single ArrowUp from the closed state opens the menu and lands the
+        // highlight on the LAST item (index 2), matching DsSelect.
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+        await tester.pumpAndSettle();
+        expect(find.text('A'), findsOneWidget);
+        expect(find.text('C'), findsOneWidget);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+
+        expect(selectedIndex, 2);
+        expect(find.text('A'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'ArrowUp on a closed dropdown skips a trailing disabled item to the '
+      'last ENABLED item',
+      (tester) async {
+        var selectedIndex = -1;
+        await tester.pumpWidget(
+          wrapWithOverlay(
+            DsDropdown(
+              trigger: const Text('Open'),
+              onSelected: (i) => selectedIndex = i,
+              items: const [
+                DsDropdownItem(label: 'A'),
+                DsDropdownItem(label: 'B'),
+                DsDropdownItem(label: 'C', enabled: false),
+              ],
+            ),
+          ),
+        );
+
+        Focus.of(tester.element(find.text('Open'))).requestFocus();
+        await tester.pump();
+
+        // ArrowUp opens and should land on B (index 1) because the trailing C
+        // (index 2) is disabled.
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+        await tester.pumpAndSettle();
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+
+        expect(selectedIndex, 1);
+      },
+    );
+
     testWidgets('ArrowDown skips a disabled item', (tester) async {
       var selectedIndex = -1;
       await tester.pumpWidget(

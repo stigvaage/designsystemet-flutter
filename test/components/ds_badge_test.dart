@@ -63,5 +63,39 @@ void main() {
       );
       expect(semanticsWidget.properties.label, '1 varsel');
     });
+
+    testWidgets('plural semantic label for count: 5 is «5 varsler»', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsBadge(count: 5, child: Text('Icon'))),
+      );
+      // The visible digit excludes itself from semantics; the announced label
+      // is the Norwegian plural «5 varsler».
+      final semanticsWidget = tester.widget<Semantics>(
+        find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == '5 varsler',
+        ),
+      );
+      expect(semanticsWidget.properties.label, '5 varsler');
+    });
+
+    testWidgets(
+      'capped semantic label uses «maxCount+ varsler» when count exceeds '
+      'maxCount',
+      (tester) async {
+        await tester.pumpWidget(
+          wrapWithTheme(
+            const DsBadge(count: 150, maxCount: 99, child: Text('Icon')),
+          ),
+        );
+        final semanticsWidget = tester.widget<Semantics>(
+          find.byWidgetPredicate(
+            (w) => w is Semantics && w.properties.label == '99+ varsler',
+          ),
+        );
+        expect(semanticsWidget.properties.label, '99+ varsler');
+      },
+    );
   });
 }

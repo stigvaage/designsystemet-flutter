@@ -93,6 +93,88 @@ void main() {
       expect(decoration.borderRadius, isNotNull);
     });
 
+    testWidgets(
+      'square variant radius equals the theme borderRadius.sm token',
+      (tester) async {
+        final theme = DsThemeDigdir.light();
+        await tester.pumpWidget(
+          DsTheme(
+            data: theme,
+            child: const Directionality(
+              textDirection: TextDirection.ltr,
+              child: DsAvatar(name: 'Jordan', variant: DsAvatarVariant.square),
+            ),
+          ),
+        );
+        final container = tester.widget<Container>(
+          find.descendant(
+            of: find.byType(DsAvatar),
+            matching: find.byType(Container),
+          ),
+        );
+        final decoration = container.decoration! as BoxDecoration;
+        // Token-driven: the rounded square uses borderRadius.sm, never a
+        // hardcoded literal.
+        expect(
+          decoration.borderRadius,
+          BorderRadius.circular(theme.borderRadius.sm),
+        );
+      },
+    );
+
+    testWidgets(
+      'filled appearance: solid baseDefault fill behind the initials text',
+      (tester) async {
+        final theme = DsThemeDigdir.light();
+        final expectedFill = theme.colorScheme
+            .resolve(DsColor.accent)
+            .baseDefault;
+        await tester.pumpWidget(
+          DsTheme(
+            data: theme,
+            child: const Directionality(
+              textDirection: TextDirection.ltr,
+              child: DsColorScope(
+                color: DsColor.accent,
+                child: DsAvatar(name: 'Jordan Vik'),
+              ),
+            ),
+          ),
+        );
+
+        // The avatar paints a solid filled chip using the resolved colour
+        // scale's baseDefault token.
+        final container = tester.widget<Container>(
+          find.descendant(
+            of: find.byType(DsAvatar),
+            matching: find.byType(Container),
+          ),
+        );
+        final decoration = container.decoration! as BoxDecoration;
+        expect(decoration.color, expectedFill);
+        expect(decoration.shape, BoxShape.circle);
+
+        // Initials render on top of the fill.
+        expect(find.text('JV'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'no border in normal (non-high-contrast) mode — purely a filled chip',
+      (tester) async {
+        await tester.pumpWidget(wrapWithTheme(const DsAvatar(name: 'Jordan')));
+        final container = tester.widget<Container>(
+          find.descendant(
+            of: find.byType(DsAvatar),
+            matching: find.byType(Container),
+          ),
+        );
+        // foregroundDecoration carries the high-contrast border; it stays null
+        // in normal mode so the avatar is a plain solid fill.
+        expect(container.foregroundDecoration, isNull);
+      },
+    );
+
     testWidgets('semantic label is name or "Profilbilde" fallback', (
       tester,
     ) async {

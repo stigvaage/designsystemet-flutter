@@ -25,5 +25,37 @@ final listComponent = WidgetbookComponent(
         );
       },
     ),
+    WidgetbookUseCase(
+      name: 'Punktliste',
+      builder: (context) {
+        return const Padding(
+          padding: EdgeInsets.all(16),
+          child: DsList(
+            ordered: false,
+            items: [
+              Text('Første element'),
+              Text('Andre element'),
+              Text('Tredje element'),
+            ],
+          ),
+        );
+      },
+    ),
+    WidgetbookUseCase(
+      name: 'Nummerert liste',
+      builder: (context) {
+        return const Padding(
+          padding: EdgeInsets.all(16),
+          child: DsList(
+            ordered: true,
+            items: [
+              Text('Første element'),
+              Text('Andre element'),
+              Text('Tredje element'),
+            ],
+          ),
+        );
+      },
+    ),
   ],
 );
