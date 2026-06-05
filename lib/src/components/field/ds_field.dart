@@ -35,20 +35,21 @@ class DsField extends StatelessWidget {
     // Designsystemet `data-size` cascade across the whole field.
     final sizeMode = size ?? DsSizeScope.of(context);
 
-    // Same body-size mapping that [DsLabel] applies: sm→bodyMd, md→bodyLg,
-    // lg→bodyXl. This keeps description and validation text in step with the
-    // scaling label instead of being pinned to bodyMd.
+    // Same body-size mapping that [DsLabel] applies: sm→bodySm, md→bodyMd,
+    // lg→bodyLg. This keeps the description and validation text in step with the
+    // scaling label instead of being pinned to a single size.
     final bodyStyle = sizeMode.pick(
-      sm: theme.typography.bodyMd,
-      md: theme.typography.bodyLg,
-      lg: theme.typography.bodyXl,
+      sm: theme.typography.bodySm,
+      md: theme.typography.bodyMd,
+      lg: theme.typography.bodyLg,
     );
 
     // [DsValidationMessage] pins its own text to bodyMd and takes no size
-    // parameter, so scale it proportionally to the resolved field size
-    // (bodyMd → 1.0, bodyLg → 1.125, bodyXl → 1.25). This is applied on top of
-    // any user text scaling so accessibility settings are still respected.
-    final validationScale = sizeMode.pick(sm: 1.0, md: 1.125, lg: 1.25);
+    // parameter, so scale it by the ratio of the resolved body size to bodyMd —
+    // making the validation message track the description and label. Applied on
+    // top of any user text scaling so accessibility settings are still respected.
+    final bodyMdSize = theme.typography.bodyMd.fontSize ?? 18.0;
+    final validationScale = (bodyStyle.fontSize ?? bodyMdSize) / bodyMdSize;
 
     // Compose the field's hint from the description and the error so a focused
     // input announces help text and the validation problem together. Both are

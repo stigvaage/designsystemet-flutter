@@ -39,6 +39,24 @@ DsParagraph(
 )
 ```
 
+## Størrelser
+
+Skriftstørrelsene følger offisiell Designsystemet v1.15.0 (px ved referansestørrelse). De samme størrelsene gjelder for alle varianter (`standard`, `short`, `long`); kun linjehøyden skiller dem.
+
+| Størrelse | Enum | Størrelse |
+| --- | --- | --- |
+| Ekstra liten | `DsBodySize.xs` | 14px |
+| Liten | `DsBodySize.sm` | 16px |
+| Medium | `DsBodySize.md` | 18px |
+| Stor | `DsBodySize.lg` | 21px |
+| Ekstra stor | `DsBodySize.xl` | 24px |
+
+| Variant | Linjehøyde |
+| --- | --- |
+| `standard` | 1.5 |
+| `short` | 1.3 |
+| `long` | 1.7 |
+
 ## Retningslinjer
 - Bruk `bodySize` for å differensiere mellom primærtekst og sekundærtekst.
 - Velg `variant` basert på kontekst — `standard` for vanlig tekst, andre varianter for spesialformål.

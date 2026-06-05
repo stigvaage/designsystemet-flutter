@@ -44,16 +44,13 @@ class DsLabel extends StatelessWidget {
 
     final sizeMode = size ?? DsSizeScope.of(context);
 
-    // Offisiell Label-skriftstørrelse for sm/md/lg = 16/18/21 px (body.md i
-    // hhv. small/medium/large size-mode). Repoets body-stige har ingen 21px-
-    // token, så lg utledes fra bodyLg (18px) skalert til 21px for å treffe
-    // den offisielle størrelsen nøyaktig.
+    // Offisiell Label-skriftstørrelse for sm/md/lg = 16/18/21 px. Etter at
+    // typografi-stigen er rettet til offisiell v1.15.0, treffer body-tokenene
+    // disse størrelsene direkte: bodySm=16, bodyMd=18, bodyLg=21.
     final baseStyle = switch (sizeMode) {
-      DsSize.sm => theme.typography.bodyMd,
-      DsSize.md => theme.typography.bodyLg,
-      DsSize.lg => theme.typography.bodyLg.copyWith(
-        fontSize: theme.typography.bodyLg.fontSize! * (21 / 18),
-      ),
+      DsSize.sm => theme.typography.bodySm,
+      DsSize.md => theme.typography.bodyMd,
+      DsSize.lg => theme.typography.bodyLg,
     };
 
     final style = baseStyle.copyWith(

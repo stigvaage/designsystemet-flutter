@@ -170,12 +170,12 @@ void main() {
     });
 
     // Finding #25: description text must scale with `size` instead of being
-    // pinned to bodyMd. Mapping mirrors DsLabel: sm→bodyMd (16), md→bodyLg
-    // (18), lg→bodyXl (20) at the reference theme scale.
+    // pinned to a single size. Mapping mirrors DsLabel: sm→bodySm (16),
+    // md→bodyMd (18), lg→bodyLg (21) at the reference theme scale.
     for (final (size, expectedFontSize) in const [
       (DsSize.sm, 16.0),
       (DsSize.md, 18.0),
-      (DsSize.lg, 20.0),
+      (DsSize.lg, 21.0),
     ]) {
       testWidgets('description scales with size $size', (tester) async {
         await tester.pumpWidget(
@@ -192,7 +192,7 @@ void main() {
       });
     }
 
-    testWidgets('description defaults to md (bodyLg) so it matches the label', (
+    testWidgets('description defaults to md (bodyMd) so it matches the label', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -218,12 +218,12 @@ void main() {
     });
 
     // Finding #25: DsValidationMessage takes no size param and pins itself to
-    // bodyMd, so DsField must apply the field size factor via a text scaler
-    // (sm→1.0, md→1.125, lg→1.25) layered on top of any user scaling.
+    // bodyMd, so DsField scales it by the ratio of the resolved body size to
+    // bodyMd (sm→16/18, md→1.0, lg→21/18) layered on top of any user scaling.
     for (final (size, expectedFactor) in const [
-      (DsSize.sm, 1.0),
-      (DsSize.md, 1.125),
-      (DsSize.lg, 1.25),
+      (DsSize.sm, 16 / 18),
+      (DsSize.md, 1.0),
+      (DsSize.lg, 21 / 18),
     ]) {
       testWidgets('validation message scaled for size $size', (tester) async {
         await tester.pumpWidget(
@@ -278,8 +278,8 @@ void main() {
             )
             .first,
       );
-      // User 2.0 scaling times the lg field factor 1.25 = 2.5.
-      expect(mq.data.textScaler.scale(16) / 16, closeTo(2.5, 1e-9));
+      // User 2.0 scaling times the lg field factor (bodyLg/bodyMd = 21/18).
+      expect(mq.data.textScaler.scale(16) / 16, closeTo(2.0 * 21 / 18, 1e-9));
     });
   });
 }

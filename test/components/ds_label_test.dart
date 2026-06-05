@@ -41,12 +41,20 @@ void main() {
       expect(text.style?.fontWeight, FontWeight.w600);
     });
 
-    testWidgets('lg size resolves to official 21px font size', (tester) async {
-      await tester.pumpWidget(
-        wrapWithTheme(const DsLabel(text: 'Large', size: DsSize.lg)),
-      );
-      final text = tester.widget<Text>(find.byType(Text));
-      expect(text.style?.fontSize, closeTo(21, 0.001));
+    testWidgets('sm/md/lg resolve to official 16/18/21px font sizes', (
+      tester,
+    ) async {
+      for (final (size, expected) in const [
+        (DsSize.sm, 16.0),
+        (DsSize.md, 18.0),
+        (DsSize.lg, 21.0),
+      ]) {
+        await tester.pumpWidget(
+          wrapWithTheme(DsLabel(text: 'Label', size: size)),
+        );
+        final text = tester.widget<Text>(find.byType(Text));
+        expect(text.style?.fontSize, closeTo(expected, 0.001));
+      }
     });
   });
 }

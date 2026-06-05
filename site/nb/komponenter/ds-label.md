@@ -37,6 +37,16 @@ DsLabel(
 )
 ```
 
+## Størrelser
+
+Skriftstørrelsene følger offisiell Designsystemet v1.15.0 (px ved referansestørrelse).
+
+| Størrelse | Enum | Størrelse |
+| --- | --- | --- |
+| Liten | `DsSize.sm` | 16px |
+| Medium | `DsSize.md` | 18px |
+| Stor | `DsSize.lg` | 21px |
+
 ## Retningslinjer
 - Plasser etiketten visuelt over eller ved siden av det tilhørende skjemafeltet.
 - Bruk alltid en etikett for hvert skjemaelement — aldri stol kun på plassholdertekst.

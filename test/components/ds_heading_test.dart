@@ -27,6 +27,16 @@ void main() {
       final text = tester.widget<Text>(find.byType(Text));
       expect(text.style?.fontWeight, FontWeight.w500);
       expect(text.style?.height, 1.3);
+      // Offisiell v1.15.0: heading 2xl = 60px ved referansestørrelse.
+      expect(text.style?.fontSize, 60);
+    });
+
+    testWidgets('md level uses official 30px font size', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsHeading(text: 'Test', level: DsHeadingLevel.md)),
+      );
+      final text = tester.widget<Text>(find.byType(Text));
+      expect(text.style?.fontSize, 30);
     });
 
     testWidgets('has header semantics', (tester) async {

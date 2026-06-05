@@ -41,6 +41,20 @@ DsHeading(
 )
 ```
 
+## Størrelser
+
+Skriftstørrelsene følger offisiell Designsystemet v1.15.0 (px ved referansestørrelse). Alle nivåer har vekt 500 (medium) og linjehøyde 1.3.
+
+| Nivå | Enum | Størrelse |
+| --- | --- | --- |
+| Ekstra ekstra stor | `DsHeadingLevel.xxl` | 60px |
+| Ekstra stor | `DsHeadingLevel.xl` | 48px |
+| Stor | `DsHeadingLevel.lg` | 36px |
+| Medium | `DsHeadingLevel.md` | 30px |
+| Liten | `DsHeadingLevel.sm` | 24px |
+| Ekstra liten | `DsHeadingLevel.xs` | 21px |
+| Ekstra ekstra liten | `DsHeadingLevel.xxs` | 18px |
+
 ## Retningslinjer
 - Bruk overskriftsnivåer i logisk rekkefølge — ikke hopp over nivåer.
 - Bruk `semanticLevel` (1–6) for det semantiske overskriftsnivået og `level` for den visuelle størrelsen. De settes uavhengig av hverandre.
