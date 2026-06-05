@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:designsystemet_flutter/src/utils/ds_focus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show SemanticsValidationResult;
 import 'package:flutter_test/flutter_test.dart';
 
 Widget _host(Widget child) => DsTheme(
@@ -183,13 +187,13 @@ void main() {
         _host(DsInput(focusNode: focus, size: DsSize.md)),
       );
 
-      final before = tester.getRect(find.byType(TextField));
+      final before = tester.getRect(find.byType(EditableText));
 
       focus.requestFocus();
       await tester.pumpAndSettle();
       expect(focus.hasFocus, isTrue);
 
-      final after = tester.getRect(find.byType(TextField));
+      final after = tester.getRect(find.byType(EditableText));
       expect(after, before, reason: 'focus ring must not move the field');
     });
   });
@@ -284,5 +288,152 @@ void main() {
         expect(first.text, 'first');
       },
     );
+  });
+
+  group('DsInput is Material/Cupertino-free', () {
+    // Core library rule: the input must not depend on Material/Cupertino. It is
+    // reimplemented on EditableText, so its source must not import either.
+    test('ds_input.dart imports neither material nor cupertino', () {
+      final source = File(
+        'lib/src/components/input/ds_input.dart',
+      ).readAsStringSync();
+      expect(source.contains('package:flutter/material.dart'), isFalse);
+      expect(source.contains('package:flutter/cupertino.dart'), isFalse);
+    });
+
+    // The editor is the bare widgets-only EditableText, not a Material
+    // TextField/Cupertino TextField wrapper.
+    testWidgets('builds an EditableText and no TextField', (tester) async {
+      await tester.pumpWidget(_host(const DsInput(size: DsSize.md)));
+      expect(find.byType(EditableText), findsOneWidget);
+      expect(find.byType(TextField), findsNothing);
+    });
+  });
+
+  group('DsInput placeholder overlay', () {
+    // EditableText has no hint of its own, so DsInput draws the placeholder as
+    // a Text overlay shown only while the field is empty.
+    testWidgets('shows the placeholder while empty and hides it on input', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(const DsInput(size: DsSize.md, placeholder: 'Skriv inn navn')),
+      );
+      expect(find.text('Skriv inn navn'), findsOneWidget);
+
+      await tester.enterText(find.byType(EditableText), 'Ada');
+      await tester.pump();
+
+      expect(find.text('Skriv inn navn'), findsNothing);
+      expect(find.text('Ada'), findsOneWidget);
+    });
+  });
+
+  group('DsInput read-only focus ring', () {
+    // A focused read-only field keeps its border suppressed but MUST still show
+    // the focus ring so keyboard users have a visible focus indicator. Only
+    // `disabled` suppresses the ring.
+    testWidgets('read-only field shows the focus ring when focused', (
+      tester,
+    ) async {
+      final focus = FocusNode();
+      addTearDown(focus.dispose);
+      await tester.pumpWidget(
+        _host(DsInput(focusNode: focus, size: DsSize.md, readOnly: true)),
+      );
+
+      // Any DecoratedBox under DsInput whose border is a non-zero-alpha,
+      // uniform-width border is the painted focus ring (DsFocus.reserveRing
+      // draws a transparent same-width border when unfocused).
+      bool hasVisibleRing() => tester
+          .widgetList<DecoratedBox>(
+            find.descendant(
+              of: find.byType(DsInput),
+              matching: find.byType(DecoratedBox),
+            ),
+          )
+          .map((d) => d.decoration)
+          .whereType<BoxDecoration>()
+          .any((d) {
+            final border = d.border;
+            return border is Border &&
+                border.top.width == DsFocus.ringWidth &&
+                border.top.color.a > 0.0;
+          });
+
+      // Unfocused: no visible ring (border is transparent).
+      expect(hasVisibleRing(), isFalse);
+
+      focus.requestFocus();
+      await tester.pumpAndSettle();
+      expect(focus.hasFocus, isTrue);
+
+      // Focused read-only field: the ring is now painted (visible indicator).
+      expect(hasVisibleRing(), isTrue);
+    });
+  });
+
+  group('DsInput error semantics', () {
+    // Error state must be exposed to assistive tech as an invalid validation
+    // result (the aria-invalid equivalent), with the message carried as a hint.
+    testWidgets('error sets invalid validation result and hint', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(const DsInput(size: DsSize.md, error: 'Ugyldig e-post')),
+      );
+
+      final semantics = tester.widget<Semantics>(
+        find
+            .descendant(
+              of: find.byType(DsInput),
+              matching: find.byWidgetPredicate(
+                (w) => w is Semantics && w.properties.textField == true,
+              ),
+            )
+            .first,
+      );
+      expect(
+        semantics.properties.validationResult,
+        SemanticsValidationResult.invalid,
+      );
+      expect(semantics.properties.hint, 'Ugyldig e-post');
+    });
+
+    testWidgets('no error keeps validation result none', (tester) async {
+      await tester.pumpWidget(_host(const DsInput(size: DsSize.md)));
+
+      final semantics = tester.widget<Semantics>(
+        find
+            .descendant(
+              of: find.byType(DsInput),
+              matching: find.byWidgetPredicate(
+                (w) => w is Semantics && w.properties.textField == true,
+              ),
+            )
+            .first,
+      );
+      expect(
+        semantics.properties.validationResult,
+        SemanticsValidationResult.none,
+      );
+    });
+  });
+
+  group('DsInput maxLength', () {
+    // EditableText has no maxLength; DsInput enforces it with a
+    // LengthLimitingTextInputFormatter.
+    testWidgets('caps the entered text at maxLength', (tester) async {
+      final controller = TextEditingController();
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        _host(DsInput(controller: controller, size: DsSize.md, maxLength: 3)),
+      );
+
+      await tester.enterText(find.byType(EditableText), 'abcdef');
+      await tester.pump();
+
+      expect(controller.text, 'abc');
+    });
   });
 }

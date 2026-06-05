@@ -55,11 +55,37 @@ DsInput(
 
 | Egenskap | Type | Standard | Beskrivelse |
 | --- | --- | --- | --- |
-| controller | `TextEditingController?` | `null` | Kontroller for inndatafeltet. |
-| size | `DsSize?` | `null` | Størrelse på inndatafeltet. |
-| error | `String?` | `null` | Feilmelding som aktiverer feiltilstand. |
-| disabled | `bool` | `false` | Om inndatafeltet er deaktivert. |
-| onChanged | `ValueChanged<String>?` | `null` | Tilbakeringing ved endring av verdi. |
+| controller | `TextEditingController?` | `null` | Kontroller for inndatafeltet. Opprettes internt når den er `null`. |
+| size | `DsSize?` | `null` | Størrelse på inndatafeltet. Faller tilbake til omsluttende størrelse. |
+| error | `String?` | `null` | Feilmelding som aktiverer feiltilstand. Faller tilbake til feltets `DsField`-feil. |
+| disabled | `bool` | `false` | Om inndatafeltet er deaktivert (dempet og ignorerer trykk). |
+| readOnly | `bool` | `false` | Om innholdet er skrivebeskyttet (kan fokuseres og markeres, men ikke redigeres). |
+| prefix | `Widget?` | `null` | Innhold til venstre for feltet, f.eks. et ikon. |
+| suffix | `Widget?` | `null` | Innhold til høyre for feltet, f.eks. et ikon eller en tøm-knapp. |
+| placeholder | `String?` | `null` | Plassholdertekst som vises når feltet er tomt. |
+| onChanged | `ValueChanged<String>?` | `null` | Tilbakeringing ved hver endring av verdi. |
+| onSubmitted | `ValueChanged<String>?` | `null` | Tilbakeringing når brukeren utløser handlingstasten. |
+| onTap | `VoidCallback?` | `null` | Tilbakeringing når brukeren trykker på feltet. |
+| focusNode | `FocusNode?` | `null` | Eksternt fokusobjekt. Opprettes internt når den er `null`. |
+| keyboardType | `TextInputType?` | `null` | Tastaturtype for myktastatur. |
+| obscureText | `bool` | `false` | Skjuler tegnene (passordfelt). |
+| maxLength | `int?` | `null` | Maksimalt antall tegn. |
+| maxLines | `int?` | `1` | Maksimalt antall linjer. `1` gir et enkeltlinjefelt. |
+| minLines | `int?` | `null` | Minste antall synlige linjer for et flerlinjefelt. |
+| autofocus | `bool` | `false` | Gir feltet fokus automatisk ved første visning. |
+| textInputAction | `TextInputAction?` | `null` | Handlingen som tastaturets handlingstast representerer. |
+| inputFormatters | `List<TextInputFormatter>?` | `null` | Inndatafiltere som transformerer eller begrenser teksten. |
+| autocorrect | `bool` | `true` | Lar plattformen foreslå rettelser. |
+| enableSuggestions | `bool` | `true` | Lar plattformen vise skriveforslag. |
+| textCapitalization | `TextCapitalization` | `none` | Hvordan tekst automatisk gjøres til store bokstaver. |
+| textAlign | `TextAlign` | `start` | Horisontal justering av teksten. |
+
+## Implementasjon
+
+`DsInput` er bygget direkte på `EditableText` fra `package:flutter/widgets.dart` —
+uten avhengighet til Material eller Cupertino. Kantlinje, bakgrunn, polstring,
+fokusring og plassholder tegnes av komponenten selv ut fra `DsTheme`-tokens, og
+markør-, markerings- og tekstfarger kommer rett fra tokenpaletten.
 
 ## Import
 
@@ -72,6 +98,8 @@ import 'package:designsystemet_flutter/components.dart';
 
 ## Semantikk
 - Har textField-semantikk slik at skjermlesere annonserer feltet korrekt.
+- Eksponerer gjeldende verdi, plassholder som etikett, og om feltet er deaktivert eller skrivebeskyttet.
+- I feiltilstand markeres feltet som ugyldig (`validationResult: invalid`), og feilmeldingen leses opp som et hint.
 
 ## Tastaturinteraksjon
 
