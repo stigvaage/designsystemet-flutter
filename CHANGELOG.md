@@ -88,6 +88,11 @@ Kjørte en altomfattende, adversarielt verifisert review av HELE repoet (25 lens
 - Dedikerte fokus-tokens (`focusOuter`/`focusInner`) i fargeskalaen — krever en strukturell
   token-/generator-endring; dagens fokusring bruker `borderStrong` og oppfyller WCAG-kontrast.
 - Eget scrim-/overlay-token for `DsDialog`-barrieren — barrierfargen er allerede token-avledet.
+- Semantiske info/suksess-basefarger: hvit tekst på `base` (info ≈3,77:1, suksess ≈4,35:1)
+  er under 4,5:1 AA for normal tekst. Korrekt fiks krever regenerering av de semantiske
+  skalaene fra offisielle tokens (Track C) for ikke å gjette farger og bryte troskap;
+  kontrasttesten beholder inntil videre et 3:1-gulv for disse to skalaene med dokumentert
+  begrunnelse.
 
 ### Tester
 

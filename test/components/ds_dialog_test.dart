@@ -36,6 +36,65 @@ void main() {
       expect(find.text('Dialog body'), findsOneWidget);
     });
 
+    testWidgets(
+      'show() carries DsTheme/DsColorScope/DsSizeScope across the route boundary',
+      (tester) async {
+        DsThemeData? capturedTheme;
+        DsColor? capturedColor;
+        DsSize? capturedSize;
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: Navigator(
+              onGenerateRoute: (_) => PageRouteBuilder(
+                // Theme + scopes live INSIDE the home route (as with
+                // MaterialApp(home: DsTheme(...))), so the dialog — a sibling
+                // route below the Navigator — does not inherit them directly.
+                pageBuilder: (context, a, sa) => DsTheme(
+                  data: DsThemeDigdir.light(),
+                  child: DsColorScope(
+                    color: DsColor.danger,
+                    child: DsSizeScope(
+                      size: DsSize.lg,
+                      child: Builder(
+                        builder: (innerContext) => GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => DsDialog.show<void>(
+                            context: innerContext,
+                            builder: (dialogContext) => DsDialog(
+                              // Read from inside the dialog subtree, which is a
+                              // descendant of the captured-themes wrap.
+                              child: Builder(
+                                builder: (ctx) {
+                                  capturedTheme = DsTheme.maybeOf(ctx);
+                                  capturedColor = DsColorScope.of(ctx);
+                                  capturedSize = DsSizeScope.of(ctx);
+                                  return const Text('dialog body');
+                                },
+                              ),
+                            ),
+                          ),
+                          child: const Text('open'),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('open'));
+        await tester.pumpAndSettle();
+        // The dialog only sees these inherited scopes because DsDialog.show
+        // captured and re-applied them across the route boundary.
+        expect(capturedTheme, isNotNull);
+        expect(capturedColor, DsColor.danger);
+        expect(capturedSize, DsSize.lg);
+        expect(find.text('dialog body'), findsOneWidget);
+      },
+    );
+
     testWidgets('renders title when provided', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(

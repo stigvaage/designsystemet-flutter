@@ -82,9 +82,19 @@ class DsDialog extends StatefulWidget {
     bool closeOnBarrierTap = false,
     DsDialogPlacement placement = DsDialogPlacement.center,
   }) {
-    return Navigator.of(context).push<T>(
+    // The dialog is built below the [Navigator], outside the caller's subtree,
+    // so capture the inherited Designsystemet themes/scopes (DsTheme,
+    // DsColorScope, DsSizeScope — all [InheritedTheme]) and re-apply them inside
+    // the route. Without this, a dialog under `MaterialApp(home: DsTheme(...))`
+    // would lose its tokens across the route boundary.
+    final navigator = Navigator.of(context);
+    final capturedThemes = InheritedTheme.capture(
+      from: context,
+      to: navigator.context,
+    );
+    return navigator.push<T>(
       _DsDialogRoute<T>(
-        builder: builder,
+        builder: (routeContext) => capturedThemes.wrap(builder(routeContext)),
         closeOnBarrierTap: closeOnBarrierTap,
         placement: placement,
       ),
