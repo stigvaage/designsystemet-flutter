@@ -286,6 +286,22 @@ Alle komponenter i biblioteket er bygget med universell utforming som grunnprins
 
 Biblioteket inkluderer en MCP-server (Model Context Protocol) som lar AI-kodeassistenter som Claude Code, Cursor og VS Code Copilot slå opp komponenter, migrere fra Material-widgets og søke i dokumentasjonen.
 
+> MCP-serveren leser komponentene direkte fra repoet, så den trenger en lokal klon (stien settes via `REPO_ROOT`).
+
+### Hurtiginstallasjon i Claude Code
+
+Klon repoet, bygg serveren, og legg den til på user-nivå (tilgjengelig i alle prosjektene dine):
+
+```bash
+git clone https://github.com/stigvaage/designsystemet-flutter.git
+cd designsystemet-flutter/mcp-server && npm ci && npm run build && cd ..
+claude mcp add designsystemet-flutter --scope user \
+  --env REPO_ROOT="$(pwd)" \
+  -- node "$(pwd)/mcp-server/dist/index.js"
+```
+
+Bytt `--scope user` med `--scope project` for å dele konfigurasjonen med teamet via `.mcp.json`.
+
 ### Installer via GitHub Packages
 
 Konfigurer npm til å hente `@stigvaage`-pakker fra GitHub Packages (legg til i `.npmrc`):
