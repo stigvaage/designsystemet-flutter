@@ -12,7 +12,8 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  # Avbryt ikke en pågående utrulling — la produksjonsdeploy fullføre.
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -23,6 +24,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          cache: true
 
       - uses: actions/setup-node@v6
         with:
@@ -54,7 +56,7 @@ jobs:
         run: cp -r widgetbook/build/web site/.vitepress/dist/widgetbook
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site/.vitepress/dist
 
@@ -67,4 +69,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

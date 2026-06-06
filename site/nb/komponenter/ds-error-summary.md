@@ -24,22 +24,39 @@ Feilsammendrag for skjemavalidering — viser alle feil samlet.
 
 ```dart
 DsErrorSummary(
-  title: 'Rett følgende feil for å gå videre:',
-  errors: [
-    DsErrorEntry(field: 'Navn', message: 'Navn er påkrevd'),
-    DsErrorEntry(field: 'E-post', message: 'Ugyldig e-postadresse'),
-  ],
+  title: 'Du må rette opp følgende',
+  errors: const ['Navn er påkrevd', 'Ugyldig e-postadresse'],
+  onErrorTap: (index) => _fokuserFelt(index),
 )
 ```
 
 ### Uten tilpasset tittel
 
+Uten `title` brukes standardteksten «Du må rette opp følgende».
+
 ```dart
 DsErrorSummary(
-  errors: [
-    DsErrorEntry(field: 'Telefonnummer', message: 'Ugyldig telefonnummer'),
-  ],
+  errors: const ['Ugyldig telefonnummer'],
 )
+```
+
+### Flytt fokus til sammendraget
+
+Send med en `focusNode` og kall `requestFocus()` etter mislykket innsending,
+slik at tastatur- og skjermleserbrukere tas til feillisten. Alternativt kan du
+sette `autofocus: true`.
+
+```dart
+final summaryFocusNode = FocusNode();
+
+DsErrorSummary(
+  errors: feilListe,
+  focusNode: summaryFocusNode,
+  onErrorTap: (index) => _fokuserFelt(index),
+)
+
+// Etter mislykket validering:
+summaryFocusNode.requestFocus();
 ```
 
 ## Retningslinjer
@@ -48,7 +65,7 @@ DsErrorSummary(
 - Gi fokus til feilsammendraget automatisk etter mislykket innsending.
 
 ## Tekst
-- Bruk en tydelig overskrift som forklarer at det finnes feil, f.eks. «Rett følgende feil for å gå videre:».
+- Bruk en tydelig overskrift som forklarer at det finnes feil. Standardteksten er «Du må rette opp følgende».
 - Feilmeldingene bør være konkrete og handlingsrettede.
 
 </template>
@@ -58,9 +75,13 @@ DsErrorSummary(
 
 | Egenskap | Type | Standard | Beskrivelse |
 | --- | --- | --- | --- |
-| errors | `List<DsErrorEntry>` | påkrevd | Liste over feil som skal vises. |
-| title | `String?` | `null` | Overskrift for feilsammendraget. |
-| size | `DsSize?` | `null` | Størrelse på feilsammendraget. |
+| errors | `List<String>` | påkrevd | Liste over feilmeldinger som skal vises. |
+| title | `String?` | `'Du må rette opp følgende'` | Overskrift for feilsammendraget. |
+| onErrorTap | `ValueChanged<int>?` | `null` | Kalles med feilens indeks når en feil aktiveres; gjør hver feil til en fokuserbar lenke. |
+| size | `DsSize` | `DsSize.md` | Størrelse på feilsammendraget. |
+| color | `DsColor` | `DsColor.danger` | Semantisk farge for sammendraget. |
+| focusNode | `FocusNode?` | `null` | Fokusnode for sammendraget. Kall `requestFocus()` etter mislykket innsending for å flytte fokus hit. |
+| autofocus | `bool` | `false` | Gir sammendraget fokus så snart det vises. |
 
 ## Import
 
@@ -72,15 +93,18 @@ import 'package:designsystemet_flutter/components.dart';
 <template #tilgjengelighet>
 
 ## Semantikk
-- Bruker alert-semantikk for å varsle om feil.
-- Lenker til feilaktige felt slik at brukeren raskt kan navigere til dem.
+- Sammendraget er en «live region» slik at skjermlesere kunngjør det når det vises.
+- Send med en `focusNode` (eller bruk `autofocus`) for å flytte fokus til sammendraget etter mislykket innsending.
+- Når `onErrorTap` er satt, blir hver feil en lenke til det aktuelle feltet. Uten `onErrorTap` vises feilene som vanlig tekst.
 
 ## Tastaturinteraksjon
+
+Tabellen under gjelder når `onErrorTap` er satt, slik at feilene er fokuserbare lenker.
 
 | Tast | Handling |
 | --- | --- |
 | Tab | Navigerer mellom feillenker i sammendraget. |
-| Enter | Aktiverer feillenken og flytter fokus til det aktuelle feltet. |
+| Enter / Mellomrom | Aktiverer feillenken og kaller `onErrorTap` med feilens indeks. |
 | Shift + Tab | Flytter fokus til forrige feillenke. |
 
 ## Fokusindikator

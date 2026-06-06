@@ -16,6 +16,10 @@ void main(List<String> args) {
       case '-h':
         _printUsage();
         exit(0);
+      default:
+        stderr.writeln('Error: Unknown argument: ${args[i]}');
+        _printUsage();
+        exit(1);
     }
   }
 

@@ -37,7 +37,7 @@ Dette sikrer at skjermlesere annonserer komponentene korrekt.
 
 ```dart
 DsDialog(
-  title: 'Bekreft sletting',
+  title: Text('Bekreft sletting'),
   // Fokus fanges automatisk innenfor dialogen
   child: Column(
     children: [

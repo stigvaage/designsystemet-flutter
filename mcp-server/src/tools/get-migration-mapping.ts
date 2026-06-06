@@ -60,13 +60,29 @@ export function registerGetMigrationMapping(
         );
       }
 
-      // Try case-insensitive partial match
+      // Try case-insensitive partial match. Collect ALL candidates so we do
+      // not silently hide alternatives (e.g. "Button" matching several widgets).
       if (!found) {
-        found = migrations.find(
+        const partial = migrations.filter(
           (m) =>
             m.materialWidget.toLowerCase().includes(searchLower) ||
             searchLower.includes(m.materialWidget.toLowerCase()),
         );
+        if (partial.length === 1) {
+          found = partial[0];
+        } else if (partial.length > 1) {
+          const list = partial
+            .map((m) => `  - ${m.materialWidget} → ${m.dsComponent}`)
+            .join("\n");
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: `Flere mulige treff for "${widget}":\n${list}\n\nKjør på nytt med et eksakt komponentnavn.`,
+              },
+            ],
+          };
+        }
       }
 
       if (!found) {

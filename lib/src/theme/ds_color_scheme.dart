@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart' show mapEquals;
+
 import '../utils/ds_enums.dart';
 import 'ds_color_scale.dart';
 
@@ -70,4 +72,35 @@ class DsColorScheme {
       DsColorCustom(key: final k) => custom[k] ?? accent,
     };
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DsColorScheme &&
+          other.accent == accent &&
+          other.neutral == neutral &&
+          other.brand1 == brand1 &&
+          other.brand2 == brand2 &&
+          other.brand3 == brand3 &&
+          other.success == success &&
+          other.danger == danger &&
+          other.warning == warning &&
+          other.info == info &&
+          mapEquals(other.custom, custom);
+
+  @override
+  int get hashCode => Object.hash(
+    accent,
+    neutral,
+    brand1,
+    brand2,
+    brand3,
+    success,
+    danger,
+    warning,
+    info,
+    Object.hashAllUnordered(
+      custom.entries.map((e) => Object.hash(e.key, e.value)),
+    ),
+  );
 }

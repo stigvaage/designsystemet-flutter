@@ -40,6 +40,23 @@ DsSearch(
 )
 ```
 
+### Med tøm-knapp
+
+Sett `clearable: true` for å vise en tøm-knapp som suffiks når feltet har
+tekst. Tøm-knappen kan nås med Tab og aktiveres med Enter eller Mellomrom.
+Når `clearable` er `true` er standard plassholder tom, i tråd med offisiell
+anbefaling — oppgi en egen `placeholder` om du vil ha ledetekst.
+
+```dart
+DsSearch(
+  controller: søkeController,
+  clearable: true,
+  placeholder: 'Søk etter kommuner...',
+  onChanged: (tekst) => filtrerResultater(tekst),
+  onClear: () => filtrerResultater(''),
+)
+```
+
 ## Retningslinjer
 - Plasser søkefeltet på et godt synlig sted, gjerne i toppmeny eller header.
 - Gi tydelig plassholdertekst som beskriver hva brukeren kan søke etter.
@@ -57,10 +74,22 @@ DsSearch(
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | controller | TextEditingController? | null | Kontroller for tekstfeltet |
-| onSubmitted | ValueChanged\<String\>? | null | Kalles når søk sendes inn |
 | onChanged | ValueChanged\<String\>? | null | Kalles ved endring i søketeksten |
-| placeholder | String? | null | Plassholdertekst i søkefeltet |
+| onSubmitted | ValueChanged\<String\>? | null | Kalles når søk sendes inn |
+| onSubmit | ValueChanged\<String\>? | null | Alias for `onSubmitted` (React-navngivning). Kalles etter `onSubmitted` |
+| placeholder | String? | null | Plassholdertekst. Standard er «Søk...», men tom når `clearable` er `true` |
 | size | DsSize? | null | Størrelse på søkefeltet |
+| focusNode | FocusNode? | null | Eksternt fokusobjekt for feltet |
+| clearable | bool | false | Viser en tøm-knapp som suffiks når feltet har tekst |
+| onClear | VoidCallback? | null | Kalles etter at feltet er tømt via tøm-knappen |
+| clearLabel | String | «Tøm» | Tilgjengelig ledetekst for tøm-knappen |
+| error | String? | null | Feilmelding som aktiverer feiltilstand |
+| disabled | bool | false | Deaktiverer feltet (kan ikke fokuseres eller redigeres) |
+| readOnly | bool | false | Gjør innholdet skrivebeskyttet, men fortsatt fokuserbart |
+| autofocus | bool | false | Gir feltet fokus automatisk ved første visning |
+| keyboardType | TextInputType? | null | Tastaturtype for myktastatur |
+| textInputAction | TextInputAction? | null | Handlingen som handlingstasten representerer |
+| inputFormatters | List\<TextInputFormatter\>? | null | Inndatafiltere som transformerer eller begrenser teksten |
 
 ## Import
 
@@ -79,9 +108,9 @@ import 'package:designsystemet_flutter/components.dart';
 
 | Tast | Handling |
 | --- | --- |
-| Tab | Flytter fokus til søkefeltet |
-| Enter | Sender inn søket |
-| Escape | Tømmer søkefeltet |
+| Tab | Flytter fokus til søkefeltet, og videre til tøm-knappen når den vises |
+| Enter | Sender inn søket (fra feltet), eller tømmer feltet når tøm-knappen har fokus |
+| Mellomrom | Tømmer feltet når tøm-knappen har fokus |
 
 ## Fokusindikator
 - Synlig fokusindikator ved tastaturnavigasjon.

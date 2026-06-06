@@ -44,6 +44,16 @@ Column(
 )
 ```
 
+### Outline-variant
+
+```dart
+DsTag(
+  variant: DsSelectionVariant.outline,
+  color: DsColor.accent,
+  child: Text('Utkast'),
+)
+```
+
 ## Retningslinjer
 - Bruk konsistente farger for samme type status gjennom hele applikasjonen.
 - Hold etikett-teksten kort — helst ett eller to ord.
@@ -61,8 +71,9 @@ Column(
 | Egenskap | Type | Standard | Beskrivelse |
 | --- | --- | --- | --- |
 | child | `Widget` | påkrevd | Innholdet i etiketten. |
-| size | `DsSize?` | `null` | Størrelse på etiketten. |
-| color | `DsColor?` | `null` | Fargetema. |
+| size | `DsSize?` | `null` | Størrelse på etiketten (`sm`, `md`, `lg`). Arver fra nærmeste `DsSizeScope` når den er `null`. |
+| color | `DsColor?` | `null` | Fargetema. Arver fra nærmeste `DsColorScope` når den er `null`. |
+| variant | `DsSelectionVariant` | `default_` | Visuell variant. `default_` gir tonet bakgrunn med subtil kantlinje, `outline` gir gjennomsiktig bakgrunn med standard kantlinje. |
 
 ## Import
 

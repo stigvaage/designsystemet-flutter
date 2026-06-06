@@ -11,10 +11,33 @@ import '../../utils/ds_enums.dart';
 /// Paints a rotating arc using [CustomPaint] and respects the platform
 /// reduce-motion setting.
 class DsSpinner extends StatefulWidget {
-  const DsSpinner({super.key, this.size, this.color});
+  const DsSpinner({
+    super.key,
+    this.size,
+    this.color,
+    this.paintColor,
+    this.ariaLabel = 'Laster inn',
+  });
+
+  /// The design-system [DsColor] used to resolve the color scale the spinner
+  /// is drawn from (falls back to the ambient [DsColorScope]). The arc is
+  /// painted with the scale's `baseDefault` unless [paintColor] is set.
+  final DsColor? color;
 
   final DsSize? size;
-  final DsColor? color;
+
+  /// An explicit paint color override for the spinner arc.
+  ///
+  /// When provided, the arc is painted with this exact [Color] instead of the
+  /// resolved scale's `baseDefault`. Pass a visible color when the scale
+  /// default would be invisible against the spinner's background (for example
+  /// a spinner shown on top of a filled `baseDefault` button).
+  final Color? paintColor;
+
+  /// Accessible label announced by screen readers. The React Spinner requires
+  /// `aria-label`; here it defaults to `'Laster inn'` and can be overridden,
+  /// e.g. `ariaLabel: 'Laster brukere …'`.
+  final String ariaLabel;
 
   @override
   State<DsSpinner> createState() => _DsSpinnerState();
@@ -61,9 +84,14 @@ class _DsSpinnerState extends State<DsSpinner>
       DsSize.md => 20.0,
       DsSize.lg => 24.0,
     };
+    // Stroke skaleres proporsjonalt med diameteren, slik som i den offisielle
+    // SVG-en (strokeWidth 5 i en viewBox på 50 → 10 % av diameteren). Dette
+    // gir sm 1,6 / md 2,0 / lg 2,4 og holder strektykkelsen visuelt konstant
+    // på tvers av størrelser.
+    final strokeWidth = dimension * 0.1;
 
     return Semantics(
-      label: 'Laster inn',
+      label: widget.ariaLabel,
       liveRegion: true,
       child: SizedBox(
         width: dimension,
@@ -73,9 +101,9 @@ class _DsSpinnerState extends State<DsSpinner>
           builder: (context, _) {
             return CustomPaint(
               painter: _SpinnerPainter(
-                color: colorScale.baseDefault,
+                color: widget.paintColor ?? colorScale.baseDefault,
                 progress: _controller.value,
-                strokeWidth: 2.5,
+                strokeWidth: strokeWidth,
               ),
             );
           },

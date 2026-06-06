@@ -1,8 +1,8 @@
-import 'package:flutter/widgets.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:designsystemet_flutter/theme.dart';
 import 'package:designsystemet_flutter/typography.dart';
-import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   Widget wrapWithTheme(Widget child, {DsThemeData? theme}) {
@@ -27,6 +27,16 @@ void main() {
       final text = tester.widget<Text>(find.byType(Text));
       expect(text.style?.fontWeight, FontWeight.w500);
       expect(text.style?.height, 1.3);
+      // Offisiell v1.15.0: heading 2xl = 60px ved referansestørrelse.
+      expect(text.style?.fontSize, 60);
+    });
+
+    testWidgets('md level uses official 30px font size', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsHeading(text: 'Test', level: DsHeadingLevel.md)),
+      );
+      final text = tester.widget<Text>(find.byType(Text));
+      expect(text.style?.fontSize, 30);
     });
 
     testWidgets('has header semantics', (tester) async {
@@ -35,12 +45,26 @@ void main() {
       expect(semantics.flagsCollection.isHeader, isTrue);
     });
 
+    testWidgets('emits the semantic heading level', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsHeading(text: 'Title', semanticLevel: 3)),
+      );
+      final node = tester.widget<Semantics>(find.byType(Semantics));
+      expect(node.properties.headingLevel, 3);
+    });
+
+    testWidgets('defaults the semantic heading level to 2', (tester) async {
+      await tester.pumpWidget(wrapWithTheme(const DsHeading(text: 'Title')));
+      final node = tester.widget<Semantics>(find.byType(Semantics));
+      expect(node.properties.headingLevel, 2);
+    });
+
     testWidgets('inherits color from DsColorScope', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(
-          DsColorScope(
+          const DsColorScope(
             color: DsColor.danger,
-            child: const DsHeading(text: 'Danger'),
+            child: DsHeading(text: 'Danger'),
           ),
         ),
       );
@@ -52,9 +76,9 @@ void main() {
     testWidgets('local color overrides scope', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(
-          DsColorScope(
+          const DsColorScope(
             color: DsColor.danger,
-            child: const DsHeading(text: 'Success', color: DsColor.success),
+            child: DsHeading(text: 'Success', color: DsColor.success),
           ),
         ),
       );

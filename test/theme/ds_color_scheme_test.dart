@@ -1,6 +1,8 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:designsystemet_flutter/theme.dart';
+import 'dart:ui' show Color;
+
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:designsystemet_flutter/theme.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('DsColorScheme', () {
@@ -46,6 +48,30 @@ void main() {
         custom: {'myBrand': customScale},
       );
       expect(scheme.resolve(DsColor.custom('myBrand')), customScale);
+    });
+
+    test('value equality: identical schemes are equal', () {
+      final a = DsThemeDigdir.light().colorScheme;
+      final b = DsThemeDigdir.light().colorScheme;
+      expect(a, equals(b));
+      expect(a.hashCode, equals(b.hashCode));
+    });
+
+    test('value equality: differing scale makes schemes unequal', () {
+      final base = DsThemeDigdir.light().colorScheme;
+      final modified = base.copyWith(
+        accent: base.accent.copyWith(baseDefault: const Color(0xFFFF0000)),
+      );
+      expect(base, isNot(equals(modified)));
+    });
+
+    test('value equality: custom map is compared by content', () {
+      final base = DsThemeDigdir.light().colorScheme;
+      final withCustom1 = base.copyWith(custom: {'x': base.accent});
+      final withCustom2 = base.copyWith(custom: {'x': base.accent});
+      expect(withCustom1, equals(withCustom2));
+      expect(withCustom1.hashCode, equals(withCustom2.hashCode));
+      expect(withCustom1, isNot(equals(base)));
     });
   });
 }

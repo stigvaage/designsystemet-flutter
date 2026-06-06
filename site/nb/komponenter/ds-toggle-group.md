@@ -24,13 +24,9 @@ Vekslegruppe for å velge mellom alternativer.
 
 ```dart
 DsToggleGroup(
-  items: [
-    DsToggleItem(value: 'liste', child: Text('Liste')),
-    DsToggleItem(value: 'rutenett', child: Text('Rutenett')),
-    DsToggleItem(value: 'kart', child: Text('Kart')),
-  ],
-  value: visning,
-  onChanged: (v) => setState(() => visning = v),
+  items: const ['Liste', 'Rutenett', 'Kart'],
+  selectedIndex: visning,
+  onChanged: (i) => setState(() => visning = i),
 )
 ```
 
@@ -40,13 +36,9 @@ DsToggleGroup(
 DsToggleGroup(
   size: DsSize.sm,
   color: DsColor.accent,
-  items: [
-    DsToggleItem(value: 'dag', child: Text('Dag')),
-    DsToggleItem(value: 'uke', child: Text('Uke')),
-    DsToggleItem(value: 'måned', child: Text('Måned')),
-  ],
-  value: tidsperiode,
-  onChanged: (v) => setState(() => tidsperiode = v),
+  items: const ['Dag', 'Uke', 'Måned'],
+  selectedIndex: tidsperiode,
+  onChanged: (i) => setState(() => tidsperiode = i),
 )
 ```
 
@@ -66,11 +58,15 @@ DsToggleGroup(
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| items | List\<DsToggleItem\> | påkrevd | Alternativene i vekslegruppen |
-| value | dynamic | påkrevd | Den valgte verdien |
-| onChanged | ValueChanged | påkrevd | Kalles når valgt alternativ endres |
+| items | List\<String\> | påkrevd | Etikettene til alternativene, i rekkefølge |
+| selectedIndex | int | påkrevd | Indeksen til det valgte alternativet |
+| onChanged | ValueChanged\<int\> | påkrevd | Kalles med den nye indeksen når valgt alternativ endres. Kalles ikke på nytt for alternativet som allerede er valgt |
 | size | DsSize? | null | Størrelse på vekslegruppen |
 | color | DsColor? | null | Farge på vekslegruppen |
+| variant | DsToggleGroupVariant | primary | Visuell vekt på det valgte alternativet (primary/secondary) |
+| focusNode | FocusNode? | null | Valgfri fokusnode for det første alternativet |
+| disabled | bool | false | Deaktiverer hele gruppen |
+| disabledIndices | Set\<int\>? | null | Indeksene til enkeltalternativer som er deaktivert |
 
 ## Import
 

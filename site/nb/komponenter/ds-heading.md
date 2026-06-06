@@ -23,7 +23,11 @@ Overskrift med 7 nivåer.
 <WidgetbookEmbed component="Typografi/DsHeading/Standard" />
 
 ```dart
-DsHeading(text: 'Velkommen til tjenesten', level: DsHeadingLevel.xl)
+DsHeading(
+  text: 'Velkommen til tjenesten',
+  level: DsHeadingLevel.xl,
+  semanticLevel: 1,
+)
 ```
 
 ### Mindre overskrift med farge
@@ -32,13 +36,28 @@ DsHeading(text: 'Velkommen til tjenesten', level: DsHeadingLevel.xl)
 DsHeading(
   text: 'Seksjonstittel',
   level: DsHeadingLevel.sm,
+  semanticLevel: 2,
   color: DsColor.accent,
 )
 ```
 
+## Størrelser
+
+Skriftstørrelsene følger offisiell Designsystemet v1.15.0 (px ved referansestørrelse). Alle nivåer har vekt 500 (medium) og linjehøyde 1.3.
+
+| Nivå | Enum | Størrelse |
+| --- | --- | --- |
+| Ekstra ekstra stor | `DsHeadingLevel.xxl` | 60px |
+| Ekstra stor | `DsHeadingLevel.xl` | 48px |
+| Stor | `DsHeadingLevel.lg` | 36px |
+| Medium | `DsHeadingLevel.md` | 30px |
+| Liten | `DsHeadingLevel.sm` | 24px |
+| Ekstra liten | `DsHeadingLevel.xs` | 21px |
+| Ekstra ekstra liten | `DsHeadingLevel.xxs` | 18px |
+
 ## Retningslinjer
 - Bruk overskriftsnivåer i logisk rekkefølge — ikke hopp over nivåer.
-- Bruk `level` for semantisk nivå og `size` kun for visuell justering der det er nødvendig.
+- Bruk `semanticLevel` (1–6) for det semantiske overskriftsnivået og `level` for den visuelle størrelsen. De settes uavhengig av hverandre.
 - Ha kun én xl-overskrift (sidetittel) per side.
 
 ## Tekst
@@ -53,14 +72,17 @@ DsHeading(
 | Egenskap | Type | Standard | Beskrivelse |
 | --- | --- | --- | --- |
 | text | `String` | påkrevd | Overskriftsteksten. |
-| level | `DsHeadingLevel` | `md` | Nivå på overskriften. |
-| size | `DsSize?` | `null` | Størrelse på overskriften. |
+| level | `DsHeadingLevel` | `md` | Visuell størrelse på overskriften (tilsvarer `data-size`). |
+| semanticLevel | `int` | `2` | Semantisk overskriftsnivå (1–6) som annonseres til skjermlesere. |
 | color | `DsColor?` | `null` | Fargetema for overskriften. |
+| textAlign | `TextAlign?` | `null` | Justering av overskriftsteksten. |
+| maxLines | `int?` | `null` | Maksimalt antall linjer før avkutting. |
+| overflow | `TextOverflow?` | `null` | Hvordan overflødig tekst håndteres. |
 
 ## Import
 
 ```dart
-import 'package:designsystemet_flutter/components.dart';
+import 'package:designsystemet_flutter/typography.dart';
 ```
 
 </template>

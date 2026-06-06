@@ -1,6 +1,7 @@
 import 'dart:ui' show Color;
-import 'package:flutter_test/flutter_test.dart';
+
 import 'package:designsystemet_flutter/theme.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const scale = DsColorScale(
@@ -49,6 +50,19 @@ void main() {
       );
       expect(scale, equals(other));
       expect(scale.hashCode, equals(other.hashCode));
+    });
+
+    test('differs when a single token changes', () {
+      expect(
+        scale,
+        isNot(equals(scale.copyWith(baseDefault: const Color(0xFFFF0000)))),
+      );
+      expect(
+        scale,
+        isNot(
+          equals(scale.copyWith(backgroundDefault: const Color(0xFF000000))),
+        ),
+      );
     });
 
     test('copyWith returns modified copy', () {

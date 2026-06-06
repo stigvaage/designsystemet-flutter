@@ -30,8 +30,8 @@ DsDropdown(
     child: Text('Meny'),
   ),
   items: [
-    DsDropdownItem(child: Text('Rediger'), onTap: () => rediger()),
-    DsDropdownItem(child: Text('Slett'), onTap: () => slett()),
+    DsDropdownItem(label: 'Rediger', onTap: () => rediger()),
+    DsDropdownItem(label: 'Slett', onTap: () => slett()),
   ],
 )
 ```
@@ -46,10 +46,10 @@ DsDropdown(
     child: Text('Handlinger'),
   ),
   items: [
-    DsDropdownItem(child: Text('Kopier'), onTap: () => kopier()),
-    DsDropdownItem(child: Text('Flytt'), onTap: () => flytt()),
-    DsDropdownItem(child: Text('Arkiver'), onTap: () => arkiver()),
-    DsDropdownItem(child: Text('Slett'), onTap: () => slett()),
+    DsDropdownItem(label: 'Kopier', onTap: () => kopier()),
+    DsDropdownItem(label: 'Flytt', onTap: () => flytt()),
+    DsDropdownItem(label: 'Arkiver', onTap: () => arkiver()),
+    DsDropdownItem(label: 'Slett', onTap: () => slett()),
   ],
 )
 ```
@@ -68,11 +68,25 @@ DsDropdown(
 
 ## Egenskaper
 
+### DsDropdown
+
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
 | trigger | Widget | påkrevd | Widgeten som åpner nedtrekksmenyen |
 | items | List\<DsDropdownItem\> | påkrevd | Elementene i nedtrekksmenyen |
-| size | DsSize? | null | Størrelse på nedtrekksmenyen |
+| onSelected | ValueChanged\<int\>? | null | Kalles med indeksen til det valgte elementet |
+| size | DsSize? | null | Størrelse på menyelementene. Faller tilbake til `DsSizeScope` |
+| color | DsColor? | null | Fargerolle for menyflate og tekst. Faller tilbake til `DsColorScope` |
+| focusNode | FocusNode? | null | Ekstern fokusnode for utløseren |
+
+### DsDropdownItem
+
+| Egenskap | Type | Standard | Beskrivelse |
+|----------|------|----------|-------------|
+| label | String | påkrevd | Teksten som vises for elementet |
+| enabled | bool | true | Når `false` er elementet nedtonet og kan ikke velges |
+| onTap | VoidCallback? | null | Kalles når elementet velges. Kjøres sammen med `onSelected` |
+| value | T? | null | En valgfri verdi knyttet til elementet, til konsumentens bruk |
 
 ## Import
 
@@ -84,18 +98,16 @@ import 'package:designsystemet_flutter/components.dart';
 <template #tilgjengelighet>
 
 ## Semantikk
-- Utløserknappen har `haspopup`-semantikk slik at skjermlesere forstår at den åpner en meny.
-- Menyalternativene annonseres med sin rolle og posisjon.
+- Utløseren har knapperolle med utvidet-tilstand (`expanded`) som speiler om menyen er åpen, slik at skjermlesere forstår at den åpner en meny.
+- Menyflaten har rollen `menu`, og hvert menyalternativ har rollen `menuItem` med riktig etikett og aktivert-tilstand.
 
 ## Tastaturinteraksjon
 
 | Tast | Handling |
 | --- | --- |
 | `Enter` / `Mellomrom` | Åpner menyen fra utløserknappen, eller aktiverer valgt menyalternativ. |
-| `Pil ned` | Flytter fokus til neste menyalternativ. |
-| `Pil opp` | Flytter fokus til forrige menyalternativ. |
-| `Home` | Flytter fokus til det første menyalternativet. |
-| `End` | Flytter fokus til det siste menyalternativet. |
+| `Pil ned` | Åpner menyen og flytter merkingen til neste menyalternativ. |
+| `Pil opp` | Åpner menyen på siste menyalternativ, eller flytter merkingen til forrige. |
 | `Escape` | Lukker menyen og returnerer fokus til utløserknappen. |
 
 ## Fokusindikator

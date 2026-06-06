@@ -79,9 +79,9 @@ import 'package:designsystemet_flutter/components.dart';
 <template #tilgjengelighet>
 
 ## Semantikk
-- Kobler etikett og feilmelding til inndatafeltet via semantikk.
-- Feilmeldinger annonseres automatisk av skjermlesere når de vises.
-- Beskrivelsestekst er tilgjengelig for hjelpeteknologi.
+- Etiketten eksponeres programmatisk som inndatafeltets tilgjengelige navn, slik at skjermlesere leser den opp når feltet får fokus.
+- Beskrivelse og feilmelding eksponeres som feltets hint, slik at de leses opp sammen med feltet.
+- Feilmeldingen vises i en live-region, slik at skjermlesere annonserer den automatisk når feltet går fra gyldig til ugyldig.
 
 ## Tastaturinteraksjon
 

@@ -18,13 +18,34 @@ class DsCard extends StatefulWidget {
     this.elevated = false,
     this.onTap,
     this.focusNode,
+    this.variant = DsCardVariant.default_,
   });
 
+  /// Innholdet som vises inne i kortet.
   final Widget child;
+
+  /// Fargetemaet som brukes på kortet.
+  ///
+  /// Faller tilbake til omkringliggende [DsColorScope] når den er `null`.
   final DsColor? color;
+
+  /// Om kortet bruker en skygge i stedet for en ramme.
   final bool elevated;
+
+  /// Kalles når kortet trykkes eller aktiveres via tastatur.
+  ///
+  /// Når denne er satt blir kortet interaktivt med hover-, trykk- og
+  /// fokustilstand.
   final VoidCallback? onTap;
+
+  /// Valgfri fokusnode for det interaktive kortet.
   final FocusNode? focusNode;
+
+  /// The visual fill variant of the card.
+  ///
+  /// [DsCardVariant.default_] uses the default surface fill, while
+  /// [DsCardVariant.tinted] uses a tinted surface fill.
+  final DsCardVariant variant;
 
   @override
   State<DsCard> createState() => _DsCardState();
@@ -33,6 +54,7 @@ class DsCard extends StatefulWidget {
 class _DsCardState extends State<DsCard> {
   bool _isHovered = false;
   bool _isFocused = false;
+  bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +65,13 @@ class _DsCardState extends State<DsCard> {
     final duration = DsAnimation.resolveDuration(context, DsAnimation.fast);
     final isClickable = widget.onTap != null;
 
-    Color bgColor = colorScale.surfaceDefault;
-    if (isClickable && _isHovered) {
+    Color bgColor = switch (widget.variant) {
+      DsCardVariant.default_ => colorScale.surfaceDefault,
+      DsCardVariant.tinted => colorScale.surfaceTinted,
+    };
+    if (isClickable && _isPressed) {
+      bgColor = colorScale.surfaceActive;
+    } else if (isClickable && _isHovered) {
       bgColor = colorScale.surfaceHover;
     }
 
@@ -57,23 +84,27 @@ class _DsCardState extends State<DsCard> {
       boxShadow: widget.elevated ? theme.shadows.sm : null,
     );
 
+    // A non-interactive card can never change its hover/focus state, so there
+    // is no reason to run an [AnimatedContainer] ticker. Render a plain
+    // [DecoratedBox] instead to avoid the needless animation and focus chrome.
+    if (!isClickable) {
+      return DecoratedBox(decoration: decoration, child: widget.child);
+    }
+
     Widget card = AnimatedContainer(
       duration: duration,
+      curve: DsAnimation.defaultCurve,
       decoration: decoration,
       child: widget.child,
     );
 
-    if (_isFocused && isClickable) {
-      card = DecoratedBox(
-        decoration: DsFocus.focusRingWithRadius(colorScale, radius),
-        child: Padding(
-          padding: const EdgeInsets.all(DsFocus.ringWidth),
-          child: card,
-        ),
-      );
-    }
-
-    if (!isClickable) return card;
+    // Always reserve focus ring space so focusing never shifts layout.
+    card = DsFocus.reserveRing(
+      focused: _isFocused,
+      radius: radius,
+      scale: colorScale,
+      child: card,
+    );
 
     return Semantics(
       button: true,
@@ -92,10 +123,18 @@ class _DsCardState extends State<DsCard> {
         child: MouseRegion(
           cursor: SystemMouseCursors.click,
           onEnter: (_) => setState(() => _isHovered = true),
-          onExit: (_) => setState(() => _isHovered = false),
+          onExit: (_) => setState(() {
+            _isHovered = false;
+            _isPressed = false;
+          }),
           child: GestureDetector(
-            onTap: widget.onTap,
             behavior: HitTestBehavior.opaque,
+            onTapDown: (_) => setState(() => _isPressed = true),
+            onTapUp: (_) {
+              setState(() => _isPressed = false);
+              widget.onTap?.call();
+            },
+            onTapCancel: () => setState(() => _isPressed = false),
             child: card,
           ),
         ),

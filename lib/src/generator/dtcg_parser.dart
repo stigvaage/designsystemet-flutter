@@ -28,6 +28,12 @@ class ParsedColorScale {
 /// Parses a DTCG (Design Token Community Group) JSON token directory
 /// into a list of [ParsedTheme] objects.
 class DtcgParser {
+  /// Matches a DTCG alias reference such as `{color.accent.base-default}`.
+  static final RegExp _aliasPattern = RegExp(r'^\{.+\}$');
+
+  /// Maximum alias-resolution recursion depth (cycle / runaway guard).
+  static const int _maxAliasDepth = 16;
+
   /// Parses a design-tokens/ directory and returns parsed themes.
   List<ParsedTheme> parse(String tokensDir) {
     final dir = Directory(tokensDir);
@@ -101,7 +107,13 @@ class DtcgParser {
         final tokenData = tokenEntry.value;
         if (tokenData is Map<String, dynamic> &&
             tokenData[r'$value'] is String) {
-          tokens[tokenEntry.key] = tokenData[r'$value'] as String;
+          final value = tokenData[r'$value'] as String;
+          tokens[tokenEntry.key] = _resolveColorValue(
+            value,
+            data,
+            file,
+            'color.$scaleName.${tokenEntry.key}',
+          );
         }
       }
       if (tokens.isNotEmpty) {
@@ -110,6 +122,62 @@ class DtcgParser {
     }
 
     return scales;
+  }
+
+  /// Resolves a DTCG color `$value`, following alias references like
+  /// `{color.accent.base-default}` against [tree].
+  ///
+  /// Literal hex strings are returned unchanged. References that cannot be
+  /// resolved within the same file throw a [DtcgParseException] naming the
+  /// offending path, instead of being silently emitted as non-compiling
+  /// `Color(0x{...})` garbage downstream.
+  String _resolveColorValue(
+    String value,
+    Map<String, dynamic> tree,
+    File file,
+    String path, {
+    int depth = 0,
+  }) {
+    final trimmed = value.trim();
+    if (!_aliasPattern.hasMatch(trimmed)) {
+      return trimmed; // Literal value (e.g. a hex string).
+    }
+    if (depth > _maxAliasDepth) {
+      throw DtcgParseException(
+        'Alias-referansen "$path" i ${file.path} er for dypt nøstet eller '
+        'sirkulær (over $_maxAliasDepth nivåer).',
+      );
+    }
+
+    final reference = trimmed.substring(1, trimmed.length - 1);
+    final resolved = _lookupTokenValue(reference, tree);
+    if (resolved == null) {
+      throw DtcgParseException(
+        'Kunne ikke løse opp alias-referansen "{$reference}" '
+        '(fra "$path") i ${file.path}. Referansen må finnes i samme fil.',
+      );
+    }
+    return _resolveColorValue(
+      resolved,
+      tree,
+      file,
+      reference,
+      depth: depth + 1,
+    );
+  }
+
+  /// Looks up a dotted DTCG token path (e.g. `color.accent.base-default`) in
+  /// [tree] and returns its raw `$value` string, or `null` if not found.
+  String? _lookupTokenValue(String dottedPath, Map<String, dynamic> tree) {
+    Object? node = tree;
+    for (final segment in dottedPath.split('.')) {
+      if (node is! Map<String, dynamic>) return null;
+      node = node[segment];
+    }
+    if (node is Map<String, dynamic> && node[r'$value'] is String) {
+      return node[r'$value'] as String;
+    }
+    return null;
   }
 
   Map<String, double> _parseDimensionGroup(
@@ -122,8 +190,9 @@ class DtcgParser {
     final result = <String, double>{};
     for (final entry in group.entries) {
       final tokenData = entry.value;
-      if (tokenData is Map<String, dynamic> && tokenData[r'$value'] is String) {
-        final value = _parseRemValue(tokenData[r'$value'] as String);
+      if (tokenData is Map<String, dynamic> &&
+          tokenData.containsKey(r'$value')) {
+        final value = _parseDimensionValue(tokenData[r'$value']);
         if (value != null) {
           result[entry.key] = value;
         }
@@ -132,11 +201,41 @@ class DtcgParser {
     return result;
   }
 
-  double? _parseRemValue(String value) {
-    final cleaned = value.replaceAll('rem', '').trim();
-    final parsed = double.tryParse(cleaned);
-    if (parsed == null) return null;
-    return parsed * 16; // Convert rem to px (assuming 16px base)
+  /// Parses a DTCG dimension `$value` into pixels.
+  ///
+  /// Accepts the string form (`"4px"`, `"0.25rem"`, unitless `"4"`) and the
+  /// object form (`{ "value": 4, "unit": "px" }`). `rem` values are scaled by
+  /// the 16px base; `px` and unitless values are taken as pixels. Returns `null`
+  /// for unparseable values (e.g. unresolved aliases).
+  double? _parseDimensionValue(Object? raw) {
+    if (raw is Map<String, dynamic>) {
+      final value = raw['value'];
+      final unit = raw['unit'];
+      if (value is num) {
+        return _scaleDimension(value.toDouble(), unit is String ? unit : 'px');
+      }
+      return null;
+    }
+    if (raw is! String) return null;
+    final s = raw.trim();
+    if (s.endsWith('rem')) {
+      return _scaleDimension(
+        double.tryParse(s.substring(0, s.length - 3).trim()),
+        'rem',
+      );
+    }
+    if (s.endsWith('px')) {
+      return _scaleDimension(
+        double.tryParse(s.substring(0, s.length - 2).trim()),
+        'px',
+      );
+    }
+    return _scaleDimension(double.tryParse(s), 'px'); // unitless -> px
+  }
+
+  double? _scaleDimension(double? value, String unit) {
+    if (value == null) return null;
+    return unit == 'rem' ? value * 16 : value;
   }
 
   Map<String, dynamic> _readJson(File file) {

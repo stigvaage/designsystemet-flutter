@@ -23,24 +23,30 @@ Hopp-til-innhold-lenke for tastaturnavigasjon og tilgjengelighet.
 <WidgetbookEmbed component="Skjema og verktøy/DsSkipLink/Standard" />
 
 ```dart
+final hovedinnholdFokus = FocusNode();
+
 DsSkipLink(
   label: 'Hopp til hovedinnhold',
-  targetId: 'hovedinnhold',
+  onActivate: () => hovedinnholdFokus.requestFocus(),
 )
 ```
 
-### Med tilpasset målelement
+### Hopp ved å rulle til målelementet
 
 ```dart
+final hovedinnholdKey = GlobalKey();
+
 DsSkipLink(
   label: 'Hopp til søkeresultater',
-  targetId: 'sokeresultater',
+  onActivate: () => Scrollable.ensureVisible(
+    hovedinnholdKey.currentContext!,
+  ),
 )
 ```
 
 ## Retningslinjer
 - Plasser DsSkipLink som det første fokuserbare elementet i widgettreet.
-- Sørg for at `targetId` peker på et element som finnes og kan motta fokus.
+- La `onActivate` flytte fokus til (eller rulle til) et element som finnes og kan motta fokus.
 - Ha kun én DsSkipLink per side for å unngå forvirring.
 
 ## Tekst
@@ -55,7 +61,8 @@ DsSkipLink(
 | Egenskap | Type | Standard | Beskrivelse |
 | --- | --- | --- | --- |
 | label | `String` | påkrevd | Teksten som vises i lenken. |
-| targetId | `String` | påkrevd | ID-en til målelementet det hoppes til. |
+| onActivate | `VoidCallback` | påkrevd | Kalles ved aktivering (Enter, Space eller trykk); flytter vanligvis fokus til hovedinnholdet. |
+| color | `DsColor?` | `null` | Overstyrer fargen fra omkringliggende `DsColorScope`. |
 
 ## Import
 
@@ -75,7 +82,8 @@ import 'package:designsystemet_flutter/components.dart';
 | Tast | Handling |
 | --- | --- |
 | Tab | Gir fokus til skip-lenken (første fokuserbare element). |
-| Enter | Hopper til målelementet angitt av `targetId`. |
+| Enter | Aktiverer lenken ved å kalle `onActivate`. |
+| Space | Aktiverer lenken ved å kalle `onActivate`. |
 
 ## Fokusindikator
 - Synlig fokusindikator ved tastaturnavigasjon.

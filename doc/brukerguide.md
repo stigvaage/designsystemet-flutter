@@ -630,9 +630,10 @@ Viser en oppsummering av alle skjemafeil:
 
 ```dart
 DsErrorSummary(
+  // Standardoverskrift når title ikke oppgis: «Du må rette opp følgende»
   errors: [
-    DsErrorEntry(field: 'Navn', message: 'Navn er påkrevd'),
-    DsErrorEntry(field: 'E-post', message: 'Ugyldig e-postadresse'),
+    'Navn er påkrevd',
+    'Ugyldig e-postadresse',
   ],
 )
 ```

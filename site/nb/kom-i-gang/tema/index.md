@@ -40,6 +40,22 @@ Bruk kodegeneratoren til å lage en temafil fra Designsystemet CLI-tokens:
 dart run designsystemet_flutter:generate --tokens-dir ./design-tokens --output lib/generated/
 ```
 
+### Helse Vest-merkevarefarge (#003087)
+
+Standardtemaet `DsThemeDigdir` bruker Helse Vest sin mørkeblå **`#003087`** som
+`accent`-basefarge. Hele den 16-stegs accent-skalaen (background → surface →
+border → text → base/contrast) er avledet fra denne basefargen og oppfyller
+WCAG 2.1 AA-kontrast (4.5:1 for tekst, 3:1 for grensesnitt).
+
+Vil du bruke en annen merkevarefarge, genererer du DTCG-token-JSON med den
+offisielle [Tema-byggeren](https://theme.designsystemet.no) (eller
+`@digdir/designsystemet`-CLI-en) med ønsket accent-farge, og kjører deretter
+Dart-generatoren over de eksporterte tokenene:
+
+```bash
+dart run designsystemet_flutter:generate --tokens-dir design-tokens --output lib/generated/
+```
+
 ## DsTheme InheritedWidget
 
 `DsTheme` er en `InheritedWidget` som gjør temadata tilgjengelig nedover i widget-treet. Alle komponenter krever en `DsTheme`-ancestor.

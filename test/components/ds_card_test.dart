@@ -1,7 +1,8 @@
-import 'package:flutter/widgets.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:designsystemet_flutter/src/utils/ds_animation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 Widget wrapWithTheme(Widget child) {
   return DsTheme(
@@ -19,12 +20,31 @@ void main() {
       expect(find.text('Card content'), findsOneWidget);
     });
 
+    testWidgets('non-interactive card renders plain DecoratedBox, no ticker', (
+      tester,
+    ) async {
+      await tester.pumpWidget(wrapWithTheme(const DsCard(child: Text('Card'))));
+      // A non-interactive card short-circuits to a DecoratedBox and does not
+      // build an AnimatedContainer ticker (no hover/focus state can change).
+      expect(find.byType(AnimatedContainer), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byType(DsCard),
+          matching: find.byType(DecoratedBox),
+        ),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('non-elevated shows border, no shadow', (tester) async {
       await tester.pumpWidget(wrapWithTheme(const DsCard(child: Text('Card'))));
-      final container = tester.widget<AnimatedContainer>(
-        find.byType(AnimatedContainer),
+      final box = tester.widget<DecoratedBox>(
+        find.descendant(
+          of: find.byType(DsCard),
+          matching: find.byType(DecoratedBox),
+        ),
       );
-      final decoration = container.decoration as BoxDecoration;
+      final decoration = box.decoration as BoxDecoration;
       expect(decoration.border, isNotNull);
       expect(decoration.boxShadow, isNull);
     });
@@ -33,12 +53,46 @@ void main() {
       await tester.pumpWidget(
         wrapWithTheme(const DsCard(elevated: true, child: Text('Card'))),
       );
+      final box = tester.widget<DecoratedBox>(
+        find.descendant(
+          of: find.byType(DsCard),
+          matching: find.byType(DecoratedBox),
+        ),
+      );
+      final decoration = box.decoration as BoxDecoration;
+      expect(decoration.border, isNull);
+      expect(decoration.boxShadow, isNotNull);
+    });
+
+    testWidgets('tinted variant uses surfaceTinted fill', (tester) async {
+      final colorScale = DsThemeDigdir.light().colorScheme.resolve(
+        DsColor.accent,
+      );
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const DsCard(variant: DsCardVariant.tinted, child: Text('Card')),
+        ),
+      );
+      final box = tester.widget<DecoratedBox>(
+        find.descendant(
+          of: find.byType(DsCard),
+          matching: find.byType(DecoratedBox),
+        ),
+      );
+      final decoration = box.decoration as BoxDecoration;
+      expect(decoration.color, colorScale.surfaceTinted);
+    });
+
+    testWidgets('interactive card builds AnimatedContainer with curve', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(DsCard(onTap: () {}, child: const Text('Click'))),
+      );
       final container = tester.widget<AnimatedContainer>(
         find.byType(AnimatedContainer),
       );
-      final decoration = container.decoration as BoxDecoration;
-      expect(decoration.border, isNull);
-      expect(decoration.boxShadow, isNotNull);
+      expect(container.curve, DsAnimation.defaultCurve);
     });
 
     testWidgets('interactive card has button semantics when onTap set', (

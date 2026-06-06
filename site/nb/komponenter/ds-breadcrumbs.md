@@ -24,28 +24,31 @@ Brødsmulesti som viser brukerens plassering i navigasjonshierarkiet.
 
 ```dart
 DsBreadcrumbs(
-  items: [
-    DsBreadcrumbItem(label: Text('Hjem'), onTap: () => gåTilHjem()),
-    DsBreadcrumbItem(label: Text('Produkter'), onTap: () => gåTilProdukter()),
-    DsBreadcrumbItem(label: Text('Detaljer')),
-  ],
+  items: const ['Hjem', 'Produkter', 'Detaljer'],
+  onItemTap: (index) {
+    if (index == 0) gåTilHjem();
+    if (index == 1) gåTilProdukter();
+  },
 )
 ```
 
-### Med egendefinert størrelse
+Det siste elementet representerer automatisk gjeldende side og trenger derfor
+ingen egen håndtering.
+
+### Med egendefinert farge
 
 ```dart
 DsBreadcrumbs(
-  size: DsSize.sm,
-  items: [
-    DsBreadcrumbItem(label: Text('Hjem'), onTap: () => gåTilHjem()),
-    DsBreadcrumbItem(label: Text('Innstillinger')),
-  ],
+  items: const ['Hjem', 'Innstillinger'],
+  color: DsColor.brand1,
+  onItemTap: (index) {
+    if (index == 0) gåTilHjem();
+  },
 )
 ```
 
 ## Retningslinjer
-- Siste element i brødsmulestien skal representere gjeldende side og skal ikke ha lenke.
+- Siste element i brødsmulestien skal representere gjeldende side.
 - Hold etikettene korte og konsise, bruk samme tittel som siden de peker til.
 - Inkluder alltid startsiden (f.eks. «Hjem») som første element.
 
@@ -60,8 +63,10 @@ DsBreadcrumbs(
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| items | List\<DsBreadcrumbItem\> | påkrevd | Elementene i brødsmulestien |
-| size | DsSize? | null | Størrelse på brødsmulestien |
+| items | List\<String\> | påkrevd | Etikettene i brødsmulestien (siste element er gjeldende side) |
+| onItemTap | ValueChanged\<int\>? | null | Kalles med indeksen når en lenke aktiveres |
+| color | DsColor? | null | Fargetema; arver fra DsColorScope hvis utelatt |
+| ariaLabel | String | 'Du er her:' | Tilgjengelig etikett for navigasjonslandemerket |
 
 ## Import
 
@@ -74,7 +79,7 @@ import 'package:designsystemet_flutter/components.dart';
 
 ## Semantikk
 - Har navigasjons-semantikk (`nav`) slik at skjermlesere identifiserer den som et navigasjonsområde.
-- Gjeldende side er markert og mangler lenke for å indikere at det er siste element.
+- Gjeldende side er kodet som en lenke med `aria-current="page"` (siste element), slik at den fortsatt er fokuserbar selv om den vises uten understreking.
 
 ## Tastaturinteraksjon
 

@@ -22,21 +22,66 @@ Forslagskomponent med autofullføringsforslag.
 
 <WidgetbookEmbed component="Navigasjon og layout/DsSuggestion/Standard" />
 
+Hvert valg oppgis som en `DsSuggestionOption<T>` med en `value` (verdien som rapporteres tilbake) og en `label` (teksten som vises i listen). `onSelectedChanged` kalles med hele den valgte listen hver gang utvalget endres.
+
 ```dart
-DsSuggestion(
-  controller: kommuneController,
-  suggestions: ['Oslo', 'Bergen', 'Trondheim', 'Stavanger'],
-  onSelected: (kommune) => velgKommune(kommune),
+DsSuggestion<String>(
+  options: const [
+    DsSuggestionOption(value: 'oslo', label: 'Oslo'),
+    DsSuggestionOption(value: 'bergen', label: 'Bergen'),
+    DsSuggestionOption(value: 'trondheim', label: 'Trondheim'),
+    DsSuggestionOption(value: 'stavanger', label: 'Stavanger'),
+  ],
+  onSelectedChanged: (valgte) => velgKommune(valgte),
 )
 ```
 
-### Med egendefinert størrelse
+### Flervalg med fjernbare brikker
+
+Med `multiple: true` kan brukeren velge flere verdier, som vises som fjernbare brikker over feltet.
 
 ```dart
-DsSuggestion(
+DsSuggestion<String>(
+  multiple: true,
+  options: const [
+    DsSuggestionOption(value: 'norge', label: 'Norge'),
+    DsSuggestionOption(value: 'sverige', label: 'Sverige'),
+    DsSuggestionOption(value: 'danmark', label: 'Danmark'),
+    DsSuggestionOption(value: 'finland', label: 'Finland'),
+    DsSuggestionOption(value: 'island', label: 'Island'),
+  ],
+  onSelectedChanged: (valgte) => velgLand(valgte),
+)
+```
+
+### Med mulighet for å opprette nye verdier
+
+Med `creatable: true` (krever `onCreate`) får brukeren en «opprett»-rad når søket ikke har et eksakt treff. Bruk `createLabel` for å overstyre teksten på raden (standard er `Opprett "<søk>"`).
+
+```dart
+DsSuggestion<String>(
+  creatable: true,
+  onCreate: (sok) => sok,
+  createLabel: (sok) => 'Legg til «$sok»',
+  options: const [
+    DsSuggestionOption(value: 'oslo', label: 'Oslo'),
+    DsSuggestionOption(value: 'bergen', label: 'Bergen'),
+  ],
+  onSelectedChanged: (valgte) => velgKommune(valgte),
+)
+```
+
+### Med egendefinert størrelse og tom-tilstand
+
+```dart
+DsSuggestion<String>(
   size: DsSize.lg,
-  suggestions: ['Norge', 'Sverige', 'Danmark', 'Finland', 'Island'],
-  onSelected: (land) => velgLand(land),
+  emptyText: 'Fant ingen kommuner',
+  options: const [
+    DsSuggestionOption(value: 'norge', label: 'Norge'),
+    DsSuggestionOption(value: 'sverige', label: 'Sverige'),
+  ],
+  onSelectedChanged: (valgte) => velgLand(valgte),
 )
 ```
 
@@ -56,10 +101,21 @@ DsSuggestion(
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| controller | TextEditingController? | null | Kontroller for tekstfeltet |
-| suggestions | List\<String\> | påkrevd | Liste over tilgjengelige forslag |
-| onSelected | ValueChanged\<String\>? | null | Kalles når et forslag velges |
-| size | DsSize? | null | Størrelse på forslagskomponenten |
+| options | List\<DsSuggestionOption\<T>> | påkrevd | Liste over tilgjengelige valg |
+| onSelectedChanged | ValueChanged\<List\<T>>? | null | Kalles med hele utvalget hver gang det endres |
+| selected | List\<T>? | null | Kontrollert utvalg. Når null styrer komponenten sin egen tilstand |
+| multiple | bool | false | Tillater å velge flere valg (vises som fjernbare brikker) |
+| filter | bool | true | Filtrerer valgene etter søketeksten (uten å skille mellom store/små bokstaver) |
+| creatable | bool | false | Viser en «opprett»-rad når søket ikke har et eksakt treff |
+| onCreate | T Function(String)? | null | Bygger en ny verdi fra søketeksten. Påkrevd når `creatable` er true |
+| createLabel | String Function(String)? | null | Overstyrer teksten på «opprett»-raden (standard: `Opprett "<søk>"`) |
+| placeholder | String? | null | Plassholdertekst i tekstfeltet når ingenting er skrevet |
+| emptyText | String | 'Ingen treff' | Tekst som vises når ingen valg matcher og ingenting kan opprettes |
+| size | DsSize? | null | Størrelse på feltet; faller tilbake til omsluttende `DsSize` når null |
+| color | DsColor? | null | Fargevariant på feltet; faller tilbake til omsluttende `DsColor` når null |
+| focusNode | FocusNode? | null | Ekstern fokusnode for tekstfeltet. Når null oppretter og eier komponenten sin egen |
+
+`DsSuggestionOption<T>` har `value` (verdien som rapporteres gjennom `onSelectedChanged`) og `label` (teksten som vises i listen).
 
 ## Import
 
@@ -71,21 +127,26 @@ import 'package:designsystemet_flutter/components.dart';
 <template #tilgjengelighet>
 
 ## Semantikk
-- Har combobox-semantikk med forslagsliste slik at skjermlesere forstår komponentens rolle.
-- Annonserer antall tilgjengelige forslag når listen oppdateres.
+- Har combobox-semantikk: feltet annonseres som et redigerbart tekstfelt, og «utvidet»-tilstanden settes når forslagslisten er åpen.
+- Forslagslisten grupperes som én beholder slik at valgene annonseres som en liste.
+- Tom-tilstanden («Ingen treff») annonseres som et live-område når den vises.
 
 ## Tastaturinteraksjon
 
 | Tast | Handling |
 | --- | --- |
-| Tab | Flytter fokus til forslagsfeltet |
+| Tab | Flytter fokus til forslagsfeltet. Når fokus forlater feltet, lukkes forslagslisten |
 | Pil ned | Åpner forslagslisten eller flytter til neste forslag |
 | Pil opp | Flytter til forrige forslag i listen |
 | Enter | Velger det markerte forslaget |
 | Escape | Lukker forslagslisten uten å velge |
+| Backspace | Fjerner den sist valgte brikken når feltet er tomt (kun ved flervalg) |
 
 ## Fokusindikator
 - Synlig fokusindikator ved tastaturnavigasjon.
+
+## Redusert bevegelse
+- Rulling av det markerte forslaget inn i synsfeltet respekterer systeminnstillingen for redusert bevegelse (`MediaQuery.disableAnimations`).
 
 ## Fargekontrast
 - Oppfyller WCAG 2.1 AA kontrastkrav.

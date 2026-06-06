@@ -1,7 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import '../../theme/ds_color_scale.dart';
+import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../utils/ds_enums.dart';
+import '../../utils/ds_focus.dart';
 import '../../utils/ds_icons.dart';
 
 /// Severity-based notification banner for inline messages.
@@ -20,12 +23,32 @@ class DsAlert extends StatelessWidget {
     this.size,
   });
 
+  /// Innholdet i varselboksen.
   final Widget child;
+
+  /// Alvorlighetsgrad som styrer ikon og fargeskala.
   final DsSeverity severity;
+
+  /// Valgfri tittel som vises over [child] med halvfet vekt.
   final Widget? title;
+
+  /// Om varselboksen kan lukkes via en lukkeknapp.
   final bool closable;
+
+  /// Tilbakeringing som kjøres når lukkeknappen aktiveres.
+  ///
+  /// Lukkeknappen er kun interaktiv (fokuserbar og tastaturstyrt) når denne
+  /// er satt; er den `null` vises ingen aktiv lukkeknapp selv om [closable]
+  /// er `true`.
   final VoidCallback? onClose;
+
+  /// Overstyrer fargerollen som ellers utledes fra [severity].
   final DsColor? color;
+
+  /// Størrelse på varselboksen (`sm`/`md`/`lg`).
+  ///
+  /// Styrer innvendig polstring, ikonstørrelse og typografi. Faller tilbake
+  /// til nærmeste [DsSizeScope] (standard `md`) når den ikke er satt.
   final DsSize? size;
 
   DsColor get _severityColor => switch (severity) {
@@ -42,17 +65,28 @@ class DsAlert extends StatelessWidget {
     final colorScale = theme.colorScheme.resolve(effectiveColor);
     final radius = BorderRadius.circular(theme.borderRadius.defaultRadius);
 
+    // Faller tilbake til nærmeste størrelsesomfang (standard md) når ikke satt,
+    // på samme måte som DsButton/DsSpinner.
+    final sizeMode = size ?? DsSizeScope.of(context);
+    final padding = sizeMode.pick(sm: 12.0, md: 16.0, lg: 20.0);
+    final iconSize = sizeMode.pick(sm: 16.0, md: 18.0, lg: 22.0);
+    final bodyStyle = sizeMode.pick(
+      sm: theme.typography.bodySm,
+      md: theme.typography.bodyMd,
+      lg: theme.typography.bodyLg,
+    );
+
     return Semantics(
       liveRegion: true,
       child: Container(
         decoration: BoxDecoration(
           color: colorScale.surfaceTinted,
           borderRadius: radius,
-          border: Border(
-            left: BorderSide(color: colorScale.borderDefault, width: 4),
-          ),
+          // Offisiell Designsystemet Alert bruker en heldekkende, tynn kant
+          // på alle sider (--dsc-alert-border-*), ikke en tykk venstrestripe.
+          border: Border.all(color: colorScale.borderDefault, width: 1),
         ),
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(padding),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -61,7 +95,11 @@ class DsAlert extends StatelessWidget {
               padding: const EdgeInsets.only(right: 12, top: 2),
               child: _SeverityIcon(
                 severity: severity,
-                color: colorScale.baseDefault,
+                // textDefault gir tilstrekkelig kontrast mot surfaceTinted for
+                // alle alvorlighetsgrader (WCAG 1.4.11), i motsetning til
+                // baseDefault som feiler for warning/info.
+                color: colorScale.textDefault,
+                size: iconSize,
               ),
             ),
             // Content
@@ -74,7 +112,7 @@ class DsAlert extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 4),
                       child: DefaultTextStyle(
-                        style: theme.typography.bodyMd.copyWith(
+                        style: bodyStyle.copyWith(
                           fontWeight: FontWeight.w600,
                           color: colorScale.textDefault,
                         ),
@@ -82,9 +120,7 @@ class DsAlert extends StatelessWidget {
                       ),
                     ),
                   DefaultTextStyle(
-                    style: theme.typography.bodyMd.copyWith(
-                      color: colorScale.textDefault,
-                    ),
+                    style: bodyStyle.copyWith(color: colorScale.textDefault),
                     child: child,
                   ),
                 ],
@@ -92,37 +128,9 @@ class DsAlert extends StatelessWidget {
             ),
             // Close button
             if (closable)
-              Semantics(
-                button: true,
-                label: 'Lukk varsel',
-                child: Focus(
-                  onKeyEvent: (node, event) {
-                    if (event is KeyDownEvent &&
-                        (event.logicalKey == LogicalKeyboardKey.enter ||
-                            event.logicalKey == LogicalKeyboardKey.space)) {
-                      onClose?.call();
-                      return KeyEventResult.handled;
-                    }
-                    return KeyEventResult.ignored;
-                  },
-                  child: GestureDetector(
-                    onTap: onClose,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: Center(
-                          child: Icon(
-                            DsIcons.x,
-                            size: 16,
-                            color: colorScale.textSubtle,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: _CloseButton(colorScale: colorScale, onClose: onClose),
               ),
           ],
         ),
@@ -131,19 +139,100 @@ class DsAlert extends StatelessWidget {
   }
 }
 
-class _SeverityIcon extends StatelessWidget {
-  const _SeverityIcon({required this.severity, required this.color});
-  final DsSeverity severity;
-  final Color color;
+/// The dismiss control rendered when [DsAlert.closable] is `true`.
+///
+/// Tracks its own focus state so it can reserve and paint a focus ring
+/// (via [DsFocus.reserveRing]) without shifting layout, and shows the
+/// click cursor on hover. Activates on tap and on Enter/Space/Escape.
+///
+/// The control is only interactive — focusable, key-handling and showing the
+/// click cursor — when [onClose] is non-null; otherwise it renders as inert
+/// (matching the `canRequestFocus: enabled` convention used by other
+/// interactive components).
+class _CloseButton extends StatefulWidget {
+  const _CloseButton({required this.colorScale, required this.onClose});
+
+  final DsColorScale colorScale;
+  final VoidCallback? onClose;
+
+  @override
+  State<_CloseButton> createState() => _CloseButtonState();
+}
+
+class _CloseButtonState extends State<_CloseButton> {
+  bool _isFocused = false;
 
   @override
   Widget build(BuildContext context) {
-    final icon = switch (severity) {
-      DsSeverity.info => DsIcons.info,
-      DsSeverity.warning => DsIcons.triangleAlert,
-      DsSeverity.success => DsIcons.circleCheck,
-      DsSeverity.danger => DsIcons.circleX,
+    final isInteractive = widget.onClose != null;
+
+    Widget button = SizedBox(
+      width: 44,
+      height: 44,
+      child: Center(
+        child: Icon(DsIcons.x, size: 16, color: widget.colorScale.textSubtle),
+      ),
+    );
+
+    // Always reserve focus ring space to prevent layout shift.
+    button = DsFocus.reserveRing(
+      focused: _isFocused,
+      radius: BorderRadius.zero,
+      scale: widget.colorScale,
+      child: button,
+    );
+
+    return Semantics(
+      button: isInteractive,
+      label: 'Lukk varsel',
+      child: Focus(
+        canRequestFocus: isInteractive,
+        onKeyEvent: (node, event) {
+          final onClose = widget.onClose;
+          if (onClose != null &&
+              event is KeyDownEvent &&
+              (event.logicalKey == LogicalKeyboardKey.enter ||
+                  event.logicalKey == LogicalKeyboardKey.space ||
+                  event.logicalKey == LogicalKeyboardKey.escape)) {
+            onClose();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        onFocusChange: (focused) {
+          setState(() => _isFocused = focused);
+        },
+        child: MouseRegion(
+          cursor: isInteractive
+              ? SystemMouseCursors.click
+              : SystemMouseCursors.basic,
+          child: GestureDetector(onTap: widget.onClose, child: button),
+        ),
+      ),
+    );
+  }
+}
+
+class _SeverityIcon extends StatelessWidget {
+  const _SeverityIcon({
+    required this.severity,
+    required this.color,
+    required this.size,
+  });
+  final DsSeverity severity;
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    // Gi ikonet en norsk per-alvorlighetsgrad-etikett slik at skjermlesere
+    // annonserer klassifiseringen (severity formidles ikke kun via farge/form).
+    final (icon, label) = switch (severity) {
+      DsSeverity.info => (DsIcons.info, 'Informasjon'),
+      DsSeverity.warning => (DsIcons.triangleAlert, 'Advarsel'),
+      DsSeverity.success => (DsIcons.circleCheck, 'Vellykket'),
+      DsSeverity.danger => (DsIcons.circleX, 'Feil'),
     };
-    return Icon(icon, size: 18, color: color);
+    return Icon(icon, size: size, color: color, semanticLabel: label);
   }
 }

@@ -6,7 +6,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  designsystemet_flutter: ^0.2.0
+  designsystemet_flutter: ^0.3.0
 ```
 
 ## 2. Import
@@ -59,3 +59,22 @@ final typography = theme.typography;
 final sizes = theme.sizeTokens;
 final borderRadius = theme.borderRadius;
 ```
+
+## 6. Default accent color (Helse Vest dark blue #003087)
+
+The built-in `DsThemeDigdir` theme uses Helse Vest's dark blue **#003087** as the
+`accent` base color (`accent.baseDefault`). The full 16-step accent scale
+(background → surface → border → text → base/contrast) is derived from this base
+and meets WCAG 2.1 AA contrast.
+
+To generate a custom theme from a different brand color, author DTCG token JSON
+(e.g. via the official `@digdir/designsystemet` CLI or
+`https://theme.designsystemet.no`), then run the bundled Dart generator:
+
+```bash
+dart run designsystemet_flutter:generate \
+  --tokens-dir design-tokens \
+  --output lib/generated
+```
+
+This emits a `DsThemeData` (light + dark) you can pass to `DsTheme(data: ...)`.

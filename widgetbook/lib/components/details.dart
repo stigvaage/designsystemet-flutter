@@ -1,5 +1,5 @@
-import 'package:flutter/widgets.dart';
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
+import 'package:flutter/widgets.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 final detailsComponent = WidgetbookComponent(
@@ -8,11 +8,20 @@ final detailsComponent = WidgetbookComponent(
     WidgetbookUseCase(
       name: 'Standard',
       builder: (context) {
-        return const Padding(
-          padding: EdgeInsets.all(16),
+        final variant = context.knobs.object.dropdown(
+          label: 'Variant',
+          options: DsDetailsVariant.values,
+          initialOption: DsDetailsVariant.default_,
+          labelBuilder: (v) => v.name,
+        );
+        return Padding(
+          padding: const EdgeInsets.all(16),
           child: DsDetails(
-            summary: Text('Klikk for å se mer'),
-            child: Text('Skjult innhold vises her når panelet er utvidet.'),
+            variant: variant,
+            summary: const Text('Klikk for å se mer'),
+            child: const Text(
+              'Skjult innhold vises her når panelet er utvidet.',
+            ),
           ),
         );
       },

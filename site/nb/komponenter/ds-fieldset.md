@@ -64,7 +64,9 @@ DsFieldset(
 | --- | --- | --- | --- |
 | legend | `String` | påkrevd | Overskrift for gruppen av skjemaelementer. |
 | children | `List<Widget>` | påkrevd | Skjemaelementene som grupperes. |
-| size | `DsSize?` | `null` | Størrelse på feltsettet. |
+| description | `String?` | `null` | Valgfri hjelpetekst som vises under legend og gir utfyllende kontekst for hele gruppen. |
+| size | `DsSize?` | `null` | Størrelse på feltsettet. Arves fra `DsSizeScope` når `null`. |
+| color | `DsColor?` | `null` | Fargetema for feltsettet. Arves fra `DsColorScope` når `null`. |
 
 ## Import
 

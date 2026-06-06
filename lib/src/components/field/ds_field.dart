@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import '../../theme/ds_size_scope.dart';
 import '../../theme/ds_theme.dart';
 import '../../typography/ds_label.dart';
 import '../../typography/ds_validation_message.dart';
@@ -29,6 +30,32 @@ class DsField extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = DsTheme.of(context);
 
+    // Resolve the field size the same way [DsLabel] does so label, description
+    // and validation message all scale together. Matches the official
+    // Designsystemet `data-size` cascade across the whole field.
+    final sizeMode = size ?? DsSizeScope.of(context);
+
+    // Same body-size mapping that [DsLabel] applies: sm→bodySm, md→bodyMd,
+    // lg→bodyLg. This keeps the description and validation text in step with the
+    // scaling label instead of being pinned to a single size.
+    final bodyStyle = sizeMode.pick(
+      sm: theme.typography.bodySm,
+      md: theme.typography.bodyMd,
+      lg: theme.typography.bodyLg,
+    );
+
+    // [DsValidationMessage] pins its own text to bodyMd and takes no size
+    // parameter, so scale it by the ratio of the resolved body size to bodyMd —
+    // making the validation message track the description and label. Applied on
+    // top of any user text scaling so accessibility settings are still respected.
+    final bodyMdSize = theme.typography.bodyMd.fontSize ?? 18.0;
+    final validationScale = (bodyStyle.fontSize ?? bodyMdSize) / bodyMdSize;
+
+    // Compose the field's hint from the description and the error so a focused
+    // input announces help text and the validation problem together. Both are
+    // optional, so the hint is null when neither is present.
+    final hint = [description, error].whereType<String>().join('. ').trim();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -36,33 +63,139 @@ class DsField extends StatelessWidget {
         if (label != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
-            child: DsLabel(text: label!, size: size),
+            // The visible label is decorative for assistive tech: its content is
+            // re-exposed programmatically as the input's accessible name via the
+            // [Semantics] wrapper below, so it is hidden here to avoid a
+            // duplicate, detached announcement.
+            child: ExcludeSemantics(
+              child: DsLabel(text: label!, size: sizeMode),
+            ),
           ),
         if (description != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
-            child: Text(
-              description!,
-              style: theme.typography.bodyMd.copyWith(
-                color: theme.colorScheme.neutral.textSubtle,
+            // Likewise excluded: the description is surfaced as part of the
+            // input's hint below instead of as a separate text node.
+            child: ExcludeSemantics(
+              child: Text(
+                description!,
+                style: bodyStyle.copyWith(
+                  color: theme.colorScheme.neutral.textSubtle,
+                ),
               ),
             ),
           ),
-        DsFieldScope(error: error, child: child),
-        if (error != null) DsValidationMessage(message: error!),
+        // Associate the label, description and error with the input for
+        // assistive technologies. [MergeSemantics] folds this name/hint into the
+        // wrapped input's own semantics node (e.g. [DsInput]'s `textField`
+        // node), so a screen reader announces "label, value, help. error" as a
+        // single field instead of disconnected siblings. [DsFieldScope] also
+        // forwards the same values down so input components can refine their own
+        // semantics if needed.
+        MergeSemantics(
+          child: Semantics(
+            label: label,
+            hint: hint.isEmpty ? null : hint,
+            child: DsFieldScope(
+              label: label,
+              description: description,
+              error: error,
+              child: child,
+            ),
+          ),
+        ),
+        if (error != null)
+          MediaQuery(
+            // Compose the field size factor with the user's current text
+            // scaler so the validation message scales with the field while
+            // still honouring accessibility text-scaling settings.
+            data: MediaQuery.of(context).copyWith(
+              textScaler: _ScaledTextScaler(
+                MediaQuery.textScalerOf(context),
+                validationScale,
+              ),
+            ),
+            // Announce valid → invalid transitions to assistive technologies the
+            // moment the message appears. The [DsValidationMessage] itself
+            // carries the danger styling.
+            child: Semantics(
+              liveRegion: true,
+              child: DsValidationMessage(message: error!),
+            ),
+          ),
       ],
     );
   }
 }
 
-class DsFieldScope extends InheritedWidget {
-  const DsFieldScope({super.key, required this.error, required super.child});
+/// A [TextScaler] that multiplies an [inner] scaler by a fixed [factor].
+///
+/// Used to apply the field's size step to [DsValidationMessage] (which pins
+/// its own text to `bodyMd`) without discarding the user's accessibility text
+/// scaling carried by [inner].
+class _ScaledTextScaler extends TextScaler {
+  const _ScaledTextScaler(this.inner, this.factor);
 
+  final TextScaler inner;
+  final double factor;
+
+  @override
+  double scale(double fontSize) => inner.scale(fontSize) * factor;
+
+  // Derives the legacy factor from [scale] so the deprecated
+  // [TextScaler.textScaleFactor] getter is never read directly.
+  @override
+  double get textScaleFactor => inner.scale(1.0) * factor;
+
+  @override
+  bool operator ==(Object other) =>
+      other is _ScaledTextScaler &&
+      other.inner == inner &&
+      other.factor == factor;
+
+  @override
+  int get hashCode => Object.hash(inner, factor);
+}
+
+/// Eksponerer den omsluttende [DsField]-tilstanden ([label], [description] og
+/// [error]) for inndata-widgets lenger ned i treet.
+///
+/// Inndatakomponenter (f.eks. [DsInput]/[DsTextfield], [DsCheckbox]) leser
+/// [DsFieldScope.of] for å gjengi feiltilstand (rød kantlinje) i takt med
+/// feltets valideringsmelding, og kan i tillegg forbedre sin egen semantikk med
+/// feltets etikett og beskrivelse. Returnerer `null` når det ikke finnes en
+/// omsluttende [DsField].
+class DsFieldScope extends InheritedWidget {
+  /// Oppretter et scope som videreformidler [label], [description] og [error]
+  /// til etterkommere. Bare [error] er påkrevd av hensyn til bakoverkompatible
+  /// kallsteder; [label] og [description] er valgfrie og `null` som standard.
+  const DsFieldScope({
+    super.key,
+    required this.error,
+    this.label,
+    this.description,
+    required super.child,
+  });
+
+  /// Feltets etikett, eller `null` når feltet ikke har en etikett. Inndatafelt
+  /// kan bruke denne som sitt tilgjengelige navn (accessible name).
+  final String? label;
+
+  /// Feltets hjelpetekst, eller `null` når feltet ikke har beskrivelse.
+  /// Inndatafelt kan eksponere denne som en del av sitt hint.
+  final String? description;
+
+  /// Gjeldende valideringsfeil, eller `null` når feltet er gyldig.
   final String? error;
 
+  /// Returnerer nærmeste omsluttende [DsFieldScope], eller `null` hvis ingen
+  /// finnes.
   static DsFieldScope? of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<DsFieldScope>();
 
   @override
-  bool updateShouldNotify(DsFieldScope oldWidget) => error != oldWidget.error;
+  bool updateShouldNotify(DsFieldScope oldWidget) =>
+      error != oldWidget.error ||
+      label != oldWidget.label ||
+      description != oldWidget.description;
 }

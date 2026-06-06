@@ -29,12 +29,15 @@ DsLink(
 )
 ```
 
-### Med størrelse
+### På farget bakgrunn
+
+Sett `inverted: true` når lenken vises på en sterk eller farget bakgrunn, slik at
+teksten bruker kontrastfargen og forblir lesbar.
 
 ```dart
 DsLink(
   text: 'Les mer om tilgjengelighet',
-  size: DsSize.sm,
+  inverted: true,
   onTap: () => navigerTil('/tilgjengelighet'),
 )
 ```
@@ -55,10 +58,12 @@ DsLink(
 
 | Egenskap | Type | Standard | Beskrivelse |
 | --- | --- | --- | --- |
-| text | `String` | påkrevd | Lenketeksten. |
-| onTap | `VoidCallback?` | påkrevd | Tilbakeringing ved trykk. |
-| size | `DsSize?` | `null` | Størrelse på lenken. |
-| color | `DsColor?` | `null` | Fargetema. |
+| text | `String` | påkrevd | Lenketeksten. Brukes også som Semantics-etikett. |
+| onTap | `VoidCallback?` | `null` | Tilbakeringing ved trykk. Når `null` er lenken ikke-interaktiv. |
+| color | `DsColor?` | `null` | Overstyrer farge fra omkringliggende `DsColorScope`. |
+| inverted | `bool` | `false` | Bruk kontrastfarge på mørk/farget bakgrunn (portspesifikk utvidelse). |
+| focusNode | `FocusNode?` | `null` | Valgfri fokusnode for programmatisk fokusstyring. |
+| autofocus | `bool` | `false` | Gi lenken fokus automatisk når den vises. |
 
 ## Import
 

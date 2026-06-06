@@ -25,14 +25,34 @@ Stablet gruppe av avatarer som viser flere brukere kompakt.
 ```dart
 DsAvatarStack(
   maxVisible: 4,
-  avatars: [
-    DsAvatar(child: Text('AB')),
-    DsAvatar(child: Text('CD')),
-    DsAvatar(child: Text('EF')),
-    DsAvatar(child: Text('GH')),
-    DsAvatar(child: Text('IJ')),
+  children: [
+    DsAvatar(name: 'Ada Berg'),
+    DsAvatar(name: 'Carl Dahl'),
+    DsAvatar(name: 'Eva Foss'),
+    DsAvatar(name: 'Geir Hansen'),
+    DsAvatar(name: 'Ida Johnsen'),
   ],
 )
+```
+
+### Med overflow-indikator
+
+Når antallet `children` overstiger den effektive grensen (`max` hvis satt, ellers
+`maxVisible`), samles de overskytende avatarene i en «+N»-indikator. Ingen avatarer
+forsvinner uten at antallet vises.
+
+```dart
+DsAvatarStack(
+  max: 3,
+  children: [
+    DsAvatar(name: 'Ada Berg'),
+    DsAvatar(name: 'Carl Dahl'),
+    DsAvatar(name: 'Eva Foss'),
+    DsAvatar(name: 'Geir Hansen'),
+    DsAvatar(name: 'Ida Johnsen'),
+  ],
+)
+// Viser 3 avatarer etterfulgt av «+2».
 ```
 
 ### Kompakt visning
@@ -41,19 +61,19 @@ DsAvatarStack(
 DsAvatarStack(
   maxVisible: 3,
   size: DsSize.sm,
-  avatars: [
-    DsAvatar(child: Text('AB')),
-    DsAvatar(child: Text('CD')),
-    DsAvatar(child: Text('EF')),
-    DsAvatar(child: Text('GH')),
+  children: [
+    DsAvatar(name: 'Ada Berg'),
+    DsAvatar(name: 'Carl Dahl'),
+    DsAvatar(name: 'Eva Foss'),
+    DsAvatar(name: 'Geir Hansen'),
   ],
 )
 ```
 
 ## Retningslinjer
-- Sett `maxVisible` til et rimelig antall basert på tilgjengelig plass, typisk 3-5.
+- Sett `maxVisible` (eller `max`) til et rimelig antall basert på tilgjengelig plass, typisk 3-5.
 - Bruk konsistent størrelse på alle avatarer i stakken.
-- Overflow-indikatoren viser automatisk antall skjulte avatarer.
+- Når antallet `children` overstiger den effektive grensen, viser overflow-indikatoren automatisk antall skjulte avatarer som «+N».
 
 ## Tekst
 - Overflow-indikatoren bør vise et tall som representerer antall skjulte brukere, f.eks. «+3».
@@ -66,8 +86,10 @@ DsAvatarStack(
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| avatars | List\<DsAvatar\> | påkrevd | Liste over avatarer som skal vises |
-| maxVisible | int | 3 | Maks antall synlige avatarer |
+| children | List\<Widget\> | påkrevd | Liste over avatarer som skal vises |
+| maxVisible | int | 5 | Standard grense for synlige avatarer når `max` ikke er satt. Overskytende avatarer samles i en «+N»-indikator |
+| max | int? | null | Eksplisitt overstyring av maks antall synlige avatarer før «+N»-indikatoren vises. Har forrang foran `maxVisible` |
+| overlap | double | 8 | Antall piksler hver avatar overlapper den forrige |
 | size | DsSize? | null | Størrelse på avatarene |
 
 ## Import

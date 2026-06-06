@@ -24,8 +24,8 @@ Sammenleggbar detaljseksjon.
 
 ```dart
 DsDetails(
-  summary: Text('Tekniske detaljer'),
-  initiallyOpen: false,
+  summary: DsParagraph(text: 'Tekniske detaljer'),
+  initiallyExpanded: false,
   child: DsParagraph(text: 'Her er de tekniske detaljene.'),
 )
 ```
@@ -34,8 +34,8 @@ DsDetails(
 
 ```dart
 DsDetails(
-  summary: Text('Viktig informasjon'),
-  initiallyOpen: true,
+  summary: DsParagraph(text: 'Viktig informasjon'),
+  initiallyExpanded: true,
   child: DsParagraph(text: 'Denne informasjonen vises som standard.'),
 )
 ```
@@ -43,7 +43,7 @@ DsDetails(
 ## Retningslinjer
 - Bruk en kort og beskrivende overskrift i `summary` slik at brukeren forstår hva som skjules.
 - Unngå å nøste DsDetails inne i hverandre, da det gjør navigasjon komplisert.
-- Bruk `initiallyOpen: true` kun når innholdet er viktig nok til å vises som standard.
+- Bruk `initiallyExpanded: true` kun når innholdet er viktig nok til å vises som standard.
 
 ## Tekst
 - Overskriften i `summary` bør være en kort setning eller frase, ikke et enkelt ord.
@@ -58,7 +58,10 @@ DsDetails(
 | --- | --- | --- | --- |
 | summary | `Widget` | påkrevd | Innholdet som alltid vises (klikkbar overskrift). |
 | child | `Widget` | påkrevd | Innholdet som vises når seksjonen er åpen. |
-| initiallyOpen | `bool` | `false` | Om seksjonen er åpen ved oppstart. |
+| initiallyExpanded | `bool` | `false` | Om seksjonen er åpen ved oppstart. |
+| color | `DsColor?` | `null` | Overstyrer fargen. Arves fra `DsColorScope` når den utelates. |
+| variant | `DsDetailsVariant` | `DsDetailsVariant.default_` | Visuell variant: `default_` viser kun ramme, `tinted` fyller med tonet flate. |
+| focusNode | `FocusNode?` | `null` | Valgfri fokusnode for summary-elementet. |
 
 ## Import
 

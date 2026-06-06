@@ -5,11 +5,18 @@ import 'ds_theme_data.dart';
 ///
 /// Wrap your app or a subtree with [DsTheme] to supply design tokens.
 /// Retrieve the active theme with [DsTheme.of].
-class DsTheme extends InheritedWidget {
+///
+/// [DsTheme] arver fra [InheritedTheme] slik at temaet kan fanges og bæres over
+/// rutegrenser (dialoger, overlays) med [InheritedTheme.capture]/[wrap] — på
+/// samme måte som Flutter sitt eget Material `Theme`.
+class DsTheme extends InheritedTheme {
+  /// Oppretter et [DsTheme] som eksponerer [data] for etterkommere.
   const DsTheme({super.key, required this.data, required super.child});
 
+  /// Det aktive token-settet for dette subtreet.
   final DsThemeData data;
 
+  /// Returnerer nærmeste [DsThemeData]; kaster hvis ingen [DsTheme] finnes.
   static DsThemeData of(BuildContext context) {
     final theme = maybeOf(context);
     if (theme == null) {
@@ -33,10 +40,15 @@ class DsTheme extends InheritedWidget {
     return theme;
   }
 
+  /// Returnerer nærmeste [DsThemeData], eller null hvis ingen [DsTheme] finnes.
   static DsThemeData? maybeOf(BuildContext context) {
     final widget = context.dependOnInheritedWidgetOfExactType<DsTheme>();
     return widget?.data;
   }
+
+  @override
+  Widget wrap(BuildContext context, Widget child) =>
+      DsTheme(data: data, child: child);
 
   @override
   bool updateShouldNotify(DsTheme oldWidget) => data != oldWidget.data;

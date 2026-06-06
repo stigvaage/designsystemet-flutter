@@ -5,21 +5,52 @@ import 'dart:ui' show Color;
 /// Mirrors the Designsystemet color-scale structure. Each step maps to a
 /// specific UI role (e.g. [baseDefault] for filled buttons, [textDefault] for body text).
 class DsColorScale {
+  /// Sidebakgrunn; tilsvarer Designsystemet `background-default`.
   final Color backgroundDefault;
+
+  /// Lett tonet sidebakgrunn; tilsvarer `background-tinted`.
   final Color backgroundTinted;
+
+  /// Standard overflate/komponentbakgrunn (kort, paneler).
   final Color surfaceDefault;
+
+  /// Lett tonet overflate; tilsvarer `surface-tinted`.
   final Color surfaceTinted;
+
+  /// Overflatefarge ved hover.
   final Color surfaceHover;
+
+  /// Overflatefarge ved aktiv/trykk.
   final Color surfaceActive;
+
+  /// Diskret kantfarge (svake skiller).
   final Color borderSubtle;
+
+  /// Standard 1px kantfarge.
   final Color borderDefault;
+
+  /// Kraftig kantfarge (sterkere skiller).
   final Color borderStrong;
+
+  /// Sekundær/dempet tekstfarge.
   final Color textSubtle;
+
+  /// Standard tekstfarge for brødtekst.
   final Color textDefault;
+
+  /// Standard fyllfarge for solide/primære elementer (fylte knapper).
   final Color baseDefault;
+
+  /// Fyllfarge ved hover.
   final Color baseHover;
+
+  /// Fyllfarge ved aktiv/trykk.
   final Color baseActive;
+
+  /// Dempet kontrastfarge mot [baseDefault] (sekundær tekst/ikon på fyll).
   final Color baseContrastSubtle;
+
+  /// Standard kontrastfarge mot [baseDefault] (tekst/ikon på fyll).
   final Color baseContrastDefault;
 
   const DsColorScale({
@@ -41,6 +72,7 @@ class DsColorScale {
     required this.baseContrastDefault,
   });
 
+  /// Returnerer en kopi der angitte felter er erstattet.
   DsColorScale copyWith({
     Color? backgroundDefault,
     Color? backgroundTinted,

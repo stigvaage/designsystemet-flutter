@@ -1,8 +1,8 @@
-import 'package:flutter/widgets.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:designsystemet_flutter/theme.dart';
 import 'package:designsystemet_flutter/typography.dart';
-import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   Widget wrapWithTheme(Widget child) {
@@ -27,6 +27,16 @@ void main() {
       final text = tester.widget<Text>(find.byType(Text));
       expect(text.style?.fontWeight, FontWeight.w400);
       expect(text.style?.height, 1.5);
+      // Offisiell v1.15.0: body md = 18px ved referansestørrelse.
+      expect(text.style?.fontSize, 18);
+    });
+
+    testWidgets('sm size uses official 16px font size', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(const DsParagraph(text: 'Test', bodySize: DsBodySize.sm)),
+      );
+      final text = tester.widget<Text>(find.byType(Text));
+      expect(text.style?.fontSize, 16);
     });
 
     testWidgets('short variant has line-height 1.3', (tester) async {
@@ -52,9 +62,9 @@ void main() {
     testWidgets('uses correct color from scope', (tester) async {
       await tester.pumpWidget(
         wrapWithTheme(
-          DsColorScope(
+          const DsColorScope(
             color: DsColor.neutral,
-            child: const DsParagraph(text: 'Neutral'),
+            child: DsParagraph(text: 'Neutral'),
           ),
         ),
       );

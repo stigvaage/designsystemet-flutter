@@ -1,13 +1,13 @@
 # designsystemet_flutter
 
-[![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.32-blue.svg)](https://flutter.dev)
-[![Dart](https://img.shields.io/badge/Dart-%3E%3D3.8-blue.svg)](https://dart.dev)
+[![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.44-blue.svg)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-%3E%3D3.12-blue.svg)](https://dart.dev)
 [![Designsystemet](https://img.shields.io/badge/Designsystemet-designsystemet.no-003087.svg)](https://designsystemet.no)
 [![Lisens: MIT](https://img.shields.io/badge/Lisens-MIT-green.svg)](LICENSE)
 [![WCAG 2.1 AA](https://img.shields.io/badge/WCAG_2.1-AA-brightgreen.svg)](https://www.w3.org/WAI/WCAG21/quickref/)
 [![CI](https://github.com/stigvaage/designsystemet-flutter/actions/workflows/ci.yml/badge.svg)](https://github.com/stigvaage/designsystemet-flutter/actions/workflows/ci.yml)
 
-> Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra Digitaliseringsdirektoratet. Utviklet av Stig H. Våge.
+> Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra Digitaliseringsdirektoratet. Utviklet av SHV.
 
 > **[Les dokumentasjonen](https://stigvaage.github.io/designsystemet-flutter/)** | **[Interaktiv komponentkatalog (Widgetbook)](https://stigvaage.github.io/designsystemet-flutter/widgetbook/)**
 
@@ -33,7 +33,7 @@ Legg til pakken i din `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  designsystemet_flutter: ^0.2.0
+  designsystemet_flutter: ^0.3.0
 ```
 
 Kjør deretter:
@@ -98,21 +98,32 @@ DsTheme(
 )
 ```
 
-### Material-integrasjon (valgfritt)
+> [!NOTE]
+> Standardtemaet `DsThemeDigdir` bruker Helse Vest sin mørkeblå **`#003087`** som
+> `accent`-basefarge. Hele den 16-stegs accent-skalaen (background → surface →
+> border → text → base/contrast) er avledet fra denne og oppfyller WCAG 2.1 AA.
+> Vil du bruke en annen merkevarefarge, se [Egendefinert tema](#egendefinert-tema).
 
-Dersom applikasjonen din allerede bruker `MaterialApp`, kan du integrere via `ThemeExtension`:
+### Bruk sammen med MaterialApp (valgfritt)
+
+Selve biblioteket har ingen avhengighet til Material. Dersom applikasjonen din
+likevel allerede bruker `MaterialApp` (eller `CupertinoApp`), pakker du bare
+innholdet inn med `DsTheme`. `DsTheme` er en `InheritedTheme` og fungerer side om
+side med et hvilket som helst Flutter-app-skall:
 
 ```dart
 MaterialApp(
-  theme: ThemeData(
-    extensions: [DsThemeDigdir.light()],
-  ),
   home: DsTheme(
     data: DsThemeDigdir.light(),
     child: const MinApp(),
   ),
 )
 ```
+
+> [!NOTE]
+> `DsThemeDigdir.light()`/`.dark()` returnerer en `DsThemeData` og leses
+> utelukkende via `DsTheme.of(context)` — den er bevisst frikoblet fra
+> `ThemeData`/`ThemeExtension`, slik at biblioteket forblir Material-fritt.
 
 ## Fargestyring
 
@@ -326,7 +337,7 @@ Se [mcp-server/README.md](mcp-server/README.md) for full dokumentasjon og Docker
 
 Prosjektet er bygget med flere teknologier og verktøy som samarbeider for å levere et komplett komponentbibliotek med dokumentasjon, interaktiv katalog og AI-integrasjon:
 
-- **Dart 3.8+ / Flutter 3.32+** -- Selve komponentbiblioteket med 40 UI-komponenter, tokendrevet temasystem, kodegenerator og full testdekning. Bygget uten Material- eller Cupertino-avhengigheter — kun `package:flutter/widgets.dart` og `package:flutter/rendering.dart`.
+- **Dart 3.12+ / Flutter 3.44+** -- Selve komponentbiblioteket med 40 UI-komponenter, tokendrevet temasystem, kodegenerator og full testdekning. Bygget uten Material- eller Cupertino-avhengigheter — kun `package:flutter/widgets.dart` og `package:flutter/rendering.dart`.
 - **Widgetbook 3.x** -- Interaktiv komponentkatalog som lar utviklere utforske, teste og justere alle komponenter med ulike egenskaper, temaer og størrelser. Bygges som en Flutter-webapp og publiseres som en del av dokumentasjonssiden.
 - **VitePress 1.6 / Vue 3** -- Dokumentasjonssiden ([stigvaage.github.io/designsystemet-flutter](https://stigvaage.github.io/designsystemet-flutter/)) med 67 norskspråklige sider. Egendefinert tema med Designsystemets fargepalett, komponentfaner (Oversikt/Kode/Tilgjengelighet), innebygd Widgetbook-forhåndsvisning og søk.
 - **MCP-server (TypeScript / Node.js)** -- Model Context Protocol-server som lar AI-kodeassistenter som Claude Code, Cursor og VS Code Copilot slå opp komponent-API-er, migrere fra Material-widgets, hente temaoppsett og søke i dokumentasjonen. Bygget med `@modelcontextprotocol/sdk`, `zod` og `minisearch`.
@@ -339,7 +350,7 @@ Vi ønsker bidrag velkommen! Se [CONTRIBUTING.md](CONTRIBUTING.md) for retningsl
 
 ## Utviklet av
 
-Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra [Digitaliseringsdirektoratet](https://www.digdir.no). Utviklet av **Stig H. Våge**.
+Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra [Digitaliseringsdirektoratet](https://www.digdir.no). Utviklet av **SHV**.
 
 ## Lisens
 

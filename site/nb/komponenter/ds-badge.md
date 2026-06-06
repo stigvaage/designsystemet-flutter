@@ -26,7 +26,7 @@ Merke for telling eller statusindikasjon.
 DsBadge(
   count: 5,
   color: DsColor.danger,
-  child: Icon(Icons.notifications),
+  child: Icon(LucideIcons.bell),
 )
 ```
 
@@ -37,7 +37,7 @@ DsBadge(
   count: 150,
   maxCount: 99,
   placement: DsBadgePlacement.topLeft,
-  child: Icon(Icons.mail),
+  child: Icon(LucideIcons.mail),
 )
 ```
 
@@ -48,7 +48,7 @@ DsBadge(
   count: 3,
   variant: DsBadgeVariant.tinted,
   color: DsColor.info,
-  child: Icon(Icons.notifications),
+  child: Icon(LucideIcons.bell),
 )
 ```
 

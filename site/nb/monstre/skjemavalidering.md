@@ -76,7 +76,6 @@ Column(
   children: [
     if (harFeil)
       DsErrorSummary(
-        title: 'Rett følgende feil for å gå videre:',
         errors: [
           if (_navnFeil != null) _navnFeil!,
           if (_epostFeil != null) _epostFeil!,
@@ -87,7 +86,19 @@ Column(
 )
 ```
 
-`DsErrorSummary` gir brukeren en rask oversikt slik at de ikke trenger å lete gjennom hele skjemaet for å finne hva som mangler. Dette er spesielt nyttig i lange skjemaer der feilfeltene kan være utenfor synlig visningsområde.
+`DsErrorSummary` tar en liste med feilmeldinger som strenger (`List<String>`). Når du ikke oppgir `title`, brukes standardteksten **«Du må rette opp følgende»**. Vil du overstyre overskriften, sender du inn din egen `title`:
+
+```dart
+DsErrorSummary(
+  title: 'Du har 2 feil i skjemaet',
+  errors: [
+    if (_navnFeil != null) _navnFeil!,
+    if (_epostFeil != null) _epostFeil!,
+  ],
+)
+```
+
+`DsErrorSummary` gir brukeren en rask oversikt slik at de ikke trenger å lete gjennom hele skjemaet for å finne hva som mangler. Dette er spesielt nyttig i lange skjemaer der feilfeltene kan være utenfor synlig visningsområde. Etter mislykket innsending bør du flytte fokus til sammendraget (send med en `focusNode` og kall `focusNode.requestFocus()`, eller sett `autofocus: true`).
 
 ## Beste praksis
 

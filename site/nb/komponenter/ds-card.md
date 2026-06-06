@@ -93,7 +93,7 @@ import 'package:designsystemet_flutter/components.dart';
 
 ## Semantikk
 - Klikkbare kort har `button`-semantikk som gjenkjennes av skjermlesere.
-- Ikke-klikkbare kort bruker gruppering-semantikk.
+- Ikke-klikkbare kort har ingen egen interaksjonssemantikk; innholdet eksponeres som vanlig for skjermlesere.
 
 ## Tastaturinteraksjon
 

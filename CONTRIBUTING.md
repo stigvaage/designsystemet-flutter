@@ -117,16 +117,18 @@ testWidgets('DsButton rendrer med primaervariant', (tester) async {
 });
 ```
 
-### Gylne tester (Golden Tests)
+### Gylne tester (Golden Tests) — planlagt
 
-Gylne tester brukes for visuell regresjonstesting. Hver komponent skal ha gylne tester for:
+Gylne tester (visuell regresjonstesting) er ennå ikke tatt i bruk i prosjektet, men
+er ønsket på sikt. Når de innføres, er målet at hver komponent dekkes for:
 
 - Alle størrelsesvarianter (sm, md, lg)
 - Alle fargevarianter der relevant
 - Alle visuelle tilstander (standard, hover, fokus, aktiv, deaktivert)
 - Både lyst og mørkt modus
 
-Oppdater gylne filer når du bevisst endrer visuell utseende:
+Inntil videre er gylne tester valgfrie. Der de finnes, oppdaterer du dem ved bevisste
+visuelle endringer:
 
 ```bash
 flutter test --update-goldens
@@ -172,7 +174,7 @@ Alle pull requests blir gjennomgått for:
 - **Designsystemet-troskap**: Komponenter skal matche referanseimplementasjonen på designsystemet.no visuelt og funksjonelt.
 - **Token-bruk**: Alle visuelle egenskaper skal bruke designtokens, ikke hardkodede verdier.
 - **Tilgjengelighet**: WCAG 2.1 AA-krav skal være oppfylt. Semantikk, fokushåndtering og tastaturnavigasjon skal være korrekt.
-- **Testdekning**: Alle endringer skal ha tilhørende tester (widget-tester og gylne tester).
+- **Testdekning**: Alle endringer skal ha tilhørende widget-tester (gylne tester der de finnes).
 - **Kodestil**: Koden skal følge Effective Dart og bestå `flutter analyze` uten advarsler.
 - **Dokumentasjon**: Offentlige API-er skal ha dartdoc-kommentarer.
 
@@ -181,7 +183,7 @@ Alle pull requests blir gjennomgått for:
 - [ ] Koden består `flutter analyze` uten advarsler
 - [ ] Alle eksisterende tester består
 - [ ] Nye tester er skrevet for endringene
-- [ ] Gylne tester er oppdatert ved visuelle endringer
+- [ ] Gylne tester er oppdatert ved visuelle endringer (der de finnes — valgfritt)
 - [ ] Dartdoc-kommentarer er lagt til for nye offentlige API-er
 - [ ] Commit-meldinger er tydelige og beskrivende
 - [ ] PR-beskrivelsen forklarer hva og hvorfor

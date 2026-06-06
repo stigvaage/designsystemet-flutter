@@ -75,7 +75,9 @@ DsSwitch(
 | description | `Widget?` | `null` | Hjelpetekst som vises under etiketten. |
 | size | `DsSize?` | `null` | Størrelse på bryteren. |
 | color | `DsColor?` | `null` | Fargetema. |
-| readOnly | `bool` | `false` | Om bryteren er skrivebeskyttet. |
+| disabled | `bool` | `false` | Om bryteren er deaktivert (dempes og blir ikke-interaktiv). |
+| readOnly | `bool` | `false` | Om bryteren er skrivebeskyttet (beholder full synlighet, men hindrer endring). |
+| variant | `DsSelectionVariant` | `default_` | Visuell variant: `default_` viser den bare bryteren, `outline` pakker den inn i en kantet boks. |
 | focusNode | `FocusNode?` | `null` | Valgfri fokusnode for fokushåndtering. |
 
 ## Import
@@ -105,7 +107,7 @@ import 'package:designsystemet_flutter/components.dart';
 
 ## Fargekontrast
 - Av- og på-tilstand oppfyller WCAG 2.1 AA kontrastkrav (minimum 4.5:1).
-- Deaktiverte brytere markeres med `enabled: false`.
+- Deaktiverte brytere settes med `disabled: true` og dempes med temaets `disabledOpacity`, og annonseres som ikke-interaktive for skjermlesere.
 
 </template>
 </ComponentTabs>

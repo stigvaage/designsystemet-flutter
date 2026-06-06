@@ -4,7 +4,9 @@ import 'package:flutter/widgets.dart';
 import '../../theme/ds_color_scale.dart';
 import '../../theme/ds_color_scope.dart';
 import '../../theme/ds_size_scope.dart';
+import '../../theme/ds_size_tokens.dart';
 import '../../theme/ds_theme.dart';
+import '../../theme/ds_theme_data.dart';
 import '../../utils/ds_animation.dart';
 import '../../utils/ds_enums.dart';
 import '../../utils/ds_focus.dart';
@@ -27,18 +29,46 @@ class DsButton extends StatefulWidget {
     this.icon,
     this.iconPosition = DsIconPosition.left,
     this.focusNode,
+    this.autofocus = false,
   });
 
+  /// Innholdet i knappen, vanligvis en [DsParagraph] eller [Text].
   final Widget child;
+
+  /// Kalles når knappen trykkes eller aktiveres med Enter/Mellomrom. Når
+  /// `null`, vises knappen som deaktivert.
   final VoidCallback? onPressed;
+
+  /// Visuell variant: primær (fylt), sekundær (omriss) eller tertiær.
   final DsButtonVariant variant;
+
+  /// Størrelse på knappen. Faller tilbake til omgivende [DsSizeScope] når
+  /// `null`.
   final DsSize? size;
+
+  /// Fargetema for knappen. Faller tilbake til omgivende [DsColorScope] når
+  /// `null`.
   final DsColor? color;
+
+  /// Om knappen er deaktivert (ikke-interaktiv og nedtonet).
   final bool disabled;
+
+  /// Om knappen viser en spinner i stedet for innholdet og blokkerer
+  /// interaksjon.
   final bool loading;
+
+  /// Valgfritt ikon som vises sammen med [child].
   final Widget? icon;
+
+  /// Om [icon] plasseres før eller etter [child]. Standard er til venstre.
   final DsIconPosition iconPosition;
+
+  /// Valgfri fokusnode for å styre knappens fokus eksternt.
   final FocusNode? focusNode;
+
+  /// Whether this button should request focus when it is first inserted into
+  /// the tree. Forwarded to the underlying [Focus] widget. Defaults to `false`.
+  final bool autofocus;
 
   @override
   State<DsButton> createState() => _DsButtonState();
@@ -49,7 +79,8 @@ class _DsButtonState extends State<DsButton> {
   bool _isPressed = false;
   bool _isFocused = false;
 
-  bool get _isDisabled => widget.disabled || widget.loading;
+  bool get _isDisabled =>
+      widget.disabled || widget.loading || widget.onPressed == null;
 
   @override
   Widget build(BuildContext context) {
@@ -63,15 +94,19 @@ class _DsButtonState extends State<DsButton> {
     final border = _resolveBorder(colorScale);
     final duration = DsAnimation.resolveDuration(context, DsAnimation.fast);
 
-    final content = _buildContent(fgColor);
+    final content = _buildContent(theme, fgColor);
 
     Widget button = ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 44),
       child: Semantics(
         button: true,
         enabled: !_isDisabled,
+        // Announce the loading state to assistive technology so the spinner
+        // (which replaces the visible label) is not silent.
+        label: widget.loading ? 'Laster' : null,
         child: AnimatedContainer(
           duration: duration,
+          curve: DsAnimation.defaultCurve,
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: radius,
@@ -82,25 +117,12 @@ class _DsButtonState extends State<DsButton> {
       ),
     );
 
-    // Always reserve focus ring space to prevent layout shift
-    final focusDecoration = _isFocused && !_isDisabled
-        ? DsFocus.focusRingWithRadius(colorScale, radius)
-        : BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              radius.topLeft.x + DsFocus.ringWidth,
-            ),
-            border: Border.all(
-              color: const Color(0x00000000),
-              width: DsFocus.ringWidth,
-            ),
-          );
-
-    button = DecoratedBox(
-      decoration: focusDecoration,
-      child: Padding(
-        padding: const EdgeInsets.all(DsFocus.ringWidth),
-        child: button,
-      ),
+    // Always reserve focus ring space to prevent layout shift.
+    button = DsFocus.reserveRing(
+      focused: _isFocused && !_isDisabled,
+      radius: radius,
+      scale: colorScale,
+      child: button,
     );
 
     if (_isDisabled) {
@@ -109,6 +131,7 @@ class _DsButtonState extends State<DsButton> {
 
     return Focus(
       focusNode: widget.focusNode,
+      autofocus: widget.autofocus,
       onKeyEvent: (node, event) {
         if (!_isDisabled &&
             event is KeyDownEvent &&
@@ -151,24 +174,11 @@ class _DsButtonState extends State<DsButton> {
     );
   }
 
-  Widget _buildContent(Color fgColor) {
-    final theme = DsTheme.of(context);
+  Widget _buildContent(DsThemeData theme, Color fgColor) {
     final sizeMode = widget.size ?? DsSizeScope.of(context);
-    final verticalPadding = switch (sizeMode) {
-      DsSize.sm => 6.0,
-      DsSize.md => 10.0,
-      DsSize.lg => 14.0,
-    };
-    final horizontalPadding = switch (sizeMode) {
-      DsSize.sm => 12.0,
-      DsSize.md => 16.0,
-      DsSize.lg => 20.0,
-    };
-    final fontSize = switch (sizeMode) {
-      DsSize.sm => 14.0,
-      DsSize.md => 16.0,
-      DsSize.lg => 18.0,
-    };
+    final verticalPadding = sizeMode.pick(sm: 6.0, md: 10.0, lg: 14.0);
+    final horizontalPadding = sizeMode.pick(sm: 12.0, md: 16.0, lg: 20.0);
+    final fontSize = DsSizeValues.fontSize(sizeMode);
 
     final textStyle = TextStyle(
       fontFamily: theme.typography.fontFamily,
@@ -179,7 +189,10 @@ class _DsButtonState extends State<DsButton> {
 
     Widget content;
     if (widget.loading) {
-      content = DsSpinner(size: sizeMode, color: widget.color);
+      // Paint the spinner with the button's foreground/contrast color (the
+      // same color the label uses) so it stays visible on every variant —
+      // notably on the filled `baseDefault` primary background.
+      content = DsSpinner(size: sizeMode, paintColor: fgColor);
     } else {
       final textWidget = DefaultTextStyle(
         style: textStyle,

@@ -89,7 +89,7 @@ Tekstområde for flerlinjes inndata.
 | `disabled` | `bool` | `false` | Deaktiver feltet |
 | `readOnly` | `bool` | `false` | Skrivebeskyttet |
 | `maxLength` | `int?` | `null` | Maks antall tegn |
-| `rows` | `int` | `3` | Antall synlige rader |
+| `rows` | `int` | `4` | Antall synlige rader |
 | `onChanged` | `ValueChanged<String>?` | `null` | Kalles ved endring |
 
 **Eksempel:**
@@ -374,10 +374,12 @@ Lenke med Designsystemet-styling.
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| `text` | `String` | påkrevd | Lenketeksten |
-| `onTap` | `VoidCallback?` | påkrevd | Handling ved trykk |
-| `size` | `DsSize?` | `null` | Størrelsesmodus |
+| `text` | `String` | påkrevd | Lenketeksten (brukes også som Semantics-etikett) |
+| `onTap` | `VoidCallback?` | `null` | Handling ved trykk. Når `null` er lenken ikke-interaktiv |
 | `color` | `DsColor?` | `null` | Fargeskala |
+| `inverted` | `bool` | `false` | Bruk kontrastfarge for lesbarhet på farget bakgrunn |
+| `focusNode` | `FocusNode?` | `null` | Egen fokusnode |
+| `autofocus` | `bool` | `false` | Automatisk fokus ved første visning |
 
 **Eksempel:**
 
@@ -826,7 +828,9 @@ Gruppering av relaterte skjemaelementer med legend.
 |----------|------|----------|-------------|
 | `legend` | `String` | påkrevd | Gruppeoverskrift |
 | `children` | `List<Widget>` | påkrevd | Skjemaelementer |
+| `description` | `String?` | `null` | Valgfri hjelpetekst under legend |
 | `size` | `DsSize?` | `null` | Størrelsesmodus |
+| `color` | `DsColor?` | `null` | Fargeskala |
 
 **Eksempel:**
 
@@ -876,18 +880,21 @@ Feilsammendrag for skjemavalidering -- viser alle feil samlet.
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| `errors` | `List<DsErrorEntry>` | påkrevd | Liste med feil |
-| `title` | `String?` | `null` | Tittel på feilsammendraget |
-| `size` | `DsSize?` | `null` | Størrelsesmodus |
+| `errors` | `List<String>` | påkrevd | Liste med feilmeldinger |
+| `title` | `String?` | `'Du må rette opp følgende'` | Overskrift over feillisten |
+| `onErrorTap` | `ValueChanged<int>?` | `null` | Kalles med feilindeks når en feil trykkes (gjør hver feil til en fokuserbar lenke) |
+| `size` | `DsSize` | `DsSize.md` | Størrelsesmodus |
+| `color` | `DsColor` | `DsColor.danger` | Fargeskala |
+| `focusNode` | `FocusNode?` | `null` | Fokusnode for å flytte fokus til sammendraget etter mislykket innsending |
+| `autofocus` | `bool` | `false` | Om sammendraget får fokus så snart det vises |
 
 **Eksempel:**
 
 ```dart
 DsErrorSummary(
-  title: 'Rett følgende feil for å gå videre:',
   errors: [
-    DsErrorEntry(field: 'Navn', message: 'Navn er påkrevd'),
-    DsErrorEntry(field: 'E-post', message: 'Ugyldig e-postadresse'),
+    'Navn er påkrevd',
+    'Ugyldig e-postadresse',
   ],
 )
 ```

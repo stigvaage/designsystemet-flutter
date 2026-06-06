@@ -1,8 +1,9 @@
 import 'dart:ui' show CheckedState, Tristate;
-import 'package:flutter/widgets.dart';
-import 'package:flutter_test/flutter_test.dart';
+
 import 'package:designsystemet_flutter/designsystemet_flutter.dart';
 import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 Widget wrapWithTheme(Widget child) {
   return DsTheme(
@@ -34,7 +35,7 @@ void main() {
         wrapWithTheme(DsCheckbox(value: false, onChanged: (_) {})),
       );
       final semantics = tester.getSemantics(find.byType(Semantics).first);
-      expect(semantics.flagsCollection.isChecked, isNot(CheckedState.none));
+      expect(semantics.flagsCollection.isChecked, CheckedState.isFalse);
     });
 
     testWidgets('DsRadio has selected semantics when selected', (tester) async {
@@ -72,7 +73,7 @@ void main() {
         ),
       );
       final semantics = tester.getSemantics(find.byType(Semantics).first);
-      expect(semantics.flagsCollection.isEnabled, isNot(Tristate.none));
+      expect(semantics.flagsCollection.isEnabled, Tristate.isFalse);
     });
   });
 }

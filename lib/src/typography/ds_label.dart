@@ -4,9 +4,14 @@ import '../theme/ds_size_scope.dart';
 import '../theme/ds_theme.dart';
 import '../utils/ds_enums.dart';
 
-/// Label text component using Designsystemet typography tokens.
+/// Etikettkomponent som bruker Designsystemets typografi-tokens.
 ///
-/// Used for form field labels and other short descriptive text.
+/// Brukes til skjemafeltetiketter og annen kort, beskrivende tekst.
+///
+/// Merk: [DsLabel] rendrer ren tekst og kobles ikke automatisk til et
+/// skjemafelt. For programmatisk kobling, bruk en skjemakomponent (f.eks.
+/// `DsInput`/`DsField`) som håndterer etikettkoblingen, eller pakk etikett og
+/// felt i en `Semantics`-widget selv.
 class DsLabel extends StatelessWidget {
   const DsLabel({
     super.key,
@@ -16,10 +21,20 @@ class DsLabel extends StatelessWidget {
     this.weight,
   });
 
+  /// Etiketteksten som vises.
   final String text;
+
+  /// Størrelsen på etiketten. Faller tilbake til [DsSizeScope] når den er
+  /// `null` (standard `md`).
   final DsSize? size;
+
+  /// Fargetema for etiketten. Faller tilbake til [DsColorScope] når den er
+  /// `null`.
   final DsColor? color;
-  final FontWeight? weight;
+
+  /// Skriftvekt for etiketten. Standard er [DsFontWeight.medium], som svarer
+  /// til den offisielle `Label`-standarden (`medium`/500).
+  final DsFontWeight? weight;
 
   @override
   Widget build(BuildContext context) {
@@ -29,15 +44,18 @@ class DsLabel extends StatelessWidget {
 
     final sizeMode = size ?? DsSizeScope.of(context);
 
+    // Offisiell Label-skriftstørrelse for sm/md/lg = 16/18/21 px. Etter at
+    // typografi-stigen er rettet til offisiell v1.15.0, treffer body-tokenene
+    // disse størrelsene direkte: bodySm=16, bodyMd=18, bodyLg=21.
     final baseStyle = switch (sizeMode) {
-      DsSize.sm => theme.typography.bodyMd,
-      DsSize.md => theme.typography.bodyLg,
-      DsSize.lg => theme.typography.bodyXl,
+      DsSize.sm => theme.typography.bodySm,
+      DsSize.md => theme.typography.bodyMd,
+      DsSize.lg => theme.typography.bodyLg,
     };
 
     final style = baseStyle.copyWith(
       color: colorScale.textDefault,
-      fontWeight: weight ?? FontWeight.w500,
+      fontWeight: (weight ?? DsFontWeight.medium).toFontWeight(),
     );
 
     return Text(text, style: style);

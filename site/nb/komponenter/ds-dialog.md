@@ -22,39 +22,96 @@ Dialogvindu (modal).
 
 <WidgetbookEmbed component="Navigasjon og layout/DsDialog/Standard" />
 
+`DsDialog` har ingen egen `actions`-slot. Plasser handlingsknapper nederst i
+`child`, for eksempel i en `Row`:
+
 ```dart
 DsDialog(
-  title: Text('Bekreft'),
-  child: Text('Vil du fortsette?'),
-  actions: [
-    DsButton(
-      variant: DsButtonVariant.secondary,
-      onPressed: () => lukk(),
-      child: Text('Avbryt'),
-    ),
-    DsButton(
-      variant: DsButtonVariant.primary,
-      onPressed: () => bekreft(),
-      child: Text('Bekreft'),
-    ),
-  ],
+  title: const Text('Bekreft'),
+  onClose: () => Navigator.of(context).pop(),
+  child: Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Text('Vil du fortsette?'),
+      const SizedBox(height: 16),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          DsButton(
+            variant: DsButtonVariant.secondary,
+            onPressed: () => lukk(),
+            child: const Text('Avbryt'),
+          ),
+          const SizedBox(width: 8),
+          DsButton(
+            variant: DsButtonVariant.primary,
+            onPressed: () => bekreft(),
+            child: const Text('Bekreft'),
+          ),
+        ],
+      ),
+    ],
+  ),
 )
 ```
 
 ### Uten lukkeknapp
 
+Sett `closeButton: false` for å skjule lukkeknappen (X). `Escape` lukker
+fortsatt dialogen.
+
 ```dart
 DsDialog(
-  title: Text('Viktig melding'),
-  closable: false,
-  child: Text('Du må fullføre registreringen.'),
-  actions: [
-    DsButton(
-      variant: DsButtonVariant.primary,
-      onPressed: () => fullfoer(),
-      child: Text('Fullfør'),
-    ),
-  ],
+  title: const Text('Viktig melding'),
+  closeButton: false,
+  child: Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Text('Du må fullføre registreringen.'),
+      const SizedBox(height: 16),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          DsButton(
+            variant: DsButtonVariant.primary,
+            onPressed: () => fullfoer(),
+            child: const Text('Fullfør'),
+          ),
+        ],
+      ),
+    ],
+  ),
+)
+```
+
+### Vis dialogen som modal rute
+
+```dart
+DsDialog.show(
+  context: context,
+  builder: (context) => DsDialog(
+    title: const Text('Bekreft'),
+    onClose: () => Navigator.of(context).pop(),
+    child: const Text('Vil du fortsette?'),
+  ),
+)
+```
+
+### Skuff (drawer)
+
+Bruk `placement` for å forankre dialogen til en skjermkant.
+
+```dart
+DsDialog.show(
+  context: context,
+  placement: DsDialogPlacement.right,
+  builder: (context) => DsDialog(
+    placement: DsDialogPlacement.right,
+    title: const Text('Filtre'),
+    child: const Text('Innhold i skuffen.'),
+  ),
 )
 ```
 
@@ -74,11 +131,15 @@ DsDialog(
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| title | Widget? | null | Tittelen som vises øverst i dialogen |
 | child | Widget | påkrevd | Innholdet i dialogen |
-| actions | List\<Widget\> | [] | Handlingsknapper nederst i dialogen |
-| closable | bool | true | Om dialogen kan lukkes med lukkeknapp |
-| onClose | VoidCallback? | null | Kalles når dialogen lukkes |
+| title | Widget? | null | Tittelen som vises øverst i dialogen |
+| onClose | VoidCallback? | null | Kalles når dialogen lukkes (lukkeknapp, `Escape`, klikk utenfor eller tilbakenavigasjon) |
+| closeButton | bool | true | Om lukkeknappen (X) vises |
+| placement | DsDialogPlacement | center | Hvor dialogen plasseres (center, left, right, top, bottom) |
+| color | DsColor? | null | Fargeskala for dialogen (faller tilbake til `DsColorScope`) |
+
+`DsDialog.show` tar i tillegg `closeOnBarrierTap` (standard `false`) som styrer om
+klikk utenfor dialogen lukker den, og `placement` for plassering på skjermen.
 
 ## Import
 
@@ -91,8 +152,9 @@ import 'package:designsystemet_flutter/components.dart';
 
 ## Semantikk
 - Fanger fokus innenfor dialogen (focus trap) slik at brukeren ikke kan tabbe ut av den.
-- Lukkeknappen er fokuserbar og synlig for skjermlesere.
+- Lukkeknappen vises som standard, er fokuserbar og annonseres som «Lukk dialogvindu» til skjermlesere.
 - Dialogen annonseres med sin tittel til skjermlesere.
+- Klikk utenfor dialogen lukker den ikke som standard; bruk `Escape` eller lukkeknappen. Sett `closeOnBarrierTap: true` i `DsDialog.show` for å tillate lukking ved klikk utenfor.
 
 ## Tastaturinteraksjon
 
@@ -100,7 +162,7 @@ import 'package:designsystemet_flutter/components.dart';
 | --- | --- |
 | `Tab` | Flytter fokus til neste fokuserbare element innenfor dialogen. |
 | `Shift + Tab` | Flytter fokus til forrige fokuserbare element innenfor dialogen. |
-| `Escape` | Lukker dialogen (når `closable` er `true`). |
+| `Escape` | Lukker dialogen. |
 | `Enter` | Aktiverer den fokuserte handlingsknappen. |
 
 ## Fokusindikator
