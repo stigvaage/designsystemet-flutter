@@ -12,9 +12,6 @@
 
 > **[Les dokumentasjonen](https://stigvaage.github.io/designsystemet-flutter/)** | **[Interaktiv komponentkatalog (Widgetbook)](https://stigvaage.github.io/designsystemet-flutter/widgetbook/)**
 
-> [!WARNING]
-> **Betaversjon (`0.3.0-beta.1`).** Dette er en forhåndsutgivelse for testing. API-et kan fortsatt endres før `0.3.0` stabil. Tilbakemeldinger og feilrapporter mottas gjerne.
-
 Flutter-implementasjon av [Designsystemet](https://designsystemet.no) -- det norske offentlige designsystemet utviklet av Digitaliseringsdirektoratet (Digdir). Biblioteket gir norske offentlige virksomheter og andre organisasjoner et ferdig sett med tilgjengelige, tokendrevne UI-komponenter som følger det offisielle designsystemet -- uten avhengigheter til Material eller Cupertino.
 
 ## Funksjoner
@@ -37,7 +34,7 @@ Legg til pakken i din `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  designsystemet_flutter: ^0.3.0-beta.1
+  designsystemet_flutter: ^0.3.0
 ```
 
 Kjør deretter:
@@ -46,9 +43,7 @@ Kjør deretter:
 flutter pub get
 ```
 
-> **Merk:** `0.3.0-beta.1` er en forhåndsutgivelse og må spesifiseres eksplisitt som over — `flutter pub add designsystemet_flutter` velger ellers siste stabile utgave (`0.2.x`).
-
-## Hva er nytt i 0.3.0-beta.1
+## Hva er nytt i 0.3.0
 
 - **Material-fritt tekstfelt** — `DsInput` (og dermed Textfield/Textarea/Search/Suggestion/Select) er reimplementert på `EditableText`. Hele biblioteket er nå fullstendig fritt for Material/Cupertino.
 - **Offisiell typografi-skala** — font-størrelsene følger nå Designsystemets primitiv-tokens nøyaktig (overskrift og brødtekst).
