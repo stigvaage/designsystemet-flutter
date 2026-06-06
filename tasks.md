@@ -1,6 +1,6 @@
 # Oppgaver — Komplett Flutter-versjon av Designsystemet
 
-Avledet fra plan: full API-paritet med Designsystemet (React-referanse `digdir/designsystemet` **v1.15.0**), regenerert fargetema fra Helse Vest mørkeblå **#003087**, oppdatert README, komplett VitePress-site og 100 % fungerende MCP-server.
+Avledet fra plan: full API-paritet med Designsystemet (React-referanse `digdir/designsystemet` **v1.15.0**), regenerert fargetema fra mørkeblå **#003087**, oppdatert README, komplett VitePress-site og 100 % fungerende MCP-server.
 
 **Branch:** `oppdater-komponentbiblioteket-iht-designsystemet`
 **Status-symboler:** `[ ]` ikke startet · `[~]` pågår · `[x]` ferdig
@@ -54,7 +54,7 @@ Kopier `DsButton`-malen (eksplisitt prop `?? Scope.of(context)` → `colorScheme
 - [ ] **B5 Search/Select** — Search.Input/Button/Clear (+ clear-knapp), Select.Option/Optgroup (+ objekter), Chip-varianter (radio/checkbox/button/removable).
 
 ## Track C — Tokens (uavhengig, kan starte dag 1)
-- [ ] **C1** Generer Helse Vest DTCG-tokens (accent #003087) via `@digdir/designsystemet` CLI; commit `design-tokens/`.
+- [ ] **C1** Generer DTCG-tokens (accent #003087) via `@digdir/designsystemet` CLI; commit `design-tokens/`.
 - [ ] **C2** Regenerer `lib/generated/ds_theme_digdir.dart` via `dart run designsystemet_flutter:generate`; golden-snapshot av verdier.
 - [ ] **C3** `test/theme/contrast_test.dart`: WCAG-kontrast (4.5:1 tekst, 3:1 grensesnitt) over alle 9 skalaer × lys/mørk.
 - [ ] **C4** Juster mørk-modus-skygger mot offisiell veiledning (lyse kanter i stedet for skygger).
@@ -63,7 +63,7 @@ Kopier `DsButton`-malen (eksplisitt prop `?? Scope.of(context)` → `colorScheme
 ## Track D — Overflater (følger komponent-PR-ene)
 - [ ] **D1** Widget-tester for hver ny variant/prop + manglende: checkbox, radio, switch, textfield, textarea, search, spinner, table, tabs, toggle_group, validation_message.
 - [ ] **D2** Widgetbook-stories for manglende: alert, avatar_stack, divider, dropdown, list, search, suggestion, field, heading, label, paragraph, validation_message.
-- [ ] **D3** README: fiks versjon (`^0.2.0`→ny), Helse Vest #003087-seksjon, lenke til `mcp-server/README.md`, paritet-/komponent-tabell, badges.
+- [ ] **D3** README: fiks versjon (`^0.2.0`→ny), #003087-seksjon, lenke til `mcp-server/README.md`, paritet-/komponent-tabell, badges.
 - [ ] **D4** VitePress-site: «egendefinert tema»-side (#003087-eksempel), manglende mønstre (`knappplassering`, `samtykkebanner`, `eksterne-lenker`, `representasjon`), oppdater komponentsider, verifiser build + Pages-deploy.
 - [ ] **D5** MCP-server 100 %: versjon-synk; fullfør `migrations.json` (alle 40 + Material/Cupertino + Ds-1.x→2.0); `dart-parser.ts` henter enum-verdier + dartdoc; `theme-setup.md` (versjon + #003087 + token-arbeidsflyt); `list_tokens` reflekterer regenererte tokens; tester for alle 6 verktøy; `npm build`+`test` grønt.
 - [ ] **D6** Release/CI: versjonsbump (pubspec ↔ mcp `package.json`), `CHANGELOG.md`, grønn CI, Pages-deploy, MCP-publish. 2.0-brytende fjerning av indeks-API/bool-varianter samlet til slutt.

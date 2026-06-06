@@ -1,5 +1,6 @@
 # designsystemet_flutter
 
+[![pub package](https://img.shields.io/pub/v/designsystemet_flutter.svg)](https://pub.dev/packages/designsystemet_flutter)
 [![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.44-blue.svg)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-%3E%3D3.12-blue.svg)](https://dart.dev)
 [![Designsystemet](https://img.shields.io/badge/Designsystemet-designsystemet.no-003087.svg)](https://designsystemet.no)
@@ -10,6 +11,9 @@
 > Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no) fra Digitaliseringsdirektoratet. Utviklet av SHV.
 
 > **[Les dokumentasjonen](https://stigvaage.github.io/designsystemet-flutter/)** | **[Interaktiv komponentkatalog (Widgetbook)](https://stigvaage.github.io/designsystemet-flutter/widgetbook/)**
+
+> [!WARNING]
+> **Betaversjon (`0.3.0-beta.1`).** Dette er en forhåndsutgivelse for testing. API-et kan fortsatt endres før `0.3.0` stabil. Tilbakemeldinger og feilrapporter mottas gjerne.
 
 Flutter-implementasjon av [Designsystemet](https://designsystemet.no) -- det norske offentlige designsystemet utviklet av Digitaliseringsdirektoratet (Digdir). Biblioteket gir norske offentlige virksomheter og andre organisasjoner et ferdig sett med tilgjengelige, tokendrevne UI-komponenter som følger det offisielle designsystemet -- uten avhengigheter til Material eller Cupertino.
 
@@ -33,7 +37,7 @@ Legg til pakken i din `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  designsystemet_flutter: ^0.3.0
+  designsystemet_flutter: ^0.3.0-beta.1
 ```
 
 Kjør deretter:
@@ -41,6 +45,17 @@ Kjør deretter:
 ```bash
 flutter pub get
 ```
+
+> **Merk:** `0.3.0-beta.1` er en forhåndsutgivelse og må spesifiseres eksplisitt som over — `flutter pub add designsystemet_flutter` velger ellers siste stabile utgave (`0.2.x`).
+
+## Hva er nytt i 0.3.0-beta.1
+
+- **Material-fritt tekstfelt** — `DsInput` (og dermed Textfield/Textarea/Search/Suggestion/Select) er reimplementert på `EditableText`. Hele biblioteket er nå fullstendig fritt for Material/Cupertino.
+- **Offisiell typografi-skala** — font-størrelsene følger nå Designsystemets primitiv-tokens nøyaktig (overskrift og brødtekst).
+- **Tilgjengelighetsforbedringer** — 44×44 tap-mål, live-region for feilmeldinger, synlige fokusringer og korrekte semantiske roller på tvers av komponentene.
+- **Alle avhengigheter på siste stabile** — Flutter 3.44+, Dart 3.12+, `flutter_lints` 6.x.
+
+Se [CHANGELOG.md](CHANGELOG.md) for fullstendig endringslogg, inkludert brytende endringer i `DsSelect` og `DsSuggestion`.
 
 ## Hurtigstart
 
@@ -99,7 +114,7 @@ DsTheme(
 ```
 
 > [!NOTE]
-> Standardtemaet `DsThemeDigdir` bruker Helse Vest sin mørkeblå **`#003087`** som
+> Standardtemaet `DsThemeDigdir` bruker mørkeblå **`#003087`** som
 > `accent`-basefarge. Hele den 16-stegs accent-skalaen (background → surface →
 > border → text → base/contrast) er avledet fra denne og oppfyller WCAG 2.1 AA.
 > Vil du bruke en annen merkevarefarge, se [Egendefinert tema](#egendefinert-tema).

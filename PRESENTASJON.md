@@ -21,7 +21,7 @@ Lag en profesjonell PowerPoint-presentasjon (PPTX-fil) for prosjektet **Designsy
 |---------|-------|
 | Komponenter | 40 tokendrevne UI-komponenter |
 | Dart-kodelinjer (lib/) | ~12 600 |
-| Dart-tester | 577 (53 testfiler) |
+| Dart-tester | 657 (53 testfiler) |
 | MCP-tester | 16 |
 | pub.dev-poeng | 160/160 (perfekt) |
 | API-dokumentasjonsdekning | 96,0 % |
@@ -89,7 +89,7 @@ Kategorisert:
 ### Slide 8: Kodekvalitet
 - **pub.dev: 160/160 poeng** (perfekt score)
 - 96 % API-dokumentasjonsdekning (dartdoc)
-- 577 Dart-tester (enhet, widget, semantikk, tastatur) + 16 MCP-tester
+- 657 Dart-tester (enhet, widget, semantikk, tastatur) + 16 MCP-tester
 - Streng analyse: strict-casts, strict-inference, strict-raw-types
 - `flutter_lints` med null-sikkerhet
 - 0 feil, 0 advarsler i analyse
@@ -103,7 +103,7 @@ Kategorisert:
   - Semantikk: verifiserer ARIA-egenskaper (isButton, isLink, isExpanded, liveRegion)
   - Tastatur: verifiserer Enter/Space/Escape-håndtering
   - Tilstand: verifiserer disabled-opacity, selected-styling, error-border
-- 577 Dart-tester (i tillegg til 16 MCP-tester)
+- 657 Dart-tester (i tillegg til 16 MCP-tester)
 
 ### Slide 10: Dokumentasjonsside (VitePress)
 - 67 norskspråklige sider på GitHub Pages
@@ -161,7 +161,7 @@ Kategorisert:
 ### Slide 15: Teknologistabel
 | Lag | Teknologi | Versjon |
 |-----|-----------|---------|
-| Komponentbibliotek | Dart / Flutter | 3.8+ / 3.32+ |
+| Komponentbibliotek | Dart / Flutter | 3.12+ / 3.44+ |
 | MCP-server | TypeScript / Node.js | 5.x / 18+ |
 | Dokumentasjon | VitePress / Vue 3 | 1.6 / 3.5 |
 | Komponentkatalog | Widgetbook | 3.x |

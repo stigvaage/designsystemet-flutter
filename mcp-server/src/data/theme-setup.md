@@ -60,9 +60,9 @@ final sizes = theme.sizeTokens;
 final borderRadius = theme.borderRadius;
 ```
 
-## 6. Default accent color (Helse Vest dark blue #003087)
+## 6. Default accent color (dark blue #003087)
 
-The built-in `DsThemeDigdir` theme uses Helse Vest's dark blue **#003087** as the
+The built-in `DsThemeDigdir` theme uses the dark blue **#003087** as the
 `accent` base color (`accent.baseDefault`). The full 16-step accent scale
 (background → surface → border → text → base/contrast) is derived from this base
 and meets WCAG 2.1 AA contrast.

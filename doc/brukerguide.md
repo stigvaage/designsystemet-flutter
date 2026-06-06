@@ -14,8 +14,8 @@ Denne brukerguiden dekker alt du trenger for å ta biblioteket i bruk, fra oppse
 
 ### Systemkrav
 
-- Flutter 3.32 eller nyere
-- Dart 3.8 eller nyere
+- Flutter 3.44 eller nyere
+- Dart 3.12 eller nyere
 - Alle Flutter-plattformer støttet: Android, iOS, Web, macOS, Linux, Windows
 
 ### Installer pakken
@@ -24,7 +24,7 @@ Legg til pakken i `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  designsystemet_flutter: ^1.0.0
+  designsystemet_flutter: ^0.3.0
 ```
 
 Kjør installasjonen:
@@ -126,28 +126,22 @@ final typografi = tema.typography;
 | `DsTheme.of(context)` | Returnerer nærmeste `DsThemeData`, eller kaster feil |
 | `DsTheme.maybeOf(context)` | Returnerer nærmeste `DsThemeData`, eller `null` |
 
-### ThemeExtension-integrasjon med MaterialApp
+### Bruk sammen med MaterialApp
 
-`DsThemeData` implementerer `ThemeExtension<DsThemeData>`, noe som gjør det mulig å integrere med eksisterende `MaterialApp`-applikasjoner:
+Selve biblioteket har ingen avhengighet til Material. `DsThemeData` er bevisst frikoblet fra `ThemeData`/`ThemeExtension` og leses utelukkende via `DsTheme.of(context)`, slik at biblioteket forblir Material-fritt. Dersom applikasjonen din likevel allerede bruker `MaterialApp` (eller `CupertinoApp`), pakker du bare innholdet inn med `DsTheme`. `DsTheme` er en `InheritedWidget` og fungerer side om side med et hvilket som helst Flutter-app-skall:
 
 ```dart
 MaterialApp(
-  theme: ThemeData(
-    extensions: [DsThemeDigdir.light()],
-  ),
   home: DsTheme(
     data: DsThemeDigdir.light(),
     child: const MinApp(),
   ),
 )
-
-// Tilgang via Material Theme:
-final dsTheme = Theme.of(context).extension<DsThemeData>()!;
 ```
 
 `DsThemeData` implementerer både `copyWith` og `lerp` for å støtte temanimasjoner og delvis temaoverskrivning.
 
-> **Merk:** Bibliotekkomponentene bruker alltid `DsTheme.of(context)` internt. `ThemeExtension`-integrasjonen er et valgfritt tillegg for utviklere som bruker `MaterialApp`.
+> **Merk:** Bibliotekkomponentene bruker alltid `DsTheme.of(context)` internt, uavhengig av hvilket app-skall du bruker.
 
 ---
 
@@ -828,11 +822,13 @@ DsDropdown(
 )
 
 // Select
-DsSelect(
-  items: fylker.map((f) => f.navn).toList(),
-  selectedIndex: valgtIndeks,
+DsSelect<String>(
+  options: fylker
+      .map((f) => DsSelectOption(value: f.kode, label: f.navn))
+      .toList(),
+  value: valgtFylke,
   placeholder: 'Velg fylke',
-  onChanged: (indeks) => setState(() => valgtIndeks = indeks),
+  onChanged: (verdi) => setState(() => valgtFylke = verdi),
 )
 ```
 
@@ -924,11 +920,12 @@ DsToggleGroup(
   onChanged: (verdi) => setState(() => visning = verdi),
 )
 
-// Suggestion -- forslagskomponent
-DsSuggestion(
-  controller: søkeController,
-  suggestions: forslag,
-  onSelected: (valgt) => brukForslag(valgt),
+// Suggestion -- forslagskomponent (combobox med type-ahead)
+DsSuggestion<String>(
+  options: forslag
+      .map((f) => DsSuggestionOption(value: f, label: f))
+      .toList(),
+  onSelectedChanged: (valgt) => brukForslag(valgt),
 )
 
 // Details -- sammenleggbar seksjon
@@ -1113,4 +1110,4 @@ Biblioteket støtter alle plattformer som Flutter støtter:
 - **Inter-font**: Levert som pakkeressurs (TTF-filer). Ingen nettverkstilgang kreves.
 - **Hover-effekter**: Bruker `MouseRegion` som kun aktiveres på pekerenheter, ikke berøring.
 - **Fokusindikatorer**: Tilpasset plattformens fokuskonvensjoner.
-- **Minste Flutter-versjon**: 3.32+ (kreves for Dart 3.8-funksjoner som mønstermatching og forseglede klasser).
+- **Minste Flutter-versjon**: 3.44+ (Dart 3.12+), som gir tilgang til moderne språkfunksjoner som mønstermatching og forseglede klasser.
