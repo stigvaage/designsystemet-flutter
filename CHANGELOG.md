@@ -1,10 +1,10 @@
 # Endringslogg
 
-## 0.3.0-beta.1 — 2026-06-06
+## 0.3.0 — 2026-06-06
 
 Stor paritetsoppdatering mot Designsystemet (React-referanse v1.15.0). Standardtemaet
 bruker mørkeblå `#003087` som accent-base (WCAG 2.1 AA, verifisert med ny
-kontrasttest).
+kontrasttest). (Først utgitt som forhåndsutgivelse `0.3.0-beta.1`.)
 
 ### Brytende endringer
 
