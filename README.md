@@ -1,7 +1,7 @@
 # designsystemet_flutter
 
-[![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.32-blue.svg)](https://flutter.dev)
-[![Dart](https://img.shields.io/badge/Dart-%3E%3D3.8-blue.svg)](https://dart.dev)
+[![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.44-blue.svg)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-%3E%3D3.12-blue.svg)](https://dart.dev)
 [![Designsystemet](https://img.shields.io/badge/Designsystemet-designsystemet.no-003087.svg)](https://designsystemet.no)
 [![Lisens: MIT](https://img.shields.io/badge/Lisens-MIT-green.svg)](LICENSE)
 [![WCAG 2.1 AA](https://img.shields.io/badge/WCAG_2.1-AA-brightgreen.svg)](https://www.w3.org/WAI/WCAG21/quickref/)
@@ -337,7 +337,7 @@ Se [mcp-server/README.md](mcp-server/README.md) for full dokumentasjon og Docker
 
 Prosjektet er bygget med flere teknologier og verktøy som samarbeider for å levere et komplett komponentbibliotek med dokumentasjon, interaktiv katalog og AI-integrasjon:
 
-- **Dart 3.8+ / Flutter 3.32+** -- Selve komponentbiblioteket med 40 UI-komponenter, tokendrevet temasystem, kodegenerator og full testdekning. Bygget uten Material- eller Cupertino-avhengigheter — kun `package:flutter/widgets.dart` og `package:flutter/rendering.dart`.
+- **Dart 3.12+ / Flutter 3.44+** -- Selve komponentbiblioteket med 40 UI-komponenter, tokendrevet temasystem, kodegenerator og full testdekning. Bygget uten Material- eller Cupertino-avhengigheter — kun `package:flutter/widgets.dart` og `package:flutter/rendering.dart`.
 - **Widgetbook 3.x** -- Interaktiv komponentkatalog som lar utviklere utforske, teste og justere alle komponenter med ulike egenskaper, temaer og størrelser. Bygges som en Flutter-webapp og publiseres som en del av dokumentasjonssiden.
 - **VitePress 1.6 / Vue 3** -- Dokumentasjonssiden ([stigvaage.github.io/designsystemet-flutter](https://stigvaage.github.io/designsystemet-flutter/)) med 67 norskspråklige sider. Egendefinert tema med Designsystemets fargepalett, komponentfaner (Oversikt/Kode/Tilgjengelighet), innebygd Widgetbook-forhåndsvisning og søk.
 - **MCP-server (TypeScript / Node.js)** -- Model Context Protocol-server som lar AI-kodeassistenter som Claude Code, Cursor og VS Code Copilot slå opp komponent-API-er, migrere fra Material-widgets, hente temaoppsett og søke i dokumentasjonen. Bygget med `@modelcontextprotocol/sdk`, `zod` og `minisearch`.

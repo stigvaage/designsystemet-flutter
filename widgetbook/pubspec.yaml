@@ -2,13 +2,13 @@ name: widgetbook_designsystemet
 description: Interaktiv komponentkatalog for designsystemet_flutter
 
 environment:
-  sdk: ^3.8.0
+  sdk: ^3.12.0
 
 dependencies:
   flutter:
     sdk: flutter
-  widgetbook: ^3.10.0
-  lucide_icons_flutter: ^3.1.10
+  widgetbook: ^3.23.0
+  lucide_icons_flutter: ^3.1.14
   designsystemet_flutter:
     path: ../
 

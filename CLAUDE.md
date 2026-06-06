@@ -4,7 +4,7 @@ Uoffisiell Flutter-implementasjon av [Designsystemet](https://designsystemet.no)
 
 ## Teknologi
 
-- **Dart 3.8+ / Flutter 3.32+** — Komponentbiblioteket (40 komponenter, tokendrevet tema, ingen Material/Cupertino-avhengigheter)
+- **Dart 3.12+ / Flutter 3.44+** — Komponentbiblioteket (40 komponenter, tokendrevet tema, ingen Material/Cupertino-avhengigheter)
 - **TypeScript 5.x / Node.js 18+** — MCP-server (`@modelcontextprotocol/sdk`, `zod`, `minisearch`)
 - **VitePress 1.6 / Vue 3** — Dokumentasjonsside (67 norskspråklige sider)
 - **Widgetbook 3.x** — Interaktiv komponentkatalog

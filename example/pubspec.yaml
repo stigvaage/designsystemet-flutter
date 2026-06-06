@@ -2,7 +2,7 @@ name: example
 description: Eksempelapp for designsystemet_flutter
 
 environment:
-  sdk: ^3.8.0
+  sdk: ^3.12.0
 
 dependencies:
   flutter:
