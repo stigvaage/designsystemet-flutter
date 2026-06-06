@@ -38,7 +38,7 @@ Biblioteket leveres med et innebygd tema i to varianter:
 - **`DsThemeDigdir.light()`** — Lyst modus
 - **`DsThemeDigdir.dark()`** — Mørkt modus
 
-Temaet bruker Designsystemets token-arkitektur, men standard accent-basefarge er Helse Vest sin mørkeblå `#003087` (se [Tema-siden](../kom-i-gang/tema/)). Vil du bruke Digitaliseringsdirektoratets offisielle accent eller en annen merkevarefarge, genererer du egne tokens med kodegeneratoren.
+Temaet bruker Designsystemets token-arkitektur, men standard accent-basefarge er mørkeblå `#003087` (se [Tema-siden](../kom-i-gang/tema/)). Vil du bruke Digitaliseringsdirektoratets offisielle accent eller en annen merkevarefarge, genererer du egne tokens med kodegeneratoren.
 
 ## Egendefinerte temaer
 

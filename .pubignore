@@ -6,6 +6,10 @@ specs/
 .specify/
 .github/
 .mcp.json
+.claude/
 CLAUDE.md
 CONTRIBUTING.md
 SECURITY.md
+PRESENTASJON.md
+tasks.md
+doc/

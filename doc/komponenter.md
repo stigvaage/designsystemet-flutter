@@ -490,15 +490,16 @@ DsDropdown(
 
 ### DsSelect
 
-Velger med nedtrekksliste.
+Generisk velger (`DsSelect<T>`) med nedtrekksliste og value-basert valg.
 
 **Egenskaper:**
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| `items` | `List<String>` | påkrevd | Valgalternativer |
-| `selectedIndex` | `int?` | `null` | Indeks for valgt alternativ |
-| `onChanged` | `ValueChanged<int>?` | `null` | Kalles med indeks ved valg |
+| `options` | `List<DsSelectOption<T>>` | påkrevd | Valgalternativer (`value` + `label`) |
+| `groups` | `List<DsSelectOptgroup<T>>?` | `null` | Valgfri gruppering av alternativer |
+| `value` | `T?` | `null` | Gjeldende valgt verdi |
+| `onChanged` | `ValueChanged<T>?` | `null` | Kalles med valgt verdi |
 | `placeholder` | `String?` | `null` | Plassholdertekst |
 | `size` | `DsSize?` | `null` | Størrelsesmodus |
 | `color` | `DsColor?` | `null` | Fargetema |
@@ -509,11 +510,15 @@ Velger med nedtrekksliste.
 **Eksempel:**
 
 ```dart
-DsSelect(
-  items: ['Oslo', 'Vestland', 'Trøndelag'],
-  selectedIndex: valgtIndeks,
+DsSelect<String>(
+  options: const [
+    DsSelectOption(value: 'oslo', label: 'Oslo'),
+    DsSelectOption(value: 'vestland', label: 'Vestland'),
+    DsSelectOption(value: 'trondelag', label: 'Trøndelag'),
+  ],
+  value: valgtFylke,
   placeholder: 'Velg fylke',
-  onChanged: (indeks) => setState(() => valgtIndeks = indeks),
+  onChanged: (verdi) => setState(() => valgtFylke = verdi),
 )
 ```
 
@@ -762,24 +767,33 @@ DsToggleGroup(
 
 ### DsSuggestion
 
-Forslagskomponent med autofullføringsforslag.
+Combobox (`DsSuggestion<T>`) med type-ahead-filtrering og autofullføringsforslag.
 
 **Egenskaper:**
 
 | Egenskap | Type | Standard | Beskrivelse |
 |----------|------|----------|-------------|
-| `controller` | `TextEditingController?` | `null` | Tekstkontroller |
-| `suggestions` | `List<String>` | påkrevd | Forslag |
-| `onSelected` | `ValueChanged<String>?` | `null` | Kalles ved valg av forslag |
+| `options` | `List<DsSuggestionOption<T>>` | påkrevd | Forslag (`value` + `label`) |
+| `onSelectedChanged` | `ValueChanged<List<T>>?` | `null` | Kalles med gjeldende utvalg |
+| `selected` | `List<T>?` | `null` | Forhåndsvalgte verdier |
+| `multiple` | `bool` | `false` | Tillat flere valg |
+| `filter` | `bool` | `true` | Type-ahead-filtrering |
+| `creatable` | `bool` | `false` | Tillat å opprette nye verdier |
+| `placeholder` | `String?` | `null` | Plassholdertekst |
+| `emptyText` | `String` | `'Ingen treff'` | Tekst når ingen forslag matcher |
 | `size` | `DsSize?` | `null` | Størrelsesmodus |
 
 **Eksempel:**
 
 ```dart
-DsSuggestion(
-  controller: kommuneController,
-  suggestions: ['Oslo', 'Bergen', 'Trondheim', 'Stavanger'],
-  onSelected: (kommune) => velgKommune(kommune),
+DsSuggestion<String>(
+  options: const [
+    DsSuggestionOption(value: 'oslo', label: 'Oslo'),
+    DsSuggestionOption(value: 'bergen', label: 'Bergen'),
+    DsSuggestionOption(value: 'trondheim', label: 'Trondheim'),
+    DsSuggestionOption(value: 'stavanger', label: 'Stavanger'),
+  ],
+  onSelectedChanged: (valgte) => velgKommuner(valgte),
 )
 ```
 

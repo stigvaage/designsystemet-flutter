@@ -11,7 +11,7 @@ import '../src/theme/ds_typography.dart';
 /// Innebygd standardtema for designsystemet_flutter, strukturert etter
 /// Designsystemet (designsystemet.no).
 ///
-/// Accent-/brand-basefargen er Helse Vest sin mørkeblå (#003087); hele
+/// Accent-/brand-basefargen er mørkeblå (#003087); hele
 /// 16-stegs skalaen er avledet fra den og oppfyller WCAG 2.1 AA. Dette er
 /// IKKE den offisielle Digdir-accentfargen.
 ///

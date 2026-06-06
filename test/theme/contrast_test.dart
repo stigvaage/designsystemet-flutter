@@ -6,7 +6,7 @@ import 'package:designsystemet_flutter/generated/ds_theme_digdir.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // WCAG 2.1 relative luminance + contrast ratio, used to verify that the
-// built-in DsThemeDigdir theme (accent derived from Helse Vest blue #003087)
+// built-in DsThemeDigdir theme (accent derived from dark blue #003087)
 // meets AA contrast across every named color scale, light and dark.
 
 double _linear(double channel) => channel <= 0.03928
@@ -87,7 +87,7 @@ void main() {
       }
     });
 
-    test('accent base is Helse Vest dark blue #003087 (light)', () {
+    test('accent base is dark blue #003087 (light)', () {
       final accent = DsThemeDigdir.light().colorScheme.accent;
       expect(accent.baseDefault, const Color(0xFF003087));
     });

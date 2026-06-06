@@ -1,6 +1,6 @@
 {
   "name": "@stigvaage/designsystemet-flutter-mcp",
-  "version": "0.3.0",
+  "version": "0.3.0-beta.1",
   "description": "MCP-server for designsystemet-flutter — komponent-API, migrering og dokumentasjonssøk",
   "type": "module",
   "main": "dist/index.js",

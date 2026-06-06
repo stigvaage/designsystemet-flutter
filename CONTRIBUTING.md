@@ -12,8 +12,8 @@ Takk for at du vil bidra til designsystemet_flutter! Denne guiden forklarer hvor
 
 ### Forutsetninger
 
-- Flutter 3.32 eller nyere
-- Dart 3.8 eller nyere
+- Flutter 3.44 eller nyere
+- Dart 3.12 eller nyere
 - Git
 
 ### Oppsett

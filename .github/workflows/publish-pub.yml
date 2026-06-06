@@ -1,0 +1,37 @@
+name: Publish to pub.dev
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+# id-token: write kreves av pub.dev sin automatiserte publisering (OIDC).
+# OIDC-tokenet hentes automatisk av `dart pub publish` når denne rettigheten
+# er satt og pakken har «Automated publishing» aktivert på pub.dev.
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    name: Flutter-bibliotek (pub.dev)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Publish to pub.dev
+        run: dart pub publish --force

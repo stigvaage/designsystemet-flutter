@@ -11,7 +11,7 @@ pubspec.lock
 .vscode/
 *.iml
 
-# Claude Code session state (cron locks, scheduled tasks)
+# Claude Code local config, commands + session state (local tooling)
 .claude/
 
 # OS
@@ -28,4 +28,15 @@ coverage/
 # VitePress
 site/.vitepress/dist/
 site/.vitepress/cache/
-site/node_modules/
+
+# Node (mcp-server + site)
+node_modules/
+*.tsbuildinfo
+mcp-server/dist/
+
+# Logs
+*.log
+
+# Spec-kit / AI-workflow scaffolding (local tooling, not needed by consumers)
+.specify/
+specs/

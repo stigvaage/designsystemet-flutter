@@ -1,9 +1,9 @@
 # Endringslogg
 
-## 0.3.0
+## 0.3.0-beta.1 — 2026-06-06
 
 Stor paritetsoppdatering mot Designsystemet (React-referanse v1.15.0). Standardtemaet
-bruker Helse Vest mørkeblå `#003087` som accent-base (WCAG 2.1 AA, verifisert med ny
+bruker mørkeblå `#003087` som accent-base (WCAG 2.1 AA, verifisert med ny
 kontrasttest).
 
 ### Brytende endringer
@@ -31,7 +31,7 @@ kontrasttest).
 - **Nye enums:** `DsCardVariant`, `DsDetailsVariant`, `DsToggleGroupVariant`,
   `DsSelectionVariant`, `DsAvatarVariant`, `DsPlacement`, `DsPopoverVariant`,
   `DsSortDirection`.
-- **WCAG-kontrasttest** for hele temaet, og Helse Vest `#003087` dokumentert i README + site.
+- **WCAG-kontrasttest** for hele temaet, og `#003087` dokumentert i README + site.
 
 ### Fikser
 
