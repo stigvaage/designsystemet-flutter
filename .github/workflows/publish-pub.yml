@@ -1,8 +1,12 @@
 name: Publish to pub.dev
 
+# Release-triggeren er midlertidig deaktivert til «trusted publishing» er aktivert
+# på pub.dev (Admin → Automated publishing). Inntil da publiseres biblioteket
+# manuelt med `flutter pub publish`, eller denne workflowen kjøres via
+# workflow_dispatch. Re-aktiver ved å legge tilbake:
+#   release:
+#     types: [published]
 on:
-  release:
-    types: [published]
   workflow_dispatch:
 
 # id-token: write kreves av pub.dev sin automatiserte publisering (OIDC).

@@ -27,6 +27,11 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm test
-      - run: npm publish
+      - name: Publish (forhåndsutgivelser → beta dist-tag)
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *-* ]]; then TAG=beta; else TAG=latest; fi
+          echo "Publiserer $VERSION med dist-tag '$TAG'"
+          npm publish --tag "$TAG"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

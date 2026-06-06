@@ -28,6 +28,13 @@ Workflowen [`publish-pub.yml`](.github/workflows/publish-pub.yml) har
 `permissions: id-token: write`, slik at `dart pub publish` automatisk plukker opp
 OIDC-tokenet når pakken er konfigurert for automatisert publisering.
 
+> **Status:** Inntil engangsoppsettet over er gjort, kjører `publish-pub.yml` kun
+> via `workflow_dispatch` (release-triggeren er kommentert ut), og biblioteket
+> publiseres manuelt med `flutter pub publish`. Når trusted publishing er
+> aktivert: legg tilbake `release: [published]`-triggeren, så publiseres
+> biblioteket automatisk fra en GitHub Release igjen. MCP-serveren publiseres
+> uansett automatisk fra GitHub Release via `publish-mcp.yml`.
+
 ## Slik gir du ut en versjon
 
 1. **Oppdater versjonsnummer** (hold dem synkronisert) til samme `X.Y.Z`:
