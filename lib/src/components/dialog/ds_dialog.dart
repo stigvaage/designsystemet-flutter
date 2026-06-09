@@ -208,11 +208,16 @@ class _DsDialogState extends State<DsDialog> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       if (widget.title != null)
-                        DefaultTextStyle(
-                          style: theme.typography.headingMd.copyWith(
-                            color: colorScale.textDefault,
+                        // Flexible so a long title shrinks/wraps within the
+                        // header Row instead of overflowing it (the close
+                        // button keeps its size via spaceBetween).
+                        Flexible(
+                          child: DefaultTextStyle(
+                            style: theme.typography.headingMd.copyWith(
+                              color: colorScale.textDefault,
+                            ),
+                            child: widget.title!,
                           ),
-                          child: widget.title!,
                         ),
                       if (widget.closeButton)
                         _DsDialogCloseButton(
